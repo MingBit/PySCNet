@@ -1,4 +1,4 @@
-# SCNetEnrich
+# PySCNet
 There are four modules:
 1) Proprecessing: Normalization, Quality Control, FeatureSelection, Batch Correction???
 2) BuildNet: WGCNA_based, Bayesian Network based, PICD, GENIE3...
@@ -51,7 +51,10 @@ There are four modules:
 
 20.May
 1) plotting functions
-2) preprocessing with scanpy.
+2) Gnetdata: GNR sepecific object
+
+22.May
+1) Update BuildNet module with Docker
 
 
 
