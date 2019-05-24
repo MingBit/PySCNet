@@ -54,7 +54,15 @@ There are four modules:
 2) Gnetdata: GNR sepecific object
 
 22.May
-1) Update BuildNet module with Docker
+1) Learn docker
+
+23.May
+1) No progress
+2) A wonderful day for me: two cats (Baby and Lumi) came to my life.
+
+24.May
+1) update BuildNet with Docker app
+
 
 
 
