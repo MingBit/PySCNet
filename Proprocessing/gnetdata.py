@@ -42,3 +42,4 @@ class Gnetdata():
 
                 input.close()
 
+

@@ -26,8 +26,3 @@ RUN ls ./
 RUN ["python", "run_genie3.py"]
 
 
-
-
-
-
-
