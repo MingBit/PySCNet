@@ -1,28 +1,25 @@
-FROM python:3.7
+FROM fsharp
 
 LABEL maintainer='ming.wu@tum.de'
 
 
 RUN apt-get update \
     && apt-get install -y \
-        build-essential \
-        cmake \
         git \
         curl \
         unzip \
         vim \
+        wget \
    && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /GENIE3
+WORKDIR /SCNS
 
-COPY . /GENIE3
+COPY . /SCNS
 
-RUN curl https://raw.githubusercontent.com/vahuynh/GENIE3/master/GENIE3_python/GENIE3.py > genie3_raw.py
-
-RUN pip install --trusted-host pypi.python.org -r requirements.txt
+RUN  git clone https://github.com/swoodhouse/SCNS-Toolkit.git
 
 RUN ls ./
 
-RUN ["python", "run_genie3.py"]
+
 
 
