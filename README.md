@@ -63,6 +63,15 @@ There are four modules:
 24.May
 1) update BuildNet with Docker app
 
+28.May
+1) Horrible day: I let my two cats out and they are still not coming back.
+
+29.May - 12. June
+1) minor progress
+
+13.June
+1) Update CORR method 
+2) test with SJARACNe method
 
 
 
