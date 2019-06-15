@@ -13,18 +13,31 @@ class Gnetdata():
         """ As cell-oriented analysis can be done by scanpy, this class includes dataset specifically
         for building GRNs. It consists four sub-classes:
                 1) GeneMatrix: A matrix for reconsctructing GRNs
-                2) CellAttrs: A dataframe gives information about cells. eg. cluster_nr, annotation
-                3) GeneAttrs: A dataframe gives information about genes. eg. module_nr, marker_annotation
-                4) NetAttrs: A dataframe includes Networks attributes. eg. Node Centralities.
+                2) CellAttrs: A dict gives information about cells. eg. cluster_nr, annotation
+                3) GeneAttrs: A dict gives information about genes. eg. module_nr, marker_annotation
+                4) NetAttrs: A dict includes Networks attributes. eg. Node Centralities.
         """
-        def __init__(self, GeneMatrix, CellAttrs, GeneAttrs):
+        def __init__(self, GeneMatrix):
 
                 self.GeneMatrix = GeneMatrix
-                self.CellAttrs = CellAttrs
-                self.GeneAttrs = GeneAttrs
-                self.NetAttrs = None
+                self.CellAttrs = dict()
+                self.GeneAttrs = dict()
+                self.NetAttrs = dict()
 
                 return None
+
+        def _add_cellattr(self, attr_name, attr):
+
+                self.CellAttrs[attr_name] = attr
+
+        def _add_geneattr(self, attr_name, attr):
+
+                self.GeneAttrs[attr_name] = attr
+
+        def _add_netattr(self, attr_name, attr):
+
+                self.NetAttrs[attr_name] = attr
+
 
         def save_Gnetdata_object(self, filepath):
                 """ export Gnetdata via pickle protocols"""

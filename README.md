@@ -70,8 +70,13 @@ There are four modules:
 1) minor progress
 
 13.June
-1) Update CORR method 
+1) Update CORR method
 2) test with SJARACNe method
+
+14.June
+1) Call function for docker container
+2) NetEnrich module
+
 
 
 

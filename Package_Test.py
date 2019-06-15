@@ -66,10 +66,24 @@ sim2_bnn.run_bnn()
 
 
 # =============================================================================
-# test with bnlearn
+# Test with Preprocessing and docker run
 # =============================================================================
 
+from __future__ import absolute_import
+import sys
+sys.path.append('/home/mwu/MING_V9T/PhD_Pro/PySCNet/')
 
+from Preprocessing import gnetdata
+from BuildNet import gne_dockercaller as gdocker
+import pandas as pd
+
+
+path =  '/home/mwu/MING_V9T/PhD_Pro/PySCNet/BuildNet/Docker_App/'
+Expr = pd.read_csv(path + "PIDC/100_yeast2_medium.txt", sep = '\t', header = 0, index_col = 0)
+gne_exp = gnetdata.Gnetdata(Expr)
+
+gne_exp = gdocker.rundocker(gne_exp, method='GENIE3')
+gne_exp = gdocker.buildnet(gne_exp, threshold=0.001)
 
 
 
