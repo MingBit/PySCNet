@@ -18,7 +18,7 @@ import tarfile
 
 path = sys.path[-1] + 'BuildNet/Docker_App/'
 
-def copy_to(container_id, src, dst):
+def __copy_to(container_id, src, dst):
     client = docker.from_env()
     container = client.containers.get(container_id)
     strm, stat = container.get_archive(src)
@@ -33,68 +33,59 @@ def copy_to(container_id, src, dst):
     os.remove(os.getenv('HOME') + '/temp.tar')
 
 
-def buildnet(gedata, threshold):
+def __rundocker(gedata,method):
 
-        links_filter = gedata.NetAttrs['links'].loc[gedata.NetAttrs['links']['weight'] > threshold]
-        G = nx.from_pandas_edgelist(links_filter,
-                                            source = "source",
-                                            target= "target",
-                                            edge_attr = True)
-        gedata._add_netattr('graph', G)
+        client = docker.from_env()
+        pd.DataFrame.to_csv(gedata.GeneMatrix, path + method + '/Expr.txt')
+        client.images.build(path = path + method, dockerfile = 'Dockerfile', tag = method.lower())
+        container = client.containers.run(method.lower(), detach = True)
+        __copy_to(container_id=container.short_id, src = '/' + method + '/links.txt', dst=os.getenv('HOME'))
+#        client.remove_container(container.short_id)
+        container.stop()
+        client.containers.prune()
+        client.images.prune()
+        raw_links = pd.read_csv(os.getenv('HOME') + '/links.txt', sep = '\t', header = 0)
+        raw_links.columns = ['source', 'target', 'weight']
+        gedata._add_netattr('links', raw_links)
 
         return(gedata)
+
 
 def rundocker(gedata, method):
 
 
         if method == 'GENIE3':
-                client = docker.from_env()
-                pd.DataFrame.to_csv(gedata.GeneMatrix, path + 'GENIE3/Expr.txt')
-                client.images.build(path = path + "/GENIE3", dockerfile = 'Dockerfile', tag = 'genie3')
-                container = client.containers.run('genie3', detach = True)
-                copy_to(container_id=container.short_id, src = '/GENIE3/links.txt', dst=os.getenv('HOME'))
+                gedata = __rundocker(gedata, 'GENIE3')
 
         elif method == 'PIDC':
-                clinet = docker.from_env()
-                pd.DataFrame.to_csv(gedata.GeneMatrix, path + 'PIDC/Expr.csv')
-                client.images.build(path = path + 'PIDC/', dockerfile = 'Dockerfile', tag = 'pidc')
-                clinet.containers.run('pidc', detach = True)
-                copy_to(container_id=container.short_id, src = '/PIDC/links.txt', dst=os.getenv('HOME'))
+                gedata = __rundocker(gedata, 'PIDC')
 
         elif method == "SCNS":
-                client = docker.from_env()
-                pd.DataFrame.to_csv(gedata.GeneMatrix, path + 'SCNS/Expr.csv')
-                client.images.build(path + 'SCNS/', 'scns')
-                client.containers.run('scns', detach = True)
-                copy_to(client, 'scns:/links.txt', '/links.txt')
+                gedata = __rundocker(gedata, 'SCNS')
 
         elif method == "CORR":
-                client = docker.from_env()
-                pd.DataFrame.to_csv(gedata.GeneMatrix, path + 'CORR/Expr.csv')
-                client.images.build(path + 'CORR/', 'corr')
-                client.containers.run('corr', detach = True)
-                copy_to(client, 'corr:/links.txt', '/links.txt')
+                gedata = __rundocker(gedata, 'CORR')
 
         elif method == "SINCERA":
-                client = docker.from_env()
-                pd.DataFrame.to_csv(gedata.GeneMatrix, path + 'SINCERA/Expr.csv')
-                client.images.build(path + 'SINCERA/', 'sincera')
-                client.containers.run('sincera', detach = True)
-                copy_to(client, 'sincera:/links.txt', '/links.txt')
+                gedata = __rundocker(gedata, 'SINCERA')
 
         elif method == "SJARACNE":
-                client = docker.from_env()
-                pd.DataFrame.to_csv(gedata.GeneMatrix, path + 'SJARACNE/Expr.csv')
-                client.images.build(path + 'SJARACNE/', 'sjaracne')
-                client.containers.run('sjaracne', detach = True)
-                copy_to(client, 'sjaracne:/links.txt', '/links.txt')
+                gedata = __rundocker(gedata, 'SJARACNE')
 
-        raw_links = pd.read_csv(os.getenv('HOME') + '/links.txt', sep = '\t', header = 0)
-        raw_links.columns = ['source', 'target', 'weight']
-        gedata._add_netattr('links', raw_links)
-
+        else:
+                print("invalid method!")
 
         return(gedata)
 
 
+def buildnet(gedata, threshold):
+
+        links_filter = gedata.NetAttrs['links'].loc[gedata.NetAttrs['links']['weight'] > threshold]
+        G = nx.from_pandas_edgelist(links_filter,
+                                    source = "source",
+                                    target= "target",
+                                    edge_attr = True)
+        gedata._add_netattr('graph', G)
+
+        return(gedata)
 

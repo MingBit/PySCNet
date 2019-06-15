@@ -39,7 +39,7 @@ class Gnetdata():
                 self.NetAttrs[attr_name] = attr
 
 
-        def save_Gnetdata_object(self, filepath):
+        def _save_Gnetdata_object(self, filepath):
                 """ export Gnetdata via pickle protocols"""
 
                 with open(filepath, 'wb') as output:
@@ -47,7 +47,7 @@ class Gnetdata():
 
                 output.close()
 
-        def load_Gnetdata_object(filepath):
+        def _load_Gnetdata_object(filepath):
                 """ import Gnetdata via pickle protocols"""
 
                 with open(filepath, 'rb') as input:
