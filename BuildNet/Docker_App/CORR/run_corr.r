@@ -25,9 +25,9 @@ run_corr <- function(Expr, pcor_type = c('pcor', 'spcor', 'cosine'), method, out
   cc[lower.tri(cc, diag = TRUE)] = NA
   cc = as.data.frame(as.table(cc))
   cc = na.omit(cc)
-  colnames(cc) = c('Source', 'Target', 'Weight')
-  write.csv(cc, output, row.names = F, quote = F)
+  colnames(cc) = c('source', 'target', 'weight')
+  write.table(cc, output, row.names = F, quote = F, sep = '\t')
 } 
 
 Expr = read.csv(args[1], sep ='\t', header = T, row.names = 1)
-run_corr(Expr, pcor_type = 'pcor', method = 'kendall', output = 'test.txt')
+run_corr(Expr, pcor_type = 'pcor', method = 'pearson', output = 'links.txt')

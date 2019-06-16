@@ -33,10 +33,20 @@ def __copy_to(container_id, src, dst):
     os.remove(os.getenv('HOME') + '/temp.tar')
 
 
+def __remove_duplicate(links):
+        links_list = sorted(links[['source', 'target']].values.tolist())
+        for i in range(len(links_list)):
+                links_list[i] = tuple(sorted(links_list[i]))
+        nodes = pd.DataFrame(list(set(links_list)), columns=('source', 'target'))
+        links = pd.merge(links, nodes, how='right')
+        return(links)
+
+
+
 def __rundocker(gedata,method):
 
         client = docker.from_env()
-        pd.DataFrame.to_csv(gedata.GeneMatrix, path + method + '/Expr.txt')
+        pd.DataFrame.to_csv(gedata.GeneMatrix, path + method + '/Expr.txt',  sep= '\t')
         client.images.build(path = path + method, dockerfile = 'Dockerfile', tag = method.lower())
         container = client.containers.run(method.lower(), detach = True)
         __copy_to(container_id=container.short_id, src = '/' + method + '/links.txt', dst=os.getenv('HOME'))
@@ -46,6 +56,7 @@ def __rundocker(gedata,method):
         client.images.prune()
         raw_links = pd.read_csv(os.getenv('HOME') + '/links.txt', sep = '\t', header = 0)
         raw_links.columns = ['source', 'target', 'weight']
+        raw_links = __remove_duplicate(raw_links)
         gedata._add_netattr('links', raw_links)
 
         return(gedata)
@@ -60,15 +71,16 @@ def rundocker(gedata, method):
         elif method == 'PIDC':
                 gedata = __rundocker(gedata, 'PIDC')
 
-        elif method == "SCNS":
-                gedata = __rundocker(gedata, 'SCNS')
+        #TODO: check the output from SCODE
+        elif method == "SCODE":
+                gedata = __rundocker(gedata, 'SCODE')
 
         elif method == "CORR":
                 gedata = __rundocker(gedata, 'CORR')
-
+        #TODO: Input data with clusterid
         elif method == "SINCERA":
                 gedata = __rundocker(gedata, 'SINCERA')
-
+        #TODO: permission issue
         elif method == "SJARACNE":
                 gedata = __rundocker(gedata, 'SJARACNE')
 

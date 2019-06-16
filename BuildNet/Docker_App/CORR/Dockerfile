@@ -17,7 +17,7 @@ COPY . /CORR
 
 RUN Rscript -e "install.packages('ppcor')"
 RUN Rscript -e "install.packages('lsa')"
-RUN ["Rscript", "run_corr.r", "/CORR/100_yeast2_medium.txt"]
+RUN ["Rscript", "run_corr.r", "/CORR/Expr.txt"]
 
 
 

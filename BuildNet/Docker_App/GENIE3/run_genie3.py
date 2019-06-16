@@ -12,6 +12,6 @@ def run_genie3(Expr, filename = 'links.txt', gene_names = None, **kwargs1):
 
         return None
 
-Expr = pd.read_csv('Expr.txt', sep = ',', header = 0, index_col = 0).T
+Expr = pd.read_csv('Expr.txt', sep = '\t', header = 0, index_col = 0).T
 
 run_genie3(Expr, gene_names=list(Expr.columns))
