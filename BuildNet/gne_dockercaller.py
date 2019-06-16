@@ -54,6 +54,7 @@ def __rundocker(gedata,method):
         container.stop()
         client.containers.prune()
         client.images.prune()
+        os.system('rm ' + path + method + '/Expr.txt')
         raw_links = pd.read_csv(os.getenv('HOME') + '/links.txt', sep = '\t', header = 0)
         raw_links.columns = ['source', 'target', 'weight']
         raw_links = __remove_duplicate(raw_links)
