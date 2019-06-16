@@ -77,6 +77,10 @@ There are four modules:
 1) Call function for docker container
 2) NetEnrich module
 
+16.June
+1) Complete NetEnrich module
+2) Test with in-house data
+
 
 
 

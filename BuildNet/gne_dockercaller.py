@@ -59,7 +59,7 @@ def __rundocker(gedata,method):
         raw_links.columns = ['source', 'target', 'weight']
         raw_links = __remove_duplicate(raw_links)
         gedata._add_netattr('links', raw_links)
-
+        gedata._add_netattr('parameters', "method:" + method)
         return(gedata)
 
 
@@ -99,6 +99,6 @@ def buildnet(gedata, threshold):
                                     target= "target",
                                     edge_attr = True)
         gedata._add_netattr('graph', G)
-
+        gedata._add_netattr('parameters', "threshold:" + threshold)
         return(gedata)
 
