@@ -23,6 +23,7 @@ class Gnetdata():
                 self.CellAttrs = dict()
                 self.GeneAttrs = dict()
                 self.NetAttrs = dict()
+                self.NetAttrs['parameters'] = dict()
 
                 return None
 
@@ -36,10 +37,13 @@ class Gnetdata():
 
         def _add_netattr(self, attr_name, attr):
 
-                self.NetAttrs[attr_name] = attr
+               self.NetAttrs[attr_name] = attr
 
+        def _add_netattr_para(self, attr_name, attr):
 
-        def _save_Gnetdata_object(self, filepath):
+                self.NetAttrs['parameters'][attr_name] = attr
+
+        def save_object(self, filepath):
                 """ export Gnetdata via pickle protocols"""
 
                 with open(filepath, 'wb') as output:
@@ -47,12 +51,13 @@ class Gnetdata():
 
                 output.close()
 
-        def _load_Gnetdata_object(filepath):
-                """ import Gnetdata via pickle protocols"""
 
-                with open(filepath, 'rb') as input:
-                        self = pk.load(input)
+def load_Gnetdata_object(gnetdata, filepath):
+         with open(filepath, 'rb') as input:
+              gnetdata   = pk.load(input)
+         input.close()
 
-                input.close()
+         return(gnetdata)
+
 
 

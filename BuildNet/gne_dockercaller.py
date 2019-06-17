@@ -14,9 +14,11 @@ import pandas as pd
 import os
 import networkx as nx
 import tarfile
+import warnings
 
-
+global path
 path = sys.path[-1] + 'BuildNet/Docker_App/'
+
 
 def __copy_to(container_id, src, dst):
     client = docker.from_env()
@@ -43,10 +45,10 @@ def __remove_duplicate(links):
 
 
 
-def __rundocker(gedata,method):
+def __rundocker(gnetdata,method, path = path):
 
         client = docker.from_env()
-        pd.DataFrame.to_csv(gedata.GeneMatrix, path + method + '/Expr.txt',  sep= '\t')
+        pd.DataFrame.to_csv(gnetdata.GeneMatrix, path + method + '/Expr.txt',  sep= '\t')
         client.images.build(path = path + method, dockerfile = 'Dockerfile', tag = method.lower())
         container = client.containers.run(method.lower(), detach = True)
         __copy_to(container_id=container.short_id, src = '/' + method + '/links.txt', dst=os.getenv('HOME'))
@@ -58,47 +60,50 @@ def __rundocker(gedata,method):
         raw_links = pd.read_csv(os.getenv('HOME') + '/links.txt', sep = '\t', header = 0)
         raw_links.columns = ['source', 'target', 'weight']
         raw_links = __remove_duplicate(raw_links)
-        gedata._add_netattr('links', raw_links)
-        gedata._add_netattr('parameters', "method:" + method)
-        return(gedata)
+        gnetdata._add_netattr('links', raw_links)
+        gnetdata._add_netattr_para('method', method)
+        return(gnetdata)
 
 
-def rundocker(gedata, method):
+def rundocker(gnetdata, method):
 
 
         if method == 'GENIE3':
-                gedata = __rundocker(gedata, 'GENIE3')
+                gnetdata = __rundocker(gnetdata, 'GENIE3')
 
         elif method == 'PIDC':
-                gedata = __rundocker(gedata, 'PIDC')
+                gnetdata = __rundocker(gnetdata, 'PIDC')
 
         #TODO: check the output from SCODE
         elif method == "SCODE":
-                gedata = __rundocker(gedata, 'SCODE')
+                gnetdata = __rundocker(gnetdata, 'SCODE')
 
         elif method == "CORR":
-                gedata = __rundocker(gedata, 'CORR')
+                gnetdata = __rundocker(gnetdata, 'CORR')
         #TODO: Input data with clusterid
         elif method == "SINCERA":
-                gedata = __rundocker(gedata, 'SINCERA')
+                gnetdata = __rundocker(gnetdata, 'SINCERA')
         #TODO: permission issue
         elif method == "SJARACNE":
-                gedata = __rundocker(gedata, 'SJARACNE')
+                gnetdata = __rundocker(gnetdata, 'SJARACNE')
 
         else:
-                print("invalid method!")
+                raise Exception("valid method: GENIE3, PIDC, SCODE, CORR, SINCERA, SJARACNE")
 
-        return(gedata)
+        return(gnetdata)
 
 
-def buildnet(gedata, threshold):
+def buildnet(gnetdata, threshold):
 
-        links_filter = gedata.NetAttrs['links'].loc[gedata.NetAttrs['links']['weight'] > threshold]
+        links_filter = gnetdata.NetAttrs['links'].loc[gnetdata.NetAttrs['links']['weight'] > threshold]
         G = nx.from_pandas_edgelist(links_filter,
                                     source = "source",
                                     target= "target",
                                     edge_attr = True)
-        gedata._add_netattr('graph', G)
-        gedata._add_netattr('parameters', "threshold:" + threshold)
-        return(gedata)
+        gnetdata._add_netattr('graph', G)
+        gnetdata._add_netattr_para('threshold', str(threshold))
+        return(gnetdata)
 
+if __name__ == '__main__':
+
+        warnings.simplefilter("ignore")

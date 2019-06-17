@@ -5,10 +5,7 @@ Created on Wed Apr 24 10:50:03 2019
 
 @author: mwu
 """
-from __future__ import absolute_import
-import sys
-#sys.path.append('/home/mwu/MING_V9T/PhD_Pro/SCNetEnrich')
-sys.path.append('/Users/angelawu/GitHub/SCNetEnrich')
+
 import gseapy
 from scipy import stats as st
 import numpy as np
