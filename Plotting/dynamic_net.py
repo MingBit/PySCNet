@@ -5,28 +5,18 @@ Created on Thu May  9 11:32:32 2019
 @author: mwu
 """
 
-import networkx as nx
-import pandas as pd
 import seaborn as sns
-#import matplotlib.pyplot as plt
-#from networkx.readwrite import json_graph
 from pyvis.network import Network
 
-def dynamic_netShow(netx, filepath, PyNetObj = None):
+def dynamic_netShow(gnetdata, filepath):
 
         """ it returns a html file representing interactive network
         """
-        if PyNetObj is not None:
-                link_table = PyNetObj.link
-                node_group = PyNetObj.communities
-        else:
-                tmp = pd.DataFrame.from_dict(nx.get_edge_attributes(netx, 'score'), columns=['score'], orient = 'index')
-                link_table = pd.DataFrame(list(tmp.index), columns=['source', 'target'])
-                link_table['score'] = list(tmp['score'])
-                node_group = None
+        link_table = gnetdata.NetAttrs['links']
+        node_group = gnetdata.NetAttrs['communities']
 
         net = Network("800px", '1600px',bgcolor="#222222", font_color="white")
-        edge_data = zip(link_table['source'], link_table['target'], link_table['score'])
+        edge_data = zip(link_table['source'], link_table['target'], link_table['weight'])
 
         colors = sns.color_palette().as_hex() + sns.color_palette('Paired', 100).as_hex()
 
@@ -56,6 +46,10 @@ def dynamic_netShow(netx, filepath, PyNetObj = None):
         #net.show_buttons(filter_= 'edges')
         net.show(filepath)
 
-def Genes_modules_Cell_Clusters():
+def Genes_modules_Cell_Clusters(gnetdata):
         """it returns summary of genes in each modules"""
 
+        node_group = gnetdata.NetAttrs['communities']
+        gene_module = node_group.groupby('group').count()
+
+        return(gene_module)

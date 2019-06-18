@@ -49,6 +49,7 @@ from Preprocessing import gnetdata
 from BuildNet import gne_dockercaller as gdocker
 import pandas as pd
 from NetEnrich import graph_toolkit as gt
+from Plotting import dynamic_net as dn
 
 
 path =  '/home/mwu/MING_V9T/PhD_Pro/PySCNet/BuildNet/Docker_App/'
@@ -74,3 +75,7 @@ dfs_path_2 = gt.graph_traveral(graph = gne_exp_2.NetAttrs['graph'], start='G53',
 
 random_walk_1 = gt.random_walk(gnetdata=gne_exp_1, start='G10', supervisedby='degree', steps=10)
 random_walk_2 = gt.random_walk(gnetdata=gne_exp_2, start='G10', supervisedby='degree', steps=10)
+
+path_merge = gt.path_merge(random_walk_1, random_walk_2, 5)
+
+dn.dynamic_netShow(gnetdata=gne_exp_2, filepath= path + 'test.html')

@@ -81,6 +81,12 @@ There are four modules:
 1) Complete NetEnrich module
 2) Test with in-house data
 
+17.June
+1) Visualization module
+
+18.June
+1) test with in-house dataset
+
 
 
 
