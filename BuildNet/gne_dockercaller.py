@@ -20,7 +20,7 @@ global path
 path = sys.path[-1] + 'BuildNet/Docker_App/'
 
 
-def __copy_to(container_id, src, dst):
+def _copy_to(container_id, src, dst):
     client = docker.from_env()
     container = client.containers.get(container_id)
     strm, stat = container.get_archive(src)
@@ -35,7 +35,7 @@ def __copy_to(container_id, src, dst):
     os.remove(os.getenv('HOME') + '/temp.tar')
 
 
-def __remove_duplicate(links):
+def _remove_duplicate(links):
         links_list = sorted(links[['source', 'target']].values.tolist())
         for i in range(len(links_list)):
                 links_list[i] = tuple(sorted(links_list[i]))
@@ -45,13 +45,13 @@ def __remove_duplicate(links):
 
 
 
-def __rundocker(gnetdata,method, path = path):
+def _rundocker(gnetdata,method, path = path):
 
         client = docker.from_env()
         pd.DataFrame.to_csv(gnetdata.GeneMatrix, path + method + '/Expr.txt',  sep= '\t')
         client.images.build(path = path + method, dockerfile = 'Dockerfile', tag = method.lower())
         container = client.containers.run(method.lower(), detach = True)
-        __copy_to(container_id=container.short_id, src = '/' + method + '/links.txt', dst=os.getenv('HOME'))
+        _copy_to(container_id=container.short_id, src = '/' + method + '/links.txt', dst=os.getenv('HOME'))
 #        client.remove_container(container.short_id)
         container.stop()
         client.containers.prune()
@@ -59,7 +59,7 @@ def __rundocker(gnetdata,method, path = path):
         os.system('rm ' + path + method + '/Expr.txt')
         raw_links = pd.read_csv(os.getenv('HOME') + '/links.txt', sep = '\t', header = 0)
         raw_links.columns = ['source', 'target', 'weight']
-        raw_links = __remove_duplicate(raw_links)
+        raw_links = _remove_duplicate(raw_links)
         gnetdata._add_netattr('links', raw_links)
         gnetdata._add_netattr_para('method', method)
         return(gnetdata)
@@ -69,23 +69,23 @@ def rundocker(gnetdata, method):
 
 
         if method == 'GENIE3':
-                gnetdata = __rundocker(gnetdata, 'GENIE3')
+                gnetdata = _rundocker(gnetdata, 'GENIE3')
 
         elif method == 'PIDC':
-                gnetdata = __rundocker(gnetdata, 'PIDC')
+                gnetdata = _rundocker(gnetdata, 'PIDC')
 
         #TODO: check the output from SCODE
         elif method == "SCODE":
-                gnetdata = __rundocker(gnetdata, 'SCODE')
+                gnetdata = _rundocker(gnetdata, 'SCODE')
 
         elif method == "CORR":
-                gnetdata = __rundocker(gnetdata, 'CORR')
+                gnetdata = _rundocker(gnetdata, 'CORR')
         #TODO: Input data with clusterid
         elif method == "SINCERA":
-                gnetdata = __rundocker(gnetdata, 'SINCERA')
+                gnetdata = _rundocker(gnetdata, 'SINCERA')
         #TODO: permission issue
         elif method == "SJARACNE":
-                gnetdata = __rundocker(gnetdata, 'SJARACNE')
+                gnetdata = _rundocker(gnetdata, 'SJARACNE')
 
         else:
                 raise Exception("valid method: GENIE3, PIDC, SCODE, CORR, SINCERA, SJARACNE")

@@ -38,6 +38,7 @@ def community_detect(gnetdata):
 
         """return predicted communities
         """
+        #TODO: more robust
         G = gnetdata.NetAttrs['graph']
         subpara = {}
 #        colors = sns.color_palette() + sns.color_palette('Paired', 100)
@@ -50,7 +51,7 @@ def community_detect(gnetdata):
 
         return(gnetdata)
 
-def __linkage_to_adjlink(linkage_table, node_list):
+def _linkage_to_adjlink(linkage_table, node_list):
         """convert linkage table to weighted adjacency matrix
         """
 
@@ -65,12 +66,12 @@ def __linkage_to_adjlink(linkage_table, node_list):
 
 
 
-def __knn_based_merge(link_1, link_2):
+def _knn_based_merge(link_1, link_2):
 
         node_list = list(set(link_1['source']) & set(link_1['target']) & set(link_2['source']) & set(link_2['target']))
 
-        adjlink_1 = __linkage_to_adjlink(link_1, node_list)
-        adjlink_2 = __linkage_to_adjlink(link_2, node_list)
+        adjlink_1 = _linkage_to_adjlink(link_1, node_list)
+        adjlink_2 = _linkage_to_adjlink(link_2, node_list)
         adjlinks = list()
         adjlinks.append(adjlink_1)
         adjlinks.append(adjlink_2)
@@ -103,7 +104,7 @@ def graph_merge(link_1, link_2, method = 'union'):
                                     edge_attr = True)
         elif method == 'knn':
 
-                Graph = __knn_based_merge(link_1, link_2)
+                Graph = _knn_based_merge(link_1, link_2)
 
         else:
 

@@ -12,7 +12,10 @@ def dynamic_netShow(gnetdata, filepath):
 
         """ it returns a html file representing interactive network
         """
+
+        filterby = float(gnetdata.NetAttrs['parameters']['threshold'])
         link_table = gnetdata.NetAttrs['links']
+        link_table = link_table.loc[link_table.weight > filterby]
         node_group = gnetdata.NetAttrs['communities']
 
         net = Network("800px", '1600px',bgcolor="#222222", font_color="white")
