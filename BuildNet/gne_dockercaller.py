@@ -93,15 +93,23 @@ def rundocker(gnetdata, method):
         return(gnetdata)
 
 
-def buildnet(gnetdata, threshold):
+def buildnet(gnetdata, threshold = None, top = None):
 
-        links_filter = gnetdata.NetAttrs['links'].loc[gnetdata.NetAttrs['links']['weight'] > threshold]
+        if((top is None) & (threshold is not None)):
+                links_filter = gnetdata.NetAttrs['links'].loc[gnetdata.NetAttrs['links']['weight'] > threshold]
+        elif((top is not None) & (threshold is None)):
+                links_filter = gnetdata.NetAttrs['links'].sort_values('weight', ascending = False).head(top)
+        elif((top is None) & (threshold is None)):
+                links_filter = gnetdata.NetAttrs['links']
+        else:
+                raise Exception("Cannot filter by threshold and top!")
         G = nx.from_pandas_edgelist(links_filter,
                                     source = "source",
                                     target= "target",
                                     edge_attr = True)
         gnetdata._add_netattr('graph', G)
         gnetdata._add_netattr_para('threshold', str(threshold))
+        gnetdata._add_netattr_para('top', str(top))
         return(gnetdata)
 
 if __name__ == '__main__':
