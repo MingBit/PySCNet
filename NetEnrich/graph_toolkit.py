@@ -87,7 +87,7 @@ def graph_merge(link_1, link_2, method = 'union'):
 
         """it returns the merged network
         """
-
+        #TODO: source -->> targget & target -->> source
         if method == 'union':
                 union_links = pd.merge(link_1, link_2, how = 'outer')
                 mergedlinks = union_links.groupby(['source', 'target'], as_index = False).mean().reindex()
