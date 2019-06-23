@@ -7,13 +7,14 @@ RUN apt-get update \
         libcurl4-openssl-dev \
         libssl-dev \
         curl \
-        unzip \
+        git \
         vim \
 && rm -rf /var/lib/apt/lists/*
 
 
-WORKDIR /SINCERA
+WORKDIR /SCODE
+COPY . /SCODE
 
-COPY . /SINCERA
+RUN git clone https://github.com/hmatsu1226/SCODE
+RUN cd SCODE
 
-RUN ["Rscript", "install_packages.r"]

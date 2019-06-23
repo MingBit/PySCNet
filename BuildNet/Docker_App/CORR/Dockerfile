@@ -12,8 +12,12 @@ RUN apt-get update \
 && rm -rf /var/lib/apt/lists/*
 
 
-WORKDIR /SINCERA
+WORKDIR /CORR
+COPY . /CORR
 
-COPY . /SINCERA
+RUN Rscript -e "install.packages('ppcor')"
+RUN Rscript -e "install.packages('lsa')"
+RUN ["Rscript", "run_corr.r", "/CORR/Expr.txt"]
 
-RUN ["Rscript", "install_packages.r"]
+
+
