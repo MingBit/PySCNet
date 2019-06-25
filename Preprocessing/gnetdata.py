@@ -8,6 +8,8 @@ Created on Wed May 22 13:53:34 2019
 
 
 import pickle as pk
+from hdfs3 import HDFileSystem
+import copy
 
 class Gnetdata():
         """ As cell-oriented analysis can be done by scanpy, this class includes dataset specifically
@@ -53,11 +55,16 @@ class Gnetdata():
 
 
 def load_Gnetdata_object(gnetdata, filepath):
-         with open(filepath, 'rb') as input:
-              gnetdata   = pk.load(input)
-         input.close()
 
-         return(gnetdata)
+        hdfs = HDFileSystem(host = 'localhost', port = 8020)
+
+        with hdfs.open(filepath, 'rb') as input:
+             gnetdata = pk.load(input)
+
+        input.close()
+
+        return(gnetdata)
 
 
-
+def copy_to(data):
+        return(copy.deepcopy(data))

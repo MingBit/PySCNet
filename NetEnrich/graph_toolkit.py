@@ -16,6 +16,8 @@ import warnings
 import networkx.algorithms.traversal as nextra
 from NetEnrich import de_bruijn as debruijn
 from NetEnrich import random_walk as rw
+from BuildNet import gne_dockercaller as dc
+import copy
 
 def __init__():
        warnings.simplefilter("ignore")
@@ -87,16 +89,22 @@ def graph_merge(link_1, link_2, method = 'union'):
 
         """it returns the merged network
         """
-        #TODO: source -->> targget & target -->> source
         if method == 'union':
                 union_links = pd.merge(link_1, link_2, how = 'outer')
+                dc._remove_duplicate(union_links)
                 mergedlinks = union_links.groupby(['source', 'target'], as_index = False).mean().reindex()
                 Graph = nx.from_pandas_edgelist(mergedlinks,
                                     source = 'source',
                                     target= 'target',
                                     edge_attr = True)
+
         elif method == 'intersection':
-                inter_links = pd.merge(link_1, link_2, how = 'inner')
+
+                link_1_cp = copy.deepcopy(link_1)
+                link_1_cp.columns = ['target', 'source', 'weight']
+                inter_links_1 = pd.merge(link_1, link_2, how = 'inner')
+                inter_links_2= pd.merge(link_1_cp, link_2, how = 'inner')
+                inter_links = pd.merge(inter_links_1, inter_links_2, how = 'outer')
                 mergedlinks = inter_links.groupby(['source', 'target'], as_index = False).mean().reindex()
                 Graph = nx.from_pandas_edgelist(mergedlinks,
                                     source = 'source',

@@ -41,7 +41,6 @@ Sim_2_Ref = Sim_2_Ref.loc[Sim_2_Ref['value'] > 0]
 # Test with Preprocessing and docker run
 # =============================================================================
 
-
 import sys
 sys.path.append('/home/mwu/MING_V9T/PhD_Pro/PySCNet/')
 
@@ -79,3 +78,11 @@ random_walk_2 = gt.random_walk(gnetdata=gne_exp_2, start='G10', supervisedby='de
 path_merge = gt.path_merge(random_walk_1, random_walk_2, 5)
 
 dn.dynamic_netShow(gnetdata=gne_exp_2, filepath= path + 'test.html')
+
+tmp = [['A','B', 0.1], ['A', 'C', 0.2], ['A', 'D', 0.3]]
+tmp_2 = [['B','A', 0.1], ['A', 'C', 0.2], ['A', 'E', 0.3]]
+
+link_1 = pd.DataFrame(tmp, columns=['source', 'target', 'weight'])
+link_2 = pd.DataFrame(tmp_2, columns=['source', 'target', 'weight'])
+
+g = gt.graph_merge(link_1, link_2, method='intersection')
