@@ -16,6 +16,7 @@ import networkx as nx
 import tarfile
 import warnings
 
+
 global path
 path = sys.path[-1] + 'BuildNet/Docker_App/'
 
@@ -48,7 +49,7 @@ def _remove_duplicate(links):
 def _rundocker(gnetdata, method, path = path):
 
         client = docker.from_env()
-        pd.DataFrame.to_csv(gnetdata.GeneMatrix, path + method + '/Expr.txt',  sep= '\t')
+        pd.DataFrame.to_csv(gnetdata.ExpMatrix, path + method + '/Expr.txt',  sep= '\t')
         client.images.build(path = path + method, dockerfile = 'Dockerfile', tag = method.lower())
         container = client.containers.run(method.lower(), detach = True)
         _copy_to(container_id=container.short_id, src = '/' + method + '/links.txt', dst=os.getenv('HOME'))
@@ -97,6 +98,7 @@ def rundocker(gnetdata, method):
 
 def buildnet(gnetdata, threshold = None, top = None):
 
+
         if((top is None) & (threshold is not None)):
                 links_filter = gnetdata.NetAttrs['links'].loc[gnetdata.NetAttrs['links']['weight'] > threshold]
         elif((top is not None) & (threshold is None)):
@@ -112,6 +114,7 @@ def buildnet(gnetdata, threshold = None, top = None):
         gnetdata._add_netattr('graph', G)
         gnetdata._add_netattr_para('threshold', str(threshold))
         gnetdata._add_netattr_para('top', str(top))
+
         return(gnetdata)
 
 if __name__ == '__main__':
