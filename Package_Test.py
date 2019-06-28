@@ -41,10 +41,9 @@ Sim_2_Ref = Sim_2_Ref.loc[Sim_2_Ref['value'] > 0]
 # Test with Preprocessing and docker run
 # =============================================================================
 
-
 import sys
 sys.path.append('/home/mwu/MING_V9T/PhD_Pro/PySCNet/')
-
+import _pickle as pk
 from Preprocessing import gnetdata
 from BuildNet import gne_dockercaller as gdocker
 import pandas as pd
@@ -57,11 +56,12 @@ Expr = pd.read_csv(path + "PIDC/100_yeast2_medium.txt", sep = '\t', header = 0, 
 pd.DataFrame.to_csv(Expr, path + 'tmp.txt', sep='\t')
 gne_exp = gnetdata.Gnetdata(Expr)
 
-gne_exp_1 = gdocker.rundocker(gne_exp, method='PIDC')
-gne_exp_1 = gdocker.buildnet(gne_exp, threshold=0.002)
 
-gne_exp_2 = gdocker.rundocker(gne_exp, method='GENIE3')
-gne_exp_2 = gdocker.buildnet(gne_exp, threshold=0.001)
+gne_exp_1 = gdocker.rundocker(gne_exp.deepcopy, method='PIDC')
+gne_exp_1 = gdocker.buildnet(gne_exp_1, top=200)
+
+gne_exp_2 = gdocker.rundocker(gnetdata.deepcopy(gne_exp), method='GENIE3')
+gne_exp_2 = gdocker.buildnet(gne_exp_2, top = 200)
 
 gne_exp_1 = gt.get_centrality(gne_exp_1)
 gne_exp_2 = gt.get_centrality(gne_exp_2)
@@ -69,7 +69,10 @@ gne_exp_2 = gt.get_centrality(gne_exp_2)
 gne_exp_1 = gt.community_detect(gne_exp_1)
 gne_exp_2 = gt.community_detect(gne_exp_2)
 
+gne_exp_1.save_as("/home/mwu/tmp.pk")
+
 merge_gne = gt.graph_merge(gne_exp_1.NetAttrs['links'], gne_exp_2.NetAttrs['links'], method='knn')
+
 dfs_path_1 = gt.graph_traveral(graph = gne_exp_1.NetAttrs['graph'], start='G53', threshold=4, method='dfs')
 dfs_path_2 = gt.graph_traveral(graph = gne_exp_2.NetAttrs['graph'], start='G53', threshold=4, method='dfs')
 
@@ -79,3 +82,16 @@ random_walk_2 = gt.random_walk(gnetdata=gne_exp_2, start='G10', supervisedby='de
 path_merge = gt.path_merge(random_walk_1, random_walk_2, 5)
 
 dn.dynamic_netShow(gnetdata=gne_exp_2, filepath= path + 'test.html')
+
+tmp = [['A','B', 0.1], ['A', 'C', 0.2], ['A', 'D', 0.3]]
+tmp_2 = [['B','A', 0.1], ['A', 'C', 0.2], ['A', 'E', 0.3]]
+
+link_1 = pd.DataFrame(tmp, columns=['source', 'target', 'weight'])
+link_2 = pd.DataFrame(tmp_2, columns=['source', 'target', 'weight'])
+
+g = gt.graph_merge(link_1, link_2, method='intersection')
+
+
+
+
+

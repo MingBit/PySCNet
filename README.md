@@ -87,6 +87,12 @@ There are four modules:
 18.June
 1) test with in-house dataset
 
+26.June
+1) gnetdata save via pickle
+2) knn test
+3) de bruijin test
+4) simulated dataset with merge function
+5) Function details
 
 
 

@@ -16,6 +16,8 @@ import warnings
 import networkx.algorithms.traversal as nextra
 from NetEnrich import de_bruijn as debruijn
 from NetEnrich import random_walk as rw
+from BuildNet import gne_dockercaller as dc
+import copy
 
 def __init__():
        warnings.simplefilter("ignore")
@@ -67,9 +69,9 @@ def _linkage_to_adjlink(linkage_table, node_list):
 
 
 def _knn_based_merge(link_1, link_2):
-
+        warnings.simplefilter("ignore")
         node_list = list(set(link_1['source']) & set(link_1['target']) & set(link_2['source']) & set(link_2['target']))
-
+        print(node_list)
         adjlink_1 = _linkage_to_adjlink(link_1, node_list)
         adjlink_2 = _linkage_to_adjlink(link_2, node_list)
         adjlinks = list()
@@ -77,9 +79,10 @@ def _knn_based_merge(link_1, link_2):
         adjlinks.append(adjlink_2)
         affinity_matrix = snf.make_affinity(adjlinks)
         fused_network = snf.snf(affinity_matrix)
-        Graph = nx.from_numpy_matrix(fused_network)
 
-        return(Graph)
+#        Graph = nx.from_numpy_matrix(fused_network)
+
+        return(fused_network)
 
 
 
@@ -87,16 +90,22 @@ def graph_merge(link_1, link_2, method = 'union'):
 
         """it returns the merged network
         """
-        #TODO: source -->> targget & target -->> source
         if method == 'union':
                 union_links = pd.merge(link_1, link_2, how = 'outer')
+                dc._remove_duplicate(union_links)
                 mergedlinks = union_links.groupby(['source', 'target'], as_index = False).mean().reindex()
                 Graph = nx.from_pandas_edgelist(mergedlinks,
                                     source = 'source',
                                     target= 'target',
                                     edge_attr = True)
+
         elif method == 'intersection':
-                inter_links = pd.merge(link_1, link_2, how = 'inner')
+
+                link_1_cp = copy.deepcopy(link_1)
+                link_1_cp.columns = ['target', 'source', 'weight']
+                inter_links_1 = pd.merge(link_1, link_2, how = 'inner')
+                inter_links_2= pd.merge(link_1_cp, link_2, how = 'inner')
+                inter_links = pd.merge(inter_links_1, inter_links_2, how = 'outer')
                 mergedlinks = inter_links.groupby(['source', 'target'], as_index = False).mean().reindex()
                 Graph = nx.from_pandas_edgelist(mergedlinks,
                                     source = 'source',
@@ -140,6 +149,7 @@ def random_walk(gnetdata, start, supervisedby, steps):
 
 
 def path_merge(path_1, path_2, k_mer = 3, path = 'Eulerian'):
+
         """ perform de bruijn graph mapping for ginve two path lists
         """
         g = debruijn.construct_graph([path_1, path_2], k_mer)
