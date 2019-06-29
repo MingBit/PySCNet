@@ -91,6 +91,15 @@ link_2 = pd.DataFrame(tmp_2, columns=['source', 'target', 'weight'])
 
 g = gt.graph_merge(link_1, link_2, method='intersection')
 
+#SCODE
+expr = pd.read_csv('//Users/angelawu/GitHub/SCODE/data/exp_train.txt', sep = '\t', header = -1)
+time = pd.read_csv('/Users/angelawu/GitHub/SCODE/data/time_train.txt', sep = '\t', header = -1)
+
+
+
+time_2.to_csv('/Users/angelawu/GitHub/SCODE/data/time_2.txt', sep='\t', header=False, index=False)
+Expr.to_csv('/Users/angelawu/GitHub/SCODE/data/Expr.txt', sep='\t', header=False, index=False)
+linkage = pd.read_csv('/Users/angelawu/GitHub/SCODE/out/A.txt', sep = '\t', header = -1)
 
 
 

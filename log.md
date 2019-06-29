@@ -94,6 +94,11 @@ There are four modules:
 4) simulated dataset with merge function
 5) Function details
 
+29.June
+1) Add other methods to BuildNet module 
+2) Add functions details
+3) Upload to PyPI and readdocio
+
 
 
 
