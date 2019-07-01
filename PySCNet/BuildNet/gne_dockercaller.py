@@ -45,18 +45,20 @@ def _remove_duplicate(links):
 
 
 
-def _rundocker(gnetdata, method, path = path, time_point = None, cell_clusterid = None):
+def _rundocker(gnetdata, method, path = path, time_point = None, cell_clusterid = None, Mms_TF = None):
 
         client = docker.from_env()
         pd.DataFrame.to_csv(gnetdata.ExpMatrix, path + method + '/Expr.txt',  sep= '\t')
-        
+
         if time_point is not None:
             pd.DataFrame.to_csv(time_point, path + method + '/time_point.txt',  sep= '\t', header=False, index=False)
-        
+
         if cell_clusterid is not None:
             pd.DataFrame.to_csv(cell_clusterid, path + method + '/cell_clusterid.txt',  sep= '\t', header=False, index=False)
-            
-        
+
+        if Mms_TF is not None:
+            pd.DataFrame.to_csv(Mms_TF, path + method + '/Mms_TF.txt',  sep= '\t', header=False, index=False)
+
         client.images.build(path = path + method, dockerfile = 'Dockerfile', tag = method.lower())
         container = client.containers.run(method.lower(), detach = True)
         _copy_to(container_id=container.short_id, src = '/' + method + '/links.txt', dst=os.getenv('HOME'))
@@ -75,7 +77,7 @@ def _rundocker(gnetdata, method, path = path, time_point = None, cell_clusterid 
         return(gnetdata)
 
 
-def rundocker(gnetdata, method, time_point = None, cell_clusterid = None):
+def rundocker(gnetdata, method, time_point = None, cell_clusterid = None, Mms_TF = None):
 
 
         if method == 'GENIE3':
@@ -94,7 +96,7 @@ def rundocker(gnetdata, method, time_point = None, cell_clusterid = None):
                 gnetdata = _rundocker(gnetdata, 'CORR')
         #TODO: Input data with clusterid
         elif method == "SINCERA":
-                gnetdata = _rundocker(gnetdata, 'SINCERA')
+                gnetdata = _rundocker(gnetdata, 'SINCERA', cell_clusterid= cell_clusterid, Mms_TF = Mms_TF)
         #TODO: permission issue
         elif method == "SJARACNE":
                 gnetdata = _rundocker(gnetdata, 'SJARACNE')
