@@ -41,15 +41,13 @@ Sim_2_Ref = Sim_2_Ref.loc[Sim_2_Ref['value'] > 0]
 # Test with Preprocessing and docker run
 # =============================================================================
 
-import sys
-sys.path.append('/home/mwu/MING_V9T/PhD_Pro/PySCNet/')
+#import sys
+#sys.path.append('/home/mwu/MING_V9T/PhD_Pro/PySCNet/')
 import _pickle as pk
-from Preprocessing import gnetdata
-from BuildNet import gne_dockercaller as gdocker
-import pandas as pd
-from NetEnrich import graph_toolkit as gt
-from Plotting import dynamic_net as dn
-
+from PySCNet.Preprocessing import gnetdata
+from PySCNet.BuildNet import gne_dockercaller as gdocker
+from PySCNet.NetEnrich import graph_toolkit as gt
+from PySCNet.Plotting import dynamic_net as dn
 
 path =  '/home/mwu/MING_V9T/PhD_Pro/PySCNet/BuildNet/Docker_App/'
 Expr = pd.read_csv(path + "PIDC/100_yeast2_medium.txt", sep = '\t', header = 0, index_col = 0)
@@ -91,9 +89,18 @@ link_2 = pd.DataFrame(tmp_2, columns=['source', 'target', 'weight'])
 
 g = gt.graph_merge(link_1, link_2, method='intersection')
 
-#Sincera
+#ensemble test
+path = '/home/mwu/MING_V9T/PhD_Pro/Test/KK_Run36_D15_CD4/'
+run36_gne_CORR = gnetdata.load_Gnetdata_object(path + 'cluster_3_CORR.pk')
+run36_gne_GENIE3 = gnetdata.load_Gnetdata_object(path + 'cluster_3_GENIE3.pk')
+run36_gne_PIDC = gnetdata.load_Gnetdata_object(path + 'cluster_3_PIDC.pk')
+run36_gne_SCODE = gnetdata.load_Gnetdata_object(path + 'cluster_3_SCODE.pk')
 
+links_dict = {'genie3': run36_gne_GENIE3.NetAttrs['links'], 'corr': run36_gne_CORR.NetAttrs['links'],
+              'pidc': run36_gne_PIDC.NetAttrs['links'], 'scode': run36_gne_SCODE.NetAttrs['links'],}
 
+tmp = gt.ensemble_classifier(links_dict, threshold=0.8)
+tmp_pos = tmp[tmp.connected > 0]
 
 
 

@@ -12,12 +12,15 @@ import community
 import snf
 import numpy as np
 import warnings
+import copy
+
 
 import networkx.algorithms.traversal as nextra
-from PySCNet.NetEnrich import de_bruijn as debruijn
-from PySCNet.NetEnrich import random_walk as rw
+from PySCNet.NetEnrich import _de_bruijn as debruijn
+from PySCNet.NetEnrich import _random_walk as rw
 from PySCNet.BuildNet import gne_dockercaller as dc
-import copy
+from PySCNet.NetEnrich import _ensemble_classifier as classifier
+
 
 def __init__():
        warnings.simplefilter("ignore")
@@ -164,12 +167,14 @@ def path_merge(path_1, path_2, k_mer = 3, path = 'Eulerian'):
 # TODO: def graph_enrichment(gnetdata_1, gnetdata_2, filteredby = 'pageRank'):
 #
 # =============================================================================
-        
-# =============================================================================
-# TODO: def graph_ensemble(gnetdata_1, gnetdata_2, filteredby = 'pageRank'):
-#
-# =============================================================================
 
+
+
+def ensemble_classifier(links_dict, threshold = 0.5, test_size = 0.4, seed = 3, model = 'RF', max_features = 5, num_trees = 100, **kwargs):
+        """ predict nodes connection via ensemble classification methods
+        """
+
+        return(classifier.ensemble_classifier(links_dict))
 
 
 

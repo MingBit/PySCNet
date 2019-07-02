@@ -18,41 +18,11 @@ sns.set_style('white')
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
 import seaborn as sns
+from theano.compile.sharedvalue import shared
+from pymc3.theanof import set_tt_rng, MRG_RandomStreams
+set_tt_rng(MRG_RandomStreams(42))
+import time
 
-
-
-
-def Generate_Zero(sim_df):
-
-    for cell in sim_df.index:
-        tmp = sim_df.loc[cell, (sim_df.loc[cell] < sim_df.mean(axis = 0))]
-        tmp_np = np.random.binomial(1, 0.5, len(tmp))
-        for i in range(0, len(tmp)):
-            tmp[i] = tmp[i] if tmp_np[i] == 1 else 0
-        sim_df.loc[cell, (sim_df.loc[cell] < sim_df.mean(axis = 0))] = tmp
-
-    return (sim_df)
-
-
-def binary_converter(m):
-    if type(m) == list:
-        ml = []
-        for l in m:
-            ml.append(((l > l.mean(0))*1).astype(int))
-        return ml
-    else:
-        return ((m > m.mean(0))*1).astype(int)
-
-def x_y_generator(Expr_df, gene, cell = None, test_size = .6):
-
-    if(cell is None):
-        return train_test_split(Expr_df.drop(columns = gene), Expr_df[gene], test_size = test_size)
-
-    elif(gene is None):
-        return train_test_split(Expr_df.drop(index = cell).transpose(), Expr_df.loc[cell], test_size = test_size)
-
-    else:
-        print('check if gene or cell is NONE!')
 
 
 def construct_bnn(ann_input, ann_output, input_nodes, hidden_layers, total_size):
@@ -93,10 +63,6 @@ def construct_bnn(ann_input, ann_output, input_nodes, hidden_layers, total_size)
 
 
 #fit and evaluate
-from theano.compile.sharedvalue import shared
-from pymc3.theanof import set_tt_rng, MRG_RandomStreams
-set_tt_rng(MRG_RandomStreams(42))
-import time
 
 def pred_eva(x_train, x_test, y_train, y_test, bnn_func, input_nodes, hidden_layers, bnn_kwargs = None, sample_kwargs = None):
 

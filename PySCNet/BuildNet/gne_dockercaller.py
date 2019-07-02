@@ -70,7 +70,7 @@ def _rundocker(gnetdata, method, path = path, time_point = None, cell_clusterid 
         os.system('rm ' + path + method + '/Expr.txt')
         raw_links = pd.read_csv(os.getenv('HOME') + '/links.txt', sep = '\t', header = 0)
         raw_links.columns = ['source', 'target', 'weight']
-        raw_links = _remove_duplicate(raw_links)
+        raw_links = _remove_duplicate(raw_links).fillna(0)
         gnetdata._add_netattr('links', raw_links)
         gnetdata._add_netattr_para('method', method)
 

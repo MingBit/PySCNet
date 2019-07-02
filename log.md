@@ -102,4 +102,9 @@ There are four modules:
 1.July
 1) Update SINCERA
 
+2.July
+1) Ensemble classifier
+2) BNN classifier
+3) Test with old dataset
+
 
