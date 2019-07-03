@@ -72,11 +72,11 @@ def ensemble_classifier(X, Y, threshold = 0.5, test_size = 0.4, seed = 3, model 
     else: raise Exception('Valid model: RF, BDT, ET, AdaB, SGB')
 
     model.fit(x_train.iloc[:,2:], y_train)
-    pred_train = model.predict(x_train.iloc[:,2:])
-
-    pred_test = model.predict(x_test.iloc[:,2:])
-#    print(list(pred_train)+ list(pred_test))
-
+#    pred_train = model.predict(x_train.iloc[:,2:])
+    pred_train_prob = model.predict_proba(x_train.iloc[:,2:])[:,1]
+#    pred_test = model.predict(x_test.iloc[:,2:])
+    pred_test_prob = model.predict_proba(x_test.iloc[:,2:])[:,1]
+    print(pred_test_prob)
     res_df = pd.DataFrame({'source': x_train.source.append(x_test.source), 'target': x_train.target.append(x_test.target),
-                           'connected': list(pred_train)+ list(pred_test)})
+                           'connected': list(pred_train_prob)+ list(pred_test_prob)})
     return(res_df)

@@ -107,4 +107,8 @@ There are four modules:
 2) BNN classifier
 3) Test with old dataset
 
+3.July:
+1) Scanpy-based preprocesing
+2) affinity network fusion
+
 

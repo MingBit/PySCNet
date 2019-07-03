@@ -60,20 +60,21 @@ def bnn_classifier(X, Y, test_size = 0.4, hideen_layers = [50,20]):
 
         ann_input = shared(np.asarray(x_train.iloc[:,2:]))
         ann_output = shared(np.asarray(y_train))
-        neural_network = _construct_bnn(ann_input, ann_output, input_nodes=x_train.shape[1]-2, hidden_layers=[50,20], total_size=y_train.shape[0])
+        neural_network = _construct_bnn(ann_input, ann_output, input_nodes=x_train.shape[1]-2, hidden_layers=hideen_layers, total_size=y_train.shape[0])
         with neural_network:
-                approx = pm.fit(n = 30000, method=pm.ADVI())
+                approx = pm.fit(method=pm.ADVI())
                 trace = approx.sample(draws = 5000)
                 ppc_train = pm.sample_posterior_predictive(trace, samples=500, model=neural_network)
-                pred_train = pd.Series((ppc_train['out'].mean(0) > 0.5) * 1, index = y_train.index)
+#                pred_train = pd.Series((ppc_train['out'].mean(0) > 0.5) * 1, index = y_train.index)
+                pred_train = pd.Series(ppc_train['out'].mean(0), index = y_train.index)
 
         ann_input.set_value(x_test.iloc[:,2:])
         ann_output.set_value(y_test)
 
         with neural_network:
                 ppc_test = pm.sample_posterior_predictive(trace, samples=500, model = neural_network)
-        #        pred_test = pd.Series(ppc_test['out'].mean(0), index = y_test.index)
-                pred_test = pd.Series((ppc_test['out'].mean(0) > 0.5) * 1, index = y_test.index)
+                pred_test = pd.Series(ppc_test['out'].mean(0), index = y_test.index)
+#                pred_test = pd.Series((ppc_test['out'].mean(0) > 0.5) * 1, index = y_test.index)
 
         res_df = pd.DataFrame({'source': x_train.source.append(x_test.source), 'target': x_train.target.append(x_test.target),
                            'connected': list(pred_train)+ list(pred_test)})
