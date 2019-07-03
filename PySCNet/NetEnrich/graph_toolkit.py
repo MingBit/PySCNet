@@ -14,12 +14,13 @@ import numpy as np
 import warnings
 import copy
 
-
+from functools import reduce
 import networkx.algorithms.traversal as nextra
 from PySCNet.NetEnrich import _de_bruijn as debruijn
 from PySCNet.NetEnrich import _random_walk as rw
 from PySCNet.BuildNet import gne_dockercaller as dc
-from PySCNet.NetEnrich import _ensemble_classifier as classifier
+from PySCNet.NetEnrich import _ensemble_classifier as Eclassifier
+from PySCNet.NetEnrich import _bnn_classifier as Bclassifier
 
 
 def __init__():
@@ -87,7 +88,22 @@ def _knn_based_merge(link_1, link_2):
 
         return(fused_network)
 
+def _generate_x_y(links_dict, threshold):
 
+        for key in links_dict.keys():
+                links_dict[key] = links_dict[key].fillna(0)
+
+        dfs = list(links_dict.values())
+        df_final = reduce(lambda left,right: pd.merge(left,right,on=['source', 'target']), dfs)
+        df_final.columns = list(df_final.columns[:2]) + list(links_dict.keys())
+        avg = df_final.mean(axis = 1)
+        df_final['Y'] = [(lambda x: 1 if x > threshold else 0)(x) for x in avg]
+
+#        X = df_final.iloc[:,:-1].iloc[:,2:]
+        X = df_final.iloc[:,:-1]
+        Y = df_final.Y
+
+        return (X, Y)
 
 def graph_merge(link_1, link_2, method = 'union'):
 
@@ -161,23 +177,25 @@ def path_merge(path_1, path_2, k_mer = 3, path = 'Eulerian'):
         return merged_path
 
 
+def ensemble_classifier(links_dict, threshold = 0.5, test_size = 0.4, seed = 3, model = 'RF', max_features = 5, num_trees = 100, **kwargs):
+        """ predict nodes connection via ensemble classification methods
+        """
+
+        X, Y = _generate_x_y(links_dict, threshold)
+
+        return(Eclassifier.ensemble_classifier(X, Y))
+
+
+def bnn_classifier(links_dict, threshold = 0.5, test_size = 0.4):
+        """predict nodes connection via bayesian neural network
+        """
+
+        X, Y = _generate_x_y(links_dict, threshold)
+        return(Bclassifier.bnn_classifier(X, Y))
+
 
 
 # =============================================================================
 # TODO: def graph_enrichment(gnetdata_1, gnetdata_2, filteredby = 'pageRank'):
 #
 # =============================================================================
-
-
-
-def ensemble_classifier(links_dict, threshold = 0.5, test_size = 0.4, seed = 3, model = 'RF', max_features = 5, num_trees = 100, **kwargs):
-        """ predict nodes connection via ensemble classification methods
-        """
-
-        return(classifier.ensemble_classifier(links_dict))
-
-
-
-
-
-

@@ -37,17 +37,15 @@ def _generate_x_y(links_dict, threshold):
         return (df_final)
 
 
-def ensemble_classifier(links_dict, threshold = 0.5, test_size = 0.4, seed = 3, model = 'RF', max_features = 5, num_trees = 100, **kwarg):
+def ensemble_classifier(X, Y, threshold = 0.5, test_size = 0.4, seed = 3, model = 'RF', max_features = 5, num_trees = 100, **kwarg):
 
-    XY = _generate_x_y(links_dict, threshold)
-
-    X = XY.iloc[:,:-1]
-    Y = XY.Y
-    x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size = test_size)
-#    node_train = x_train.source + '_' + x_train.target
-#    node_test = x_test.source + '_' + x_test.target
+#    XY = _generate_x_y(links_dict, threshold)
 #
-#    kfold = model_selection.KFold(n_splits=10, random_state=seed)
+#    X = XY.iloc[:,:-1]
+#    Y = XY.Y
+    x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size = test_size)
+
+        #    kfold = model_selection.KFold(n_splits=10, random_state=seed)
     if X.shape[1]-2 < max_features: max_features = X.shape[1]-2
 
     if model == 'RF':
@@ -75,7 +73,7 @@ def ensemble_classifier(links_dict, threshold = 0.5, test_size = 0.4, seed = 3, 
 
     model.fit(x_train.iloc[:,2:], y_train)
     pred_train = model.predict(x_train.iloc[:,2:])
-    print(pd.crosstab(np.array(y_train), pred_train, rownames=['Actual'], colnames=['Predicted']))
+
     pred_test = model.predict(x_test.iloc[:,2:])
 #    print(list(pred_train)+ list(pred_test))
 

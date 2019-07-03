@@ -99,8 +99,11 @@ run36_gne_SCODE = gnetdata.load_Gnetdata_object(path + 'cluster_3_SCODE.pk')
 links_dict = {'genie3': run36_gne_GENIE3.NetAttrs['links'], 'corr': run36_gne_CORR.NetAttrs['links'],
               'pidc': run36_gne_PIDC.NetAttrs['links'], 'scode': run36_gne_SCODE.NetAttrs['links'],}
 
-tmp = gt.ensemble_classifier(links_dict, threshold=0.8)
-tmp_pos = tmp[tmp.connected > 0]
+Eclass = gt.ensemble_classifier(links_dict, threshold=0.8)
+Eclass_pos = Eclass[Eclass.connected > 0]
+
+Bclass = gt.bnn_classifier(links_dict, threshold=0.8)
+Bclass_pos = Bclass[Bclass.connected > 0]
 
 
 
