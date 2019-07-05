@@ -66,7 +66,7 @@ def test_run(links, Ref_links, input_dataset, filename):
         plt.savefig(filename + '_ROC.png')
         plt.close()
 
-#PR curve
+        #PR curve
         average_precision = metrics.average_precision_score(actual_ref['value'], links['connected'])
 
         precision, recall, threshold = metrics.precision_recall_curve(actual_ref['value'], links['connected'])
