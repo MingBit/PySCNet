@@ -33,17 +33,17 @@ path = '/home/mwu/MING_V9T/PhD_Pro/TODOLIST/BN_Test/SC_Published_Data/'
 #Sim_2_Ref.columns = ['node1', 'node2', 'value']
 #Sim_2_Ref = Sim_2_Ref.loc[Sim_2_Ref['value'] > 0]
 
-HSC_Data = pd.read_excel(path + 'HSC_DATA/Moignard_HSC_Data.xlsx', index_col = 0, sheetname = 0)
+HSC_Data = pd.read_excel(path + 'HSC_DATA/Moignard_HSC_Data.xlsx', index_col = 0, sheet_name = 0).T
 HSC_Data[HSC_Data == 25] = 0
 HSC_Ref = pd.read_csv(path + 'HSC_DATA/Moignard_HSC_ReferenceEdges.tsv', sep = '\t')
 
-ESC_Data = pd.read_excel(path + 'ESC_DATA/GSE59892_ESC_Dataset.xlsx', index_col = 0).T
+ESC_Data = pd.read_excel(path + 'ESC_DATA/GSE59892_ESC_Dataset.xlsx', index_col = 0, sheet_name=0)
 ESC_Gene_Symbol = pd.read_csv(path + 'ESC_DATA/GSE59892_ESC_Genesymobol.txt', sep = '\t')
 ESC_Gene_Symbol_dict = dict(zip(ESC_Gene_Symbol.Ref_ID, ESC_Gene_Symbol.GeneSymbol))
 ESC_Ref = pd.read_csv(path + 'ESC_DATA/GSE59892_ESC_ReferenceEdges.tsv', sep = '\t')
 
-ESC_Data.columns = list(ESC_Gene_Symbol_dict.get(i) for i in list(ESC_Data.columns))
-ESC_Data.to_csv(path + 'Expr.txt', sep = '\t')
+ESC_Data.index = list(ESC_Gene_Symbol_dict.get(i) for i in list(ESC_Data.index))
+ESC_Data = ESC_Data[ESC_Data.sum(1) > 0]
 # =============================================================================
 # Test with Preprocessing and docker run
 # =============================================================================
@@ -99,8 +99,8 @@ gne_HSC_SCODE = gdocker.rundocker(HSC_gne.deepcopy, method = 'SCODE', time_point
 #gne_exp_PIDC = gnetdata.load_Gnetdata_object(path + 'cluster_3_PIDC.pk')
 #gne_exp_SCODE = gnetdata.load_Gnetdata_object(path + 'cluster_3_SCODE.pk')
 
-links_dict = {'genie3': gne_exp_GENIE3.NetAttrs['links'], 'corr': gne_exp_CORR.NetAttrs['links'],
-              'pidc': gne_exp_PIDC.NetAttrs['links'], 'scode': gne_exp_SCODE.NetAttrs['links']}
+#links_dict = {'genie3': gne_exp_GENIE3.NetAttrs['links'], 'corr': gne_exp_CORR.NetAttrs['links'],
+#              'pidc': gne_exp_PIDC.NetAttrs['links'], 'scode': gne_exp_SCODE.NetAttrs['links']}
 
 ESC_links_dict = {'genie3': gne_ESC_GENIE3.NetAttrs['links'], 'corr': gne_ESC_CORR.NetAttrs['links'],
               'pidc': gne_ESC_PIDC.NetAttrs['links'], 'scode': gne_ESC_SCODE.NetAttrs['links']}

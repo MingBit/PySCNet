@@ -84,6 +84,7 @@ def rundocker(gnetdata, method, time_point = None, cell_clusterid = None, Mms_TF
                 gnetdata = _rundocker(gnetdata, 'GENIE3')
 
         elif method == 'PIDC':
+                #remove genes with 0 counts
                 gnetdata = _rundocker(gnetdata, 'PIDC')
 
         elif method == 'JUMP3':
