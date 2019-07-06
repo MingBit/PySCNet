@@ -56,9 +56,9 @@ def test_run(links, Ref_links, input_dataset, filename):
 
         actual_ref.loc[actual_ref['value'] < 1, 'value'] = 0
 
-        auc = metrics.roc_auc_score(actual_ref['value'], links['connected'])
+        auc = metrics.roc_auc_score(actual_ref['value'], links['weight'])
 
-        fpr, tpr, thresholds = metrics.roc_curve(actual_ref['value'], links['connected'])
+        fpr, tpr, thresholds = metrics.roc_curve(actual_ref['value'], links['weight'])
         plt.plot([0,1], [0,1], linestyle = '--')
         plt.plot(fpr, tpr, marker = '.')
         plt.title('ROC: AUC = {0:0.2f}'.format(auc))
@@ -67,9 +67,9 @@ def test_run(links, Ref_links, input_dataset, filename):
         plt.close()
 
         #PR curve
-        average_precision = metrics.average_precision_score(actual_ref['value'], links['connected'])
+        average_precision = metrics.average_precision_score(actual_ref['value'], links['weight'])
 
-        precision, recall, threshold = metrics.precision_recall_curve(actual_ref['value'], links['connected'])
+        precision, recall, threshold = metrics.precision_recall_curve(actual_ref['value'], links['weight'])
         plt.step(recall, precision, color='b', alpha=0.2,
          where='post')
         plt.fill_between(recall, precision, step='post', alpha=0.2,
@@ -83,6 +83,5 @@ def test_run(links, Ref_links, input_dataset, filename):
 
         plt.savefig(filename + '_PR.png')
         plt.close()
-
 
 
