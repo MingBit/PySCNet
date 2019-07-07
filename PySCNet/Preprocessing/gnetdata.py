@@ -19,8 +19,9 @@ class Gnetdata():
                 3) GeneAttrs: A dict gives information about genes. eg. module_nr, marker_annotation
                 4) NetAttrs: A dict includes Networks attributes. eg. Node Centralities.
         """
-        def __init__(self, ExpMatrix):
+        def __init__(self, name, ExpMatrix):
 
+#                self.name = name
                 self.ExpMatrix = ExpMatrix
                 self.CellAttrs = dict()
                 self.GeneAttrs = dict()
@@ -44,10 +45,19 @@ class Gnetdata():
 
                 self.NetAttrs['parameters'][attr_name] = attr
 
+#        @property
+#        def name(self):
+#                return self.name
+
         @property
         def shape(self):
                 """return the shape of ExpMatrix"""
                 return self.ExpMatrix.shape
+
+        @property
+        def deepcopy(self):
+                """make a deepcopy of gnetData """
+                return(copy.deepcopy(self))
 
         @property
         def get_attr(self):
@@ -58,7 +68,8 @@ class Gnetdata():
                         keys = getattr(self, at).keys()
                         text += '\n' + at + ':' + str(keys)
 
-                return(text)
+                print(text)
+#                return(text)
 
 
         def save_as(self, outpath):
@@ -68,10 +79,7 @@ class Gnetdata():
                                 pk.dump(self, outfile)
                 else:
                     raise Exception('filepath cannot be null!')
-        @property
-        def deepcopy(self):
-                """make a deepcopy of gnetData """
-                return(copy.deepcopy(self))
+
 
 
 def load_Gnetdata_object(filepath):

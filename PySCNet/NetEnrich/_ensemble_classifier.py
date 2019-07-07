@@ -19,22 +19,23 @@ from sklearn.ensemble import BaggingClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 
-def _generate_x_y(links_dict, threshold):
-
-        for key in links_dict.keys():
-                links_dict[key] = links_dict[key].fillna(0)
-
-        dfs = list(links_dict.values())
-        df_final = reduce(lambda left,right: pd.merge(left,right,on=['source', 'target']), dfs)
-        df_final.columns = list(df_final.columns[:2]) + list(links_dict.keys())
-        avg = df_final.mean(axis = 1)
-        df_final['Y'] = [(lambda x: 1 if x > threshold else 0)(x) for x in avg]
-
-#        X = df_final.iloc[:,:-1].iloc[:,2:]
-#        Y = df_final.Y
+#def _generate_x_y(links_dict, threshold):
 #
-#        node_pairs = X['source'] + '_' + X['target']
-        return (df_final)
+#        for key in links_dict.keys():
+#                links_dict[key] = links_dict[key].fillna(0)
+#
+#        dfs = list(links_dict.values())
+#        df_final = reduce(lambda left,right: pd.merge(left,right,on=['source', 'target']), dfs)
+#        rep = (df_final.shape[1] - 2)/len(links_dict)
+#        df_final.columns = list(df_final.columns[:2]) + list(np.repeat(list(links_dict.keys()), rep))
+#        avg = df_final.mean(axis = 1)
+#        df_final['Y'] = [(lambda x: 1 if x > threshold else 0)(x) for x in avg]
+#
+##        X = df_final.iloc[:,:-1].iloc[:,2:]
+##        Y = df_final.Y
+##
+##        node_pairs = X['source'] + '_' + X['target']
+#        return (df_final)
 
 
 def ensemble_classifier(X, Y, threshold = 0.5, test_size = 0.4, seed = 3, model = 'RF', max_features = 5, num_trees = 100, **kwarg):

@@ -88,15 +88,18 @@ def _knn_based_merge(link_1, link_2):
 
         return(fused_network)
 
-def _generate_x_y(links_dict, threshold):
+def _generate_x_y(links_dict, threshold = 0.5):
 
         for key in links_dict.keys():
                 links_dict[key] = links_dict[key].fillna(0)
-
         dfs = list(links_dict.values())
         df_final = reduce(lambda left,right: pd.merge(left,right,on=['source', 'target']), dfs)
-        df_final.columns = list(df_final.columns[:2]) + list(links_dict.keys())
+        df_final.iloc[:,2:] = df_final.iloc[:,2:].abs()
+        rep = (df_final.shape[1] - 2)/len(links_dict)
+        df_final.columns = list(df_final.columns[:2]) + list(np.repeat(list(links_dict.keys()), rep))
+        print(df_final.head(5))
         avg = df_final.mean(axis = 1)
+#        df_final['Y'] = [(lambda x: 1 if x > avg.quantile(threshold) else 0)(x) for x in avg]
         df_final['Y'] = [(lambda x: 1 if x > threshold else 0)(x) for x in avg]
 
 #        X = df_final.iloc[:,:-1].iloc[:,2:]
@@ -190,7 +193,7 @@ def bnn_classifier(links_dict, threshold = 0.5, test_size = 0.4):
         """predict nodes connection via bayesian neural network
         """
 
-        X, Y = _generate_x_y(links_dict, threshold)
+        X, Y = _generate_x_y(links_dict, threshold = 0.5)
         return(Bclassifier.bnn_classifier(X, Y))
 
 

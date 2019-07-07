@@ -77,7 +77,7 @@ def bnn_classifier(X, Y, test_size = 0.4, hideen_layers = [50,20]):
 #                pred_test = pd.Series((ppc_test['out'].mean(0) > 0.5) * 1, index = y_test.index)
 
         res_df = pd.DataFrame({'source': x_train.source.append(x_test.source), 'target': x_train.target.append(x_test.target),
-                           'connected': list(pred_train)+ list(pred_test)})
+                           'weight': list(pred_train)+ list(pred_test)})
 
         return(res_df)
 
