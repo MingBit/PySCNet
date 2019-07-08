@@ -111,4 +111,6 @@ There are four modules:
 1) Scanpy-based preprocesing
 2) affinity network fusion
 
-
+8.July:
+1) Random walk plots
+2) poster start
