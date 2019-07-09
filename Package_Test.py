@@ -19,7 +19,7 @@ import _pickle as pk
 from PySCNet.Preprocessing import gnetdata
 from PySCNet.BuildNet import gne_dockercaller as gdocker
 from PySCNet.NetEnrich import graph_toolkit as gt
-from PySCNet.Plotting import dynamic_net as dn
+from PySCNet.Plotting import show_net as sn
 import Eva_Test
 import copy
 import matplotlib.pyplot as plt
@@ -161,7 +161,6 @@ HSC_links_dict = {'genie3': gne_HSC_GENIE3.NetAttrs['links'], 'corr': gne_HSC_CO
               'pidc': gne_HSC_PIDC.NetAttrs['links'], 'scode': gne_HSC_SCODE.NetAttrs['links']}
 
 
-
 Eclass = gt.ensemble_classifier(ESC_links_dict, threshold=0.45, num_trees=3000, seed=7, model = 'RF')
 Eclass_pos = Eclass.sort_values('weight', ascending = False).head(500)
 
@@ -207,6 +206,9 @@ obj = gdocker.buildnet(obj, top = 200)
 obj = gt.community_detect(obj)
 obj = gt.get_centrality(obj)
 path = gt.random_walk(obj, start='Gata1', supervisedby='pageRank', steps=10)
-dn.dynamic_netShow(obj, '/home/mwu/test.html',gravity = -6000, spring_length = 200)
-dn.static_netShow(obj, '/home/mwu/test.pdf', figure_size=[10, 10], random_path = path, path_highlight = True,
+
+tmp1 = ['Gata1']
+tmp1.extend(list(obj.NetAttrs['graph']['Gata1'].keys()))
+sn.static_netShow(obj, '/home/mwu/test_1.pdf', figure_size=[10, 10],
+                  start = 'Gata1', neighhours_highlight=True,
                   scale=2, node_size = 200, font_size = 10, edge_color = 'grey')

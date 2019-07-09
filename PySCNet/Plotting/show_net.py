@@ -65,7 +65,9 @@ def dynamic_netShow(gnetdata, filename, **kwargs):
 
 
 
-def static_netShow(gnetdata, filename, scale = 4, figure_size = [20,10], node_group = None, random_path = None, path_highlight = False, **kwargs):
+def static_netShow(gnetdata, filename, scale = 4, figure_size = [20,10], node_group = None,
+                   random_path = None, path_highlight = False, neighhours_highlight = False,
+                   start = None, **kwargs):
 
         if gnetdata.NetAttrs['parameters']['threshold'] != 'None':
                 filterby = float(gnetdata.NetAttrs['parameters']['threshold'])
@@ -82,15 +84,33 @@ def static_netShow(gnetdata, filename, scale = 4, figure_size = [20,10], node_gr
 
         net = nx.from_pandas_edgelist(link_table)
         pos = nx.kamada_kawai_layout(net, scale=scale)
-        if path_highlight:
-                nx.draw_networkx(net, pos, node_color = 'grey', **kwargs)
-                nx.draw_networkx_nodes(net, pos, nodelist=random_path, node_color = colors[0])
-                for i in range(len(random_path)-1):
-                        nx.draw_networkx_edges(net, pos, {(random_path[i], random_path[i+1]): str(i+1)},
-                                                          edge_color=colors[1], width= 5)
-                        nx.draw_networkx_edge_labels(net, pos, {(random_path[i], random_path[i+1]): str(i+1)},
-                                                          font_color=colors[2])
 
+        if path_highlight:
+                if random_path is None:
+                        raise Exception('random_path must not be Null if path_highlight is True!')
+                else:
+                        nx.draw_networkx(net, pos, node_color = 'grey', **kwargs)
+                        nx.draw_networkx_nodes(net, pos, nodelist=random_path, node_color = colors[0])
+                        for i in range(len(random_path)-1):
+                                nx.draw_networkx_edges(net, pos, {(random_path[i], random_path[i+1]): str(i+1)},
+                                                                  edge_color=colors[1], width= 5)
+                                nx.draw_networkx_edge_labels(net, pos, {(random_path[i], random_path[i+1]): str(i+1)},
+                                                                  font_color=colors[2])
+
+
+        elif neighhours_highlight:
+                if start is None:
+                        raise Exception('start node must not be None!')
+                else:
+                        neighbors = [start]
+                        neighbors.extend(list(net[start].keys()))
+                        nx.draw_networkx(net, pos, node_color = 'grey', **kwargs)
+                        nx.draw_networkx_nodes(net, pos, nodelist=neighbors, node_color = colors[0])
+                        for i in range(len(neighbors)):
+                                nx.draw_networkx_edges(net, pos, {(start, neighbors[i]): str(i)},
+                                                                  edge_color=colors[3], width= 5)
+                                nx.draw_networkx_edge_labels(net, pos, {(start, neighbors[i]): str(i)},
+                                                                  font_color=colors[2])
         else:
                 nx.draw_networkx(net, pos, node_color = node_color, **kwargs)
 
