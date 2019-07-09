@@ -202,6 +202,11 @@ plt.legend(loc="lower right")
 plt.savefig('/home/mwu/test.png')
 plt.close()
 
-
-
-
+obj = gne_HSC_PIDC.deepcopy
+obj = gdocker.buildnet(obj, top = 200)
+obj = gt.community_detect(obj)
+obj = gt.get_centrality(obj)
+path = gt.random_walk(obj, start='Gata1', supervisedby='pageRank', steps=10)
+dn.dynamic_netShow(obj, '/home/mwu/test.html',gravity = -6000, spring_length = 200)
+dn.static_netShow(obj, '/home/mwu/test.pdf', figure_size=[10, 10], random_path = path, path_highlight = True,
+                  scale=2, node_size = 200, font_size = 10, edge_color = 'grey')

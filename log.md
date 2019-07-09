@@ -114,3 +114,7 @@ There are four modules:
 8.July:
 1) Random walk plots
 2) poster start
+
+9.July:
+1) Visualization!!!
+2) Simulated data/published data with Random walk.
