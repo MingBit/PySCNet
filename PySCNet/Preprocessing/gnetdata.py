@@ -19,7 +19,7 @@ class Gnetdata():
                 3) GeneAttrs: A dict gives information about genes. eg. module_nr, marker_annotation
                 4) NetAttrs: A dict includes Networks attributes. eg. Node Centralities.
         """
-        def __init__(self, name, ExpMatrix):
+        def __init__(self, ExpMatrix):
 
 #                self.name = name
                 self.ExpMatrix = ExpMatrix

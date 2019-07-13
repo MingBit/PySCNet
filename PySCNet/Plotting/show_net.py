@@ -27,8 +27,9 @@ def dynamic_netShow(gnetdata, filename, **kwargs):
                 link_table = gnetdata.NetAttrs['links']
         node_group = gnetdata.NetAttrs['communities']
 
-        net = Network("800px", '1600px',bgcolor="#222222", font_color="white")
-        net.barnes_hut(**kwargs)
+#        net = Network("800px", '1600px',bgcolor="#222222", font_color="white")
+        net = Network('800px', '1600px')
+#        net.barnes_hut(**kwargs)
         edge_data = zip(link_table['source'], link_table['target'], link_table['weight'])
 
         colors = sns.color_palette().as_hex() + sns.color_palette('Paired', 100).as_hex()
@@ -65,7 +66,7 @@ def dynamic_netShow(gnetdata, filename, **kwargs):
 
 
 
-def static_netShow(gnetdata, filename, scale = 4, figure_size = [20,10], node_group = None,
+def static_netShow(gnetdata, filename, scale = 4, figure_size = [20,10],
                    random_path = None, path_highlight = False, neighhours_highlight = False,
                    start = None, **kwargs):
 
@@ -93,9 +94,9 @@ def static_netShow(gnetdata, filename, scale = 4, figure_size = [20,10], node_gr
                         nx.draw_networkx_nodes(net, pos, nodelist=random_path, node_color = colors[0])
                         for i in range(len(random_path)-1):
                                 nx.draw_networkx_edges(net, pos, {(random_path[i], random_path[i+1]): str(i+1)},
-                                                                  edge_color=colors[1], width= 5)
+                                                                  edge_color=colors[1], width= 3)
                                 nx.draw_networkx_edge_labels(net, pos, {(random_path[i], random_path[i+1]): str(i+1)},
-                                                                  font_color=colors[2])
+                                                                  font_color=colors[2], font_size = 4)
 
 
         elif neighhours_highlight:
@@ -105,14 +106,14 @@ def static_netShow(gnetdata, filename, scale = 4, figure_size = [20,10], node_gr
                         neighbors = [start]
                         neighbors.extend(list(net[start].keys()))
                         nx.draw_networkx(net, pos, node_color = 'grey', **kwargs)
-                        nx.draw_networkx_nodes(net, pos, nodelist=neighbors, node_color = colors[0])
+                        nx.draw_networkx_nodes(net, pos, nodelist=neighbors, node_color = colors[0], node_size = 100)
                         for i in range(len(neighbors)):
                                 nx.draw_networkx_edges(net, pos, {(start, neighbors[i]): str(i)},
-                                                                  edge_color=colors[3], width= 5)
+                                                                  edge_color=colors[3], width= 4)
                                 nx.draw_networkx_edge_labels(net, pos, {(start, neighbors[i]): str(i)},
-                                                                  font_color=colors[2])
+                                                                  font_color=colors[2], font_size = 4)
         else:
-                nx.draw_networkx(net, pos, node_color = node_color, **kwargs)
+                nx.draw_networkx(net, pos, node_color = 'grey', **kwargs)
 
         mpl.rcParams['figure.figsize'] = figure_size
         plt.savefig(filename)

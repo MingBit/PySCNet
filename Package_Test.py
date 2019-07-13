@@ -58,13 +58,13 @@ ESC_Data = ESC_Data[ESC_Data.sum(1) > 0]
 # Test with Preprocessing and docker run
 # =============================================================================
 
-
-
+tmp_gne = gnetdata.Gnetdata(tmp)
 Sim1_gne = gnetdata.Gnetdata(Sim_1)
 Sim2_gne = gnetdata.Gnetdata(Sim_2)
 ESC_gne = gnetdata.Gnetdata(ESC_Data)
 HSC_gne = gnetdata.Gnetdata(HSC_Data)
 
+gne_tmp_GENIE3 = gdocker.rundocker(tmp_gne.deepcopy, method='GENIE3')
 gne_Sim1_PIDC = gdocker.rundocker(Sim1_gne.deepcopy, method = 'PIDC')
 gne_Sim1_GENIE3 = gdocker.rundocker(Sim1_gne.deepcopy, method = 'GENIE3')
 gne_Sim1_CORR = gdocker.rundocker(Sim1_gne.deepcopy, method = 'CORR')
@@ -100,7 +100,7 @@ sim1_list = [gne_Sim1_CORR, gne_Sim1_GENIE3, gne_Sim1_PIDC, gne_Sim1_SCODE]
 sim2_list = [gne_Sim2_CORR, gne_Sim2_GENIE3, gne_Sim2_PIDC, gne_Sim2_SCODE]
 
 for obj in sim1_list:
-        obj = gdocker.buildnet(obj, top = 500)
+        obj = gdocker.buildnet(obj, top = 50)
         obj = gt.community_detect(obj)
         obj = gt.get_centrality(obj)
 
@@ -128,6 +128,15 @@ def build_table(gnedata):
         links['centrality_avg'] = centrality_avg
         return(links)
 
+gne_Sim1_PIDC = gnetdata.load_Gnetdata_object(path + 'gnetData/Sim1_PIDC.pk')
+gne_Sim1_GENIE3 = gnetdata.load_Gnetdata_object(path + 'gnetData/Sim1_GENIE3.pk')
+gne_Sim1_CORR = gnetdata.load_Gnetdata_object(path + 'gnetData/Sim1_CORR.pk')
+gne_Sim1_SCODE = gnetdata.load_Gnetdata_object(path + 'gnetData/Sim1_SCODE.pk')
+
+gne_Sim2_PIDC = gnetdata.load_Gnetdata_object(path + 'gnetData/Sim2_PIDC.pk')
+gne_Sim2_GENIE3 = gnetdata.load_Gnetdata_object(path + 'gnetData/Sim2_GENIE3.pk')
+gne_Sim2_CORR = gnetdata.load_Gnetdata_object(path + 'gnetData/Sim2_CORR.pk')
+gne_Sim2_SCODE = gnetdata.load_Gnetdata_object(path + 'gnetData/Sim2_SCODE.pk')
 
 gne_HSC_CORR = gnetdata.load_Gnetdata_object(path + 'gnetData/HSC_CORR.pk')
 gne_HSC_PIDC = gnetdata.load_Gnetdata_object(path + 'gnetData/HSC_PIDC.pk')
@@ -161,23 +170,23 @@ HSC_links_dict = {'genie3': gne_HSC_GENIE3.NetAttrs['links'], 'corr': gne_HSC_CO
               'pidc': gne_HSC_PIDC.NetAttrs['links'], 'scode': gne_HSC_SCODE.NetAttrs['links']}
 
 
-Eclass = gt.ensemble_classifier(ESC_links_dict, threshold=0.45, num_trees=3000, seed=7, model = 'RF')
+Eclass = gt.ensemble_classifier(Sim1_links_dict, threshold=0.5, num_trees=1000, seed=7, model = 'RF')
 Eclass_pos = Eclass.sort_values('weight', ascending = False).head(500)
 
 RF_fpr, RF_tpr, RF_auc = Eva_Test.test_run(links = Eclass_pos,
-                                           Ref_links=ESC_Ref, input_dataset = ESC_Data)
+                                           Ref_links=Sim_1_Ref, input_dataset = Sim_1)
 
-PIDC_fpr, PIDC_tpr, PIDC_auc = Eva_Test.test_run(links = gne_ESC_PIDC.NetAttrs['links'].sort_values('weight', ascending = False).head(500),
-                                           Ref_links=ESC_Ref, input_dataset = ESC_Data)
+PIDC_fpr, PIDC_tpr, PIDC_auc = Eva_Test.test_run(links = gne_Sim1_PIDC.NetAttrs['links'].sort_values('weight', ascending = False).head(500),
+                                           Ref_links=Sim_1_Ref, input_dataset = Sim_1)
 
-GENIE3_fpr, GENIE3_tpr, GENIE3_auc = Eva_Test.test_run(links = gne_ESC_GENIE3.NetAttrs['links'].sort_values('weight', ascending = False).head(500),
-                                                       Ref_links=ESC_Ref, input_dataset = ESC_Data)
+GENIE3_fpr, GENIE3_tpr, GENIE3_auc = Eva_Test.test_run(links = gne_Sim1_GENIE3.NetAttrs['links'].sort_values('weight', ascending = False).head(500),
+                                                       Ref_links=Sim_1_Ref, input_dataset = Sim_1)
 
-CORR_fpr, CORR_tpr, CORR_auc = Eva_Test.test_run(links = gne_ESC_CORR.NetAttrs['links'].sort_values('weight', ascending = False).head(500),
-                                           Ref_links=ESC_Ref, input_dataset = ESC_Data)
+CORR_fpr, CORR_tpr, CORR_auc = Eva_Test.test_run(links = gne_Sim1_CORR.NetAttrs['links'].sort_values('weight', ascending = False).head(500),
+                                           Ref_links=Sim_1_Ref, input_dataset = Sim_1)
 
-SCODE_fpr, SCODE_tpr, SCODE_auc = Eva_Test.test_run(links = gne_ESC_SCODE.NetAttrs['links'].sort_values('weight', ascending = False).head(500),
-                                           Ref_links=ESC_Ref, input_dataset = ESC_Data)
+SCODE_fpr, SCODE_tpr, SCODE_auc = Eva_Test.test_run(links = gne_Sim1_SCODE.NetAttrs['links'].sort_values('weight', ascending = False).head(500),
+                                           Ref_links=Sim_1_Ref, input_dataset = Sim_1)
 
 fpr_dict = {'RF': RF_fpr, 'GENIE3': GENIE3_fpr, 'PIDC': PIDC_fpr, 'CORR': CORR_fpr, 'SCODE': SCODE_fpr}
 tpr_dict = {'RF': RF_tpr, 'GENIE3': GENIE3_tpr, 'PIDC': PIDC_tpr, 'CORR': CORR_tpr, 'SCODE': SCODE_tpr}
@@ -185,30 +194,40 @@ auc_dict = {'RF': RF_auc, 'GENIE3': GENIE3_auc, 'PIDC': PIDC_auc, 'CORR': CORR_a
 
 import seaborn as sns
 colors = sns.color_palette().as_hex()[1:6]
-plt.figure()
+plt.figure(figsize = (8,8))
 for i, color in zip(['RF', 'GENIE3', 'PIDC', 'CORR', 'SCODE'], colors):
         plt.plot(fpr_dict[i], tpr_dict[i], color = color, label = 'ROC curve of method {0} (area = {1:0.2f})'.format(i, auc_dict[i]))
+
+#for i, color in zip(['Ensemble_Classifier', 'GENIE3', 'PIDC', 'CORR', 'SCODE'], colors):
+#        plt.plot(fpr_dict[i], tpr_dict[i], color = color, label = 'ROC curve of method {0}'.format(i))
 
 plt.plot([0, 1], [0, 1], 'k--')
 plt.xlim([0.0, 1.0])
 plt.ylim([0.0, 1.05])
-plt.xlabel('False Positive Rate')
-plt.ylabel('True Positive Rate')
-plt.title('Algorithms performance')
+plt.xlabel('False Positive Rate', fontsize = 20)
+plt.ylabel('True Positive Rate', fontsize = 20)
+plt.title('Sim1: Algorithms performance', fontsize = 25)
 plt.legend(loc="lower right")
-#plt.show()
 
-plt.savefig('/home/mwu/test.png')
+plt.savefig('/home/mwu/test.pdf')
 plt.close()
 
 obj = gne_HSC_PIDC.deepcopy
 obj = gdocker.buildnet(obj, top = 200)
 obj = gt.community_detect(obj)
 obj = gt.get_centrality(obj)
-path = gt.random_walk(obj, start='Gata1', supervisedby='pageRank', steps=10)
+random_path = gt.random_walk(obj, start='Gata1', supervisedby='pageRank', steps=10)
 
 tmp1 = ['Gata1']
 tmp1.extend(list(obj.NetAttrs['graph']['Gata1'].keys()))
-sn.static_netShow(obj, '/home/mwu/test_1.pdf', figure_size=[10, 10],
-                  start = 'Gata1', neighhours_highlight=True,
-                  scale=2, node_size = 200, font_size = 10, edge_color = 'grey')
+sn.static_netShow(obj, '/home/mwu/Gata_Path.pdf', figure_size=[5,5],
+                  start='Gata1', neighhours_highlight=True,
+                  random_path= random_path, path_highlight= True,
+                  scale=2, node_size = 100, font_size = 4, edge_color = 'grey', width = 1)
+
+sn.static_netShow(obj, '/home/mwu/test_7.pdf', figure_size=[5,2], scale=2, node_size = 100, width = 0.8,
+                  edge_color = 'grey', font_size = 5, random_path=path, path_highlight=True)
+
+sn.dynamic_netShow(obj, filename='/home/mwu/test.html')
+#simulate linkage table
+tmp = pd.DataFrame()
