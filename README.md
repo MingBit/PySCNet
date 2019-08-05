@@ -5,3 +5,4 @@ There are four modules:
 3) NetEnrich: Graph-based tooltik for network analysis.
 4) Plots: Visulization.
 
+![Overview](https://github.com/MingBit/PySCNet/Overview.png)
