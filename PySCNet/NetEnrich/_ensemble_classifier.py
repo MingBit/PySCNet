@@ -18,6 +18,8 @@ from functools import reduce
 from sklearn.ensemble import BaggingClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import GradientBoostingClassifier
+import autosklearn.classification
+
 
 #def _generate_x_y(links_dict, threshold):
 #
@@ -70,7 +72,10 @@ def ensemble_classifier(X, Y, threshold = 0.5, test_size = 0.4, seed = 3, model 
     elif model == 'SGB':
         model = GradientBoostingClassifier(n_estimators=num_trees, random_state=seed, **kwarg)
 
-    else: raise Exception('Valid model: RF, BDT, ET, AdaB, SGB')
+    elif model == 'autoSK':
+        model = autosklearn.classification.AutoSklearnClassifier(**kwarg)
+
+    else: raise Exception('Valid model: RF, BDT, ET, AdaB, SGB, autoSK')
 
     model.fit(x_train.iloc[:,2:], y_train)
 #    pred_train = model.predict(x_train.iloc[:,2:])

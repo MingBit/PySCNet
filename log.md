@@ -118,3 +118,8 @@ There are four modules:
 9.July:
 1) Visualization!!!
 2) Simulated data/published data with Random walk.
+
+5.August
+1) After workshop and conference, finally back to work
+2) R shiny app for visualization
+

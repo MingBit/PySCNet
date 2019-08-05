@@ -170,32 +170,41 @@ HSC_links_dict = {'genie3': gne_HSC_GENIE3.NetAttrs['links'], 'corr': gne_HSC_CO
               'pidc': gne_HSC_PIDC.NetAttrs['links'], 'scode': gne_HSC_SCODE.NetAttrs['links']}
 
 
-Eclass = gt.ensemble_classifier(Sim1_links_dict, threshold=0.5, num_trees=1000, seed=7, model = 'RF')
+Eclass = gt.ensemble_classifier(Sim2_links_dict, threshold=0.5, model = 'autoSK', seed = 5)
 Eclass_pos = Eclass.sort_values('weight', ascending = False).head(500)
 
-RF_fpr, RF_tpr, RF_auc = Eva_Test.test_run(links = Eclass_pos,
-                                           Ref_links=Sim_1_Ref, input_dataset = Sim_1)
+Eclass_RF = gt.ensemble_classifier(Sim2_links_dict, threshold=0.5, num_trees=1000, seed=5, model = 'RF')
+Eclass_pos_RF = Eclass_RF.sort_values('weight', ascending = False).head(500)
 
-PIDC_fpr, PIDC_tpr, PIDC_auc = Eva_Test.test_run(links = gne_Sim1_PIDC.NetAttrs['links'].sort_values('weight', ascending = False).head(500),
-                                           Ref_links=Sim_1_Ref, input_dataset = Sim_1)
+Eclass_RF = gt.ensemble_classifier(HSC_links_dict, threshold=0.5, num_trees=1000, seed=5, model = 'autoSK')
+Eclass_pos_RF = Eclass_RF.sort_values('weight', ascending = False).head(500)
 
-GENIE3_fpr, GENIE3_tpr, GENIE3_auc = Eva_Test.test_run(links = gne_Sim1_GENIE3.NetAttrs['links'].sort_values('weight', ascending = False).head(500),
-                                                       Ref_links=Sim_1_Ref, input_dataset = Sim_1)
+RF_fpr, RF_tpr, RF_auc = Eva_Test.test_run(links = Eclass_pos_RF,
+                                           Ref_links=Sim_2_Ref, input_dataset = Sim_2)
 
-CORR_fpr, CORR_tpr, CORR_auc = Eva_Test.test_run(links = gne_Sim1_CORR.NetAttrs['links'].sort_values('weight', ascending = False).head(500),
-                                           Ref_links=Sim_1_Ref, input_dataset = Sim_1)
+Auto_RF_fpr, Auto_RF_tpr, Auto_RF_auc = Eva_Test.test_run(links = Eclass_pos,
+                                           Ref_links=Sim_2_Ref, input_dataset = Sim_2)
 
-SCODE_fpr, SCODE_tpr, SCODE_auc = Eva_Test.test_run(links = gne_Sim1_SCODE.NetAttrs['links'].sort_values('weight', ascending = False).head(500),
-                                           Ref_links=Sim_1_Ref, input_dataset = Sim_1)
+PIDC_fpr, PIDC_tpr, PIDC_auc = Eva_Test.test_run(links = gne_Sim2_PIDC.NetAttrs['links'].sort_values('weight', ascending = False).head(500),
+                                           Ref_links=Sim_2_Ref, input_dataset = Sim_2)
 
-fpr_dict = {'RF': RF_fpr, 'GENIE3': GENIE3_fpr, 'PIDC': PIDC_fpr, 'CORR': CORR_fpr, 'SCODE': SCODE_fpr}
-tpr_dict = {'RF': RF_tpr, 'GENIE3': GENIE3_tpr, 'PIDC': PIDC_tpr, 'CORR': CORR_tpr, 'SCODE': SCODE_tpr}
-auc_dict = {'RF': RF_auc, 'GENIE3': GENIE3_auc, 'PIDC': PIDC_auc, 'CORR': CORR_auc, 'SCODE': SCODE_auc}
+GENIE3_fpr, GENIE3_tpr, GENIE3_auc = Eva_Test.test_run(links = gne_Sim2_GENIE3.NetAttrs['links'].sort_values('weight', ascending = False).head(500),
+                                                       Ref_links=Sim_2_Ref, input_dataset = Sim_2)
+
+CORR_fpr, CORR_tpr, CORR_auc = Eva_Test.test_run(links = gne_Sim2_CORR.NetAttrs['links'].sort_values('weight', ascending = False).head(500),
+                                           Ref_links=Sim_2_Ref, input_dataset = Sim_2)
+
+SCODE_fpr, SCODE_tpr, SCODE_auc = Eva_Test.test_run(links = gne_Sim2_SCODE.NetAttrs['links'].sort_values('weight', ascending = False).head(500),
+                                           Ref_links=Sim_2_Ref, input_dataset = Sim_2)
+
+fpr_dict = {'Auto_ML': Auto_RF_fpr, 'RF': RF_fpr, 'GENIE3': GENIE3_fpr, 'PIDC': PIDC_fpr, 'CORR': CORR_fpr, 'SCODE': SCODE_fpr}
+tpr_dict = {'Auto_ML': Auto_RF_tpr, 'RF': RF_tpr, 'GENIE3': GENIE3_tpr, 'PIDC': PIDC_tpr, 'CORR': CORR_tpr, 'SCODE': SCODE_tpr}
+auc_dict = {'Auto_ML': Auto_RF_auc, 'RF': RF_auc, 'GENIE3': GENIE3_auc, 'PIDC': PIDC_auc, 'CORR': CORR_auc, 'SCODE': SCODE_auc}
 
 import seaborn as sns
-colors = sns.color_palette().as_hex()[1:6]
+colors = sns.color_palette().as_hex()[1:7]
 plt.figure(figsize = (8,8))
-for i, color in zip(['RF', 'GENIE3', 'PIDC', 'CORR', 'SCODE'], colors):
+for i, color in zip(['Auto_ML', 'RF', 'GENIE3', 'PIDC', 'CORR', 'SCODE'], colors):
         plt.plot(fpr_dict[i], tpr_dict[i], color = color, label = 'ROC curve of method {0} (area = {1:0.2f})'.format(i, auc_dict[i]))
 
 #for i, color in zip(['Ensemble_Classifier', 'GENIE3', 'PIDC', 'CORR', 'SCODE'], colors):
@@ -206,13 +215,15 @@ plt.xlim([0.0, 1.0])
 plt.ylim([0.0, 1.05])
 plt.xlabel('False Positive Rate', fontsize = 20)
 plt.ylabel('True Positive Rate', fontsize = 20)
-plt.title('Sim1: Algorithms performance', fontsize = 25)
+plt.title('Sim2: Algorithms performance', fontsize = 25)
 plt.legend(loc="lower right")
 
 plt.savefig('/home/mwu/test.pdf')
 plt.close()
 
-obj = gne_HSC_PIDC.deepcopy
+#obj = gne_HSC_PIDC.deepcopy
+obj = gnetdata.Gnetdata(HSC_Data)
+obj.NetAttrs['links'] = Eclass_RF
 obj = gdocker.buildnet(obj, top = 200)
 obj = gt.community_detect(obj)
 obj = gt.get_centrality(obj)
@@ -221,8 +232,8 @@ random_path = gt.random_walk(obj, start='Gata1', supervisedby='pageRank', steps=
 tmp1 = ['Gata1']
 tmp1.extend(list(obj.NetAttrs['graph']['Gata1'].keys()))
 sn.static_netShow(obj, '/home/mwu/Gata_Path.pdf', figure_size=[5,5],
-                  start='Gata1', neighhours_highlight=True,
-                  random_path= random_path, path_highlight= True,
+#                  start='Gata1', neighhours_highlight=True,
+                  random_path = random_path, path_highlight = True,
                   scale=2, node_size = 100, font_size = 4, edge_color = 'grey', width = 1)
 
 sn.static_netShow(obj, '/home/mwu/test_7.pdf', figure_size=[5,2], scale=2, node_size = 100, width = 0.8,

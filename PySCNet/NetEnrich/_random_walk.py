@@ -29,7 +29,7 @@ def supervised_random_walk(gnetdata, start, supervisedby = 'pageRank', steps = 1
                 else:
                         new_neighbors_score = {}
                         for key, score in new_neighbors.items():
-                                new_score = float(supervise_matrix.loc[supervise_matrix['node'] == key, supervisedby]) * float(list(score.values())[2])
+                                new_score = float(supervise_matrix.loc[supervise_matrix['node'] == key, supervisedby]) * float(list(score.values())[0])
                                 new_neighbors_score[key] = new_score
                         go = sorted(new_neighbors_score.items(), key=lambda x: x[1], reverse=True)[0][0]
 #                        links.loc[links.shape[0] + 1] = [start, go, new_neighbors_score[go]]

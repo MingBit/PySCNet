@@ -106,7 +106,7 @@ def static_netShow(gnetdata, filename, scale = 4, figure_size = [20,10],
                         neighbors = [start]
                         neighbors.extend(list(net[start].keys()))
                         nx.draw_networkx(net, pos, node_color = 'grey', **kwargs)
-                        nx.draw_networkx_nodes(net, pos, nodelist=neighbors, node_color = colors[0], node_size = 100)
+                        nx.draw_networkx_nodes(net, pos, nodelist=neighbors, node_color = colors[0])
                         for i in range(len(neighbors)):
                                 nx.draw_networkx_edges(net, pos, {(start, neighbors[i]): str(i)},
                                                                   edge_color=colors[3], width= 4)
