@@ -24,8 +24,8 @@ ui = tagList(
       actionButton("clean_button", "Clean", class = 'btn-primary')
     ),
     mainPanel(
-      titlePanel('Expression table'),
-      DT::dataTableOutput('exp')
+      titlePanel('Expression table')
+      # DT::dataTableOutput('exp')
     )
     ),
     
@@ -48,15 +48,35 @@ ui = tagList(
       plotOutput('gene_summary')
     )),
     
-    tabPanel(h5("Network Attributes"),   fluidPage(
-      h3('Linkage Table'),
-      DT::dataTableOutput('links'),
-      hr(),
-      h3('Network')
-      
-    ))
+    tabPanel(h5("Network Attributes"),
+             sidebarPanel(
+               h3("Create your own network"),
+               hr(),
+               radioButtons('trans_genes', 'Gene or Transcription Factor', c('Gene', 'TF', 'TF/Gene')),
+               selectInput('cluster_id', 'Select Cluster ID', choices = 'clusterid'),
+               selectInput('gene_module', 'Select Gene Module', choices = 'genemodule'),
+               sliderInput('weight_filter', "Weight cut by", 0.2, min = 0, max = 1, step = .05),
+               hr(),
+               sliderInput("node_opacity", "Node Opacity", 0.8, min = 0.1,
+                           max = 1, step = .1),
+               sliderInput("label_size", "Label Fontsize", 25, min = 10,
+                           max = 50, step = 5),
+               selectInput('node_size', "Node Size encoded by", 
+                           choices = c('pageRank', 'degree', 'betweenness', 'closeness'))
+             ),
+             mainPanel(
+             
+               h3('Network'),
+               simpleNetworkOutput('network'),
+              fluidPage(
+               hr(),
+               h3('Linkage Table'),
+               DT::dataTableOutput('links', width = "80%"),
+               hr(),
+               h3('Gene Module Table'),
+               DT::dataTableOutput('gene_module')))
+     )
   )
 )
-
 
 shinyApp(ui = ui, server = server)
