@@ -33,7 +33,7 @@ ui = tagList(
     tabPanel(h5("Cell Attributes"), 
              fluidPage(
                h3('Cell Attributes'),
-               # DT::dataTableOutput('cell_info'),
+               DT::dataTableOutput('cell_info'),
                hr(),
                h3('Summary'),
                plotOutput('cell_summary')
@@ -42,7 +42,7 @@ ui = tagList(
     tabPanel(h5("Gene Attributes"), 
             fluidPage(
       h3('Gene Attributes'),
-      # DT::dataTableOutput('gene_info'),
+      DT::dataTableOutput('gene_info'),
       hr(),
       h3('Summary'),
       plotOutput('gene_summary')

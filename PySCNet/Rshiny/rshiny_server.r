@@ -1,3 +1,6 @@
+library(ggpubr)
+library(dplyr)
+
 server = function(input, output) {
   source_python('~/MING_V9T/PhD_Pro/PySCNet/PySCNet/Preprocessing/gnetdata.py')
   pk_upload <- reactive({
@@ -10,7 +13,8 @@ server = function(input, output) {
   
   get_links <- reactive({
     pickle_data <- pk_upload()
-    links <- data.frame(source = pickle_data$NetAttrs$links['source'],
+    links <- data.frame(cell_clusterid = pickle_data$NetAttrs$links['cell_clusterid'],
+                        source = pickle_data$NetAttrs$links['source'],
                          target = pickle_data$NetAttrs$links['target'],
                          weight = pickle_data$NetAttrs$links['weight'])
     return(links)
@@ -39,7 +43,7 @@ server = function(input, output) {
     #                      weight = pickle_data$NetAttrs$links['weight'])) %>% 
     links <- get_links() 
     datatable(links, options = list(lengthMenu = c(5, 30, 50), pageLength = 5)) %>%
-      formatStyle(c('source', 'target', 'weight'), backgroundColor = "grey") %>%
+      formatStyle(c('cell_clusterid', 'source', 'target', 'weight'), backgroundColor = "grey") %>%
       formatStyle(0, target = 'row', backgroundColor = 'black', fontWeight = 'bold')
   })
   
@@ -50,13 +54,24 @@ server = function(input, output) {
     #                      target = pickle_data$NetAttrs$links['target'],
     #                      weight = pickle_data$NetAttrs$links['weight'])) %>% 
     datatable(links, options = list(lengthMenu = c(5, 30, 50), pageLength = 5)) %>%
-      formatStyle(c('source', 'target', 'weight'), backgroundColor = "grey") %>%
+      formatStyle(c('cell_clusterid','source', 'target', 'weight'), backgroundColor = "grey") %>%
       formatStyle(0, target = 'row', backgroundColor = 'black', fontWeight = 'bold')
   })
   
   output$cell_summary <- renderPlot({
     pickle_data <- pk_upload()
-    hist(pickle_data$NetAttrs$links['weight'])
+    cell_cluster_df = plyr::count(pickle_data$CellAttrs, vars = c('cluster_id', 'cell_type'))
+    cell_count <- column_to_rownames(as.data.frame(aggregate(freq ~ cell_type, data = cell_cluster_df, sum)),'cell_type')
+    cell_cluster_df$percent <- paste(format((cell_cluster_df$freq / cell_count[cell_cluster_df$cell_type,]) * 100, digits = 2),"%", sep = "")
+    
+    ggbarplot(cell_cluster_df, x = 'cluster_id', y = "freq",
+                    fill = "cell_type",
+                    # color = c('#FB4944', '#9659D9'),
+                    palette =  c('#033F63', '#BF4342'),
+                    xlab = "Clusters",
+                    ylab = "Cell Counts",
+                    label = "percent", lab.vjust = 1.2, 
+                    lab.size = 6) + theme(text = element_text(size = 20))
   })
   
   output$gene_summary <- renderPlot({

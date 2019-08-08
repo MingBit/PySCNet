@@ -123,3 +123,6 @@ There are four modules:
 1) After workshop and conference, finally back to work
 2) R shiny app for visualization
 
+8.August
+1) update the structure of gNetData
+2) re-do BuildNet ect and visualization

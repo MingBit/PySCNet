@@ -48,16 +48,21 @@ def _remove_duplicate(links):
 def _rundocker(gnetdata, method, path = path, time_point = None, cell_clusterid = None, Mms_TF = None):
 
         client = docker.from_env()
-        pd.DataFrame.to_csv(gnetdata.ExpMatrix, path + method + '/Expr.txt',  sep= '\t')
+        #TODO: remove cell_clusterid???
+        if cell_clusterid is not None:
+#            pd.DataFrame.to_csv(cell_clusterid, path + method + '/cell_clusterid.txt',  sep= '\t', header=False, index=False)
+             cell_info = gnetdata.CellAttrs
+             tmp_expr = gnetdata.ExpMatrix[list(cell_info.loc[cell_info.cluster_id.isin([cell_clusterid])].index)]
+        else:
+             tmp_expr = gnetdata.ExpMatrix
+
+        if Mms_TF is not None:
+            pd.DataFrame.to_csv(Mms_TF, path + method + '/Mms_TF.txt',  sep= '\t', header=False, index=False)
 
         if time_point is not None:
             pd.DataFrame.to_csv(time_point, path + method + '/time_point.txt',  sep= '\t', header=False, index=False)
 
-        if cell_clusterid is not None:
-            pd.DataFrame.to_csv(cell_clusterid, path + method + '/cell_clusterid.txt',  sep= '\t', header=False, index=False)
-
-        if Mms_TF is not None:
-            pd.DataFrame.to_csv(Mms_TF, path + method + '/Mms_TF.txt',  sep= '\t', header=False, index=False)
+        pd.DataFrame.to_csv(tmp_expr, path + method + '/Expr.txt',  sep= '\t')
 
         client.images.build(path = path + method, dockerfile = 'Dockerfile', tag = method.lower())
         container = client.containers.run(method.lower(), detach = True)
@@ -71,6 +76,7 @@ def _rundocker(gnetdata, method, path = path, time_point = None, cell_clusterid 
         raw_links = pd.read_csv(os.getenv('HOME') + '/links.txt', sep = '\t', header = 0)
         raw_links.columns = ['source', 'target', 'weight']
         raw_links = _remove_duplicate(raw_links).fillna(0)
+
         gnetdata._add_netattr('links', raw_links)
         gnetdata._add_netattr_para('method', method)
 
@@ -81,26 +87,34 @@ def rundocker(gnetdata, method, time_point = None, cell_clusterid = None, Mms_TF
 
 
         if method == 'GENIE3':
-                gnetdata = _rundocker(gnetdata, 'GENIE3')
+                gnetdata = _rundocker(gnetdata, method = 'GENIE3',
+                                      cell_clusterid = cell_clusterid, Mms_TF = Mms_TF)
 
         elif method == 'PIDC':
                 #remove genes with 0 counts
-                gnetdata = _rundocker(gnetdata, 'PIDC')
+                gnetdata = _rundocker(gnetdata, method = 'PIDC',
+                                      cell_clusterid = cell_clusterid, Mms_TF = Mms_TF)
 
         elif method == 'JUMP3':
-                gnetdata = _rundocker(gnetdata, 'JUMP3')
+                gnetdata = _rundocker(gnetdata, method = 'JUMP3',
+                                      cell_clusterid = cell_clusterid, Mms_TF = Mms_TF)
 
         elif method == "SCODE":
-                gnetdata = _rundocker(gnetdata, 'SCODE', time_point = time_point)
+                gnetdata = _rundocker(gnetdata, method = 'SCODE', time_point = time_point,
+                                      cell_clusterid = cell_clusterid, Mms_TF = Mms_TF)
 
         elif method == "CORR":
-                gnetdata = _rundocker(gnetdata, 'CORR')
+                gnetdata = _rundocker(gnetdata, method = 'CORR',
+                                      cell_clusterid = cell_clusterid, Mms_TF = Mms_TF)
+
         #TODO: Input data with clusterid
         elif method == "SINCERA":
-                gnetdata = _rundocker(gnetdata, 'SINCERA', cell_clusterid= cell_clusterid, Mms_TF = Mms_TF)
+                gnetdata = _rundocker(gnetdata, method = 'SINCERA',
+                                      cell_clusterid= cell_clusterid, Mms_TF = Mms_TF)
         #TODO: permission issue
         elif method == "SJARACNE":
-                gnetdata = _rundocker(gnetdata, 'SJARACNE')
+                gnetdata = _rundocker(gnetdata, method = 'SJARACNE',
+                                      cell_clusterid=cell_clusterid, Mms_TF=Mms_TF)
 
         else:
                 raise Exception("valid method: GENIE3, PIDC, SCODE, CORR, SINCERA, SJARACNE, JUMP3")
