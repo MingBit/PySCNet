@@ -11,33 +11,36 @@ ui = tagList(
     theme = shinytheme("superhero"),
     "PySCNet Visualization",
     
-    tabPanel(h5("Expression Data"),
-     sidebarPanel(
-      id = 'sidebar',
-      fileInput("file1", "Choose gNetData File:",
-                multiple = FALSE,
-                accept = ".pk"),
-      textInput("txt", "Cell Filter:"),
-      textInput("txt", "Gene Filter:"),
-      textInput("txt", "Search:"),
-      actionButton("action1", "Search", class = "btn-primary"),
-      actionButton("clean_button", "Clean", class = 'btn-primary')
-    ),
-    mainPanel(
-      titlePanel('Expression table')
-      # DT::dataTableOutput('exp')
-    )
-    ),
+    # tabPanel(h5("Expression Data"),
+    #  sidebarPanel(
+    #   id = 'sidebar',
+    #   fileInput("file1", "Choose gNetData File:",
+    #             multiple = FALSE,
+    #             accept = ".pk")
+    # 
+    # ),
+    # mainPanel(
+    #   titlePanel('Expression table')
+    #   # DT::dataTableOutput('exp')
+    # ),
     
     
     tabPanel(h5("Cell Attributes"), 
-             fluidPage(
-               h3('Cell Attributes'),
-               DT::dataTableOutput('cell_info'),
-               hr(),
-               h3('Summary'),
-               plotOutput('cell_summary')
-             )), 
+              sidebarPanel(
+               id = 'sidebar',
+               fileInput("file1", "Choose gNetData File:",
+                         multiple = FALSE,
+                         accept = ".pk")
+
+             ),
+             mainPanel(
+                fluidPage(
+                 h3('Cell Attributes'),
+                 DT::dataTableOutput('cell_info'),
+                 hr(),
+                 h3('Summary'),
+                 plotOutput('cell_summary')
+             ))), 
     
     tabPanel(h5("Gene Attributes"), 
             fluidPage(
@@ -54,8 +57,8 @@ ui = tagList(
                hr(),
                radioButtons('trans_genes', 'Gene or Transcription Factor', c('Gene', 'TF', 'TF/Gene')),
                uiOutput('clusterid'),
-               uiOutput('genemodule'),
-               sliderInput('weight_filter', "Weight cut by", 0, min = 0, max = 1, step = .05),
+               # uiOutput('genemodule'),
+               # sliderInput('weight_filter', "Weight cut by", 0, min = 0, max = 1, step = .05),
                selectInput('top_edges', 'Select Top Edges', choices = c('50', '100', '200', '500'), selected = '200'),
                hr(),
                sliderInput("node_opacity", "Node Opacity", 1, min = 0.1,
@@ -63,7 +66,7 @@ ui = tagList(
                sliderInput("label_size", "Label Fontsize", 15, min = 10,
                            max = 50, step = 5),
                selectInput('node_size', "Node Size encoded by", 
-                           choices = c('pageRank', 'degree', 'betweenness', 'closeness'))
+                           choices = c('degree', 'betweenness', 'closeness', 'pageRank'))
              ),
              mainPanel(
              

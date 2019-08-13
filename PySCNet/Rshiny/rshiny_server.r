@@ -22,6 +22,31 @@ server = function(input, output) {
     return(links)
   })
   
+  create_network <- reactive({
+    
+    links <- get_links() %>% dplyr::filter(cell_clusterid == input$cluster_id)
+    links <- links[order(links$weight, decreasing = T), ][1:as.numeric(input$top_edges),]
+    
+    graph <- graph_from_edgelist(as.matrix(links[,c('source', 'target')]), directed = FALSE)
+    gene_communities <- cluster_louvain(graph)
+    
+    gene_module <- data.frame(Gene = as.character(names(membership(gene_communities))),
+                              module = as.factor(gene_communities$membership)) %>%
+      mutate(id = seq(0, nrow(.)-1)) %>%
+      mutate(degree = degree(graph)) %>%
+      mutate(betweenness = betweenness(graph)) %>%
+      mutate(closeness = closeness(graph)) %>%
+      mutate(pageRank = page_rank(graph)$vector)
+    
+    
+    links <- links %>% mutate(source_id = gene_module[match(source, gene_module$Gene),'id']) %>%
+              mutate(target_id = gene_module[match(target, gene_module$Gene),'id'])
+    
+    
+    return(list(gene_module, links))
+    
+    })
+  
   output$exp <- DT::renderDataTable({
     
     pickle_data <- pk_upload()
@@ -67,13 +92,13 @@ server = function(input, output) {
     
   })
 
-  output$genemodule <- renderUI({
-    
-    links <- get_links()
-    selectInput('gene_module', 'Select Gene Module', choices = as.list(unique(links$cell_clusterid)), selected = '1')
-    
-  })
-  
+  # output$genemodule <- renderUI({
+  #   
+  #   links <- get_links()
+  #   selectInput('gene_module', 'Select Gene Module', choices = as.list(unique(links$cell_clusterid)), selected = 'All')
+  #   
+  # })
+  # 
   output$links <- DT::renderDataTable({
     
     links <- get_links() 
@@ -82,34 +107,29 @@ server = function(input, output) {
       formatStyle(0, target = 'row', backgroundColor = 'black', fontWeight = 'bold')
   })
   
+  
   output$gene_module <- DT::renderDataTable({
     
-    links <- get_links()
-    datatable(links, options = list(lengthMenu = c(5, 30, 50), pageLength = 10), style = 'jqueryui') %>%
-      formatStyle(c('cell_clusterid','source', 'target', 'weight'), backgroundColor = "grey") %>%
+    datatable(as.data.frame(create_network()[1]),
+              options = list(lengthMenu = c(5, 30, 50), pageLength = 10), style = 'jqueryui') %>%
+      formatStyle(c('module', 'id', 'degree', 'betweenness', 'closeness'), backgroundColor = "grey") %>%
       formatStyle(0, target = 'row', backgroundColor = 'black', fontWeight = 'bold')
+  
   })
   
   output$network <- renderForceNetwork({
-    
-    pickle_data <- pk_upload()
-    gene_info <- pickle_data$GeneAttrs %>% mutate(id = seq(0, nrow(.)-1))
-    
-    links <- get_links() %>% dplyr::filter(cell_clusterid == input$cluster_id) %>% 
-      mutate(source_id = gene_info[match(source, gene_info$Gene),'id']) %>%
-      mutate(target_id = gene_info[match(target, gene_info$Gene),'id'])
-    
-    links <- links[order(links$weight, decreasing = T), ][1:as.numeric(input$top_edges),]
-    
-    
-    forceNetwork(Links = links,
-                 Source = "source_id", Nodes = gene_info, opacityNoHover = 1,linkWidth = 5,
-                 Target = "target_id", Value = 1, NodeID = "Gene", Group = 'TF_Gene',
-                 height = 500, width = 1000, fontSize = input$label_size, zoom = TRUE,
+    tmp = create_network()
+    # if(input$gene_module == 'All') {Nodes = as.data.frame(tmp[1])} 
+    # else{Nodes = as.data.frame(tmp[1]) %>% dplyr::filter(module == input$gene_module)}
+    # Links = as.data.frame(tmp[2]) %>% dplyr::filter(source %in% Nodes['Gene'] & target %in% Nodes['Gene'])
+    net <- forceNetwork(Links = as.data.frame(tmp[2]),
+                 Source = "source_id", Nodes = as.data.frame(tmp[1]), opacityNoHover = 1,linkWidth = 5,
+                 Target = "target_id", Value = 'weight', NodeID = "Gene", Group = 'module',
+                 height = 500, width = 1000, fontSize = input$label_size, zoom = TRUE, Nodesize = input$node_size,
                  opacity = input$node_opacity, colourScale = JS("d3.scaleOrdinal(d3.schemeCategory20);"))
+    
   })
   
-
   
   observeEvent(input$clean_button, {
     shinyjs::reset("sidebar")
