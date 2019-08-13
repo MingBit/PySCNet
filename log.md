@@ -126,3 +126,8 @@ There are four modules:
 8.August
 1) update the structure of gNetData
 2) re-do BuildNet ect and visualization
+
+13.August
+1) gene module detection in R
+2) publish R shiny
+
