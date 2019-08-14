@@ -15,7 +15,7 @@ There are four modules:
 5) Test with integrated sc RNA-seq data.
 
 # Cite
-:smile_cat: This has been presented at [ISMB/ECCB 2019](https://www.iscb.org/ismbeccb2019);
-:paw_prints: Go to [my poster](https://f1000research.com/posters/8-1359);
-:page_with_curl: Reference: *Wu M, Kanev K, Roelli P and Zehn D. PySCNet:
+- :smile_cat: This has been presented at [ISMB/ECCB 2019](https://www.iscb.org/ismbeccb2019);
+- :paw_prints: Go to [my poster](https://f1000research.com/posters/8-1359);
+- :page_with_curl: Reference: *Wu M, Kanev K, Roelli P and Zehn D. PySCNet:
 A tool for reconstructing and analyzing gene regulatory network from single-cell RNA-Seq data [version 1; not peer reviewed]. F1000Research 2019, 8(ISCB Comm J):1359 (poster) (doi: 10.7490/f1000research.1117280.1)*
