@@ -1,10 +1,25 @@
+#
+# This is the server logic of a Shiny web application. You can run the 
+# application by clicking 'Run App' above.
+#
+# Find out more about building applications with Shiny here:
+# 
+#    http://shiny.rstudio.com/
+#
+
+library(shiny)
 library(ggpubr)
 library(dplyr)
 library(igraph)
-library(networkD3)
 library(reticulate)
+library(shinythemes)
+library(DT)
+library(shinyjs)
 
-server = function(input, output) {
+
+# Define server logic required to draw a histogram
+shinyServer(function(input, output) {
+   
   source_python('/home/mwu/MING_V9T/PhD_Pro/PySCNet/PySCNet/Preprocessing/gnetdata.py')
   
   pk_upload <- reactive({
@@ -132,9 +147,5 @@ server = function(input, output) {
     
   })
   
-  
-  observeEvent(input$clean_button, {
-    shinyjs::reset("sidebar")
-  })
-}
+})
 

@@ -1,11 +1,23 @@
+#
+# This is the user-interface definition of a Shiny web application. You can
+# run the application by clicking 'Run App' above.
+#
+# Find out more about building applications with Shiny here:
+# 
+#    http://shiny.rstudio.com/
+#
+
 library(shiny)
+library(ggpubr)
+library(dplyr)
+library(igraph)
+library(reticulate)
 library(shinythemes)
 library(DT)
-library(reticulate)
 library(shinyjs)
-library(networkD3)
 
-ui = tagList(
+# Define UI for application that draws a histogram
+shinyUI(tagList(
   # shinythemes::themeSelector(),
   
   navbarPage(
@@ -82,6 +94,5 @@ ui = tagList(
                  DT::dataTableOutput('gene_module')))
     )
   )
-)
+))
 
-shinyApp(ui = ui, server = server)
