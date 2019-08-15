@@ -7,8 +7,10 @@ Created on Wed May 22 13:53:34 2019
 """
 
 
+import pandas
 import _pickle as pk
 import copy
+
 
 
 class Gnetdata():

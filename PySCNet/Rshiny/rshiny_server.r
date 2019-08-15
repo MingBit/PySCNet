@@ -3,8 +3,11 @@ library(dplyr)
 library(igraph)
 library(networkD3)
 library(reticulate)
+library(tibble)
 
 server = function(input, output) {
+  
+  
   source_python('/home/mwu/MING_V9T/PhD_Pro/PySCNet/PySCNet/Preprocessing/gnetdata.py')
   
   pk_upload <- reactive({

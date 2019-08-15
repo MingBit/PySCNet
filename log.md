@@ -131,3 +131,8 @@ There are four modules:
 1) gene module detection in R
 2) publish R shiny
 
+14.August
+1) fix the shiny-web bug
+2) network with multi-nodeshape
+
+

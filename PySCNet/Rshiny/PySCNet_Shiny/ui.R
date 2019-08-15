@@ -1,12 +1,3 @@
-#
-# This is the user-interface definition of a Shiny web application. You can
-# run the application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-# 
-#    http://shiny.rstudio.com/
-#
-
 library(shiny)
 library(ggpubr)
 library(dplyr)
@@ -15,6 +6,8 @@ library(reticulate)
 library(shinythemes)
 library(DT)
 library(shinyjs)
+library(markdown)
+library(networkD3)
 
 # Define UI for application that draws a histogram
 shinyUI(tagList(
@@ -95,4 +88,5 @@ shinyUI(tagList(
     )
   )
 ))
+shinyApp(ui = ui, server = server)
 
