@@ -4,6 +4,7 @@ library(DT)
 library(reticulate)
 library(shinyjs)
 library(networkD3)
+library(dplyr)
 
 ui = tagList(
   # shinythemes::themeSelector(),
