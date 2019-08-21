@@ -142,4 +142,8 @@ There are four modules:
 1) Again! locally publish R shiny:
 2) Go to deep learning for GRN
 
+21.August
+1) collect one more published GRN method
+2) build smile Neural network
+
 
