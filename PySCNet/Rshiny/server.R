@@ -5,7 +5,7 @@ library(igraph)
 library(networkD3)
 library(reticulate)
 library(tibble)
-
+Sys.setenv("RSTUDIO_PANDOC"="/usr/lib/rstudio/bin/pandoc")
 server = function(input, output) {
   
   import_from_path('PySCNet', '/home/mwu/MING_V9T/PhD_Pro/PySCNet/')

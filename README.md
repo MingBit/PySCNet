@@ -7,6 +7,10 @@ There are four modules:
 
 ![Overview](https://github.com/MingBit/PySCNet/blob/master/Overview.png)
 
+# :tada: :confetti_ball: News!!!
+![Create your own GRN](https://github.com/MingBit/PySCNet/blob/master/ShinyApp.gif)
+
+
 # TO-DO:
 1) Add an Auto-ML based pipeline to Pre-Processing module;
 2) Collect more GRN methods to BuildNet module;

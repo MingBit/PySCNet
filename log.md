@@ -139,5 +139,7 @@ There are four modules:
 1) had to switch to side projects...:(
 
 20.August
-1) Again! locally publish R shiny
+1) Again! locally publish R shiny:
 2) Go to deep learning for GRN
+
+

@@ -6,6 +6,8 @@ library(shinyjs)
 library(networkD3)
 library(dplyr)
 
+Sys.setenv("RSTUDIO_PANDOC"="/usr/lib/rstudio/bin/pandoc")
+
 ui = tagList(
   # shinythemes::themeSelector(),
   
@@ -86,3 +88,4 @@ ui = tagList(
 )
 
 shinyApp(ui = ui, server = server)
+runApp()
