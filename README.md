@@ -12,6 +12,7 @@ Shinyapp is available now for creating your own GRNs.
 Once the cells are grouped into several clusters and linkage tables are generated for each/all clusters, you can export the results
 as pickle object and uplaod onto Shinyapp. Cell attributes, Gene attributes and Network attributes are illustrated here.
 As shown belows, you can set your own thresholds to build each/all cluster-specific GRNs.
+
 ![Create your own GRN](https://github.com/MingBit/PySCNet/blob/master/ShinyApp.gif)
 
 
