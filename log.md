@@ -144,6 +144,10 @@ There are four modules:
 
 21.August
 1) collect one more published GRN method
-2) build smile Neural network
+2) test seq2seq model
+
+22.August
+1) Switch to side project
+
 
 
