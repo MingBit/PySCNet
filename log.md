@@ -149,5 +149,13 @@ There are four modules:
 22.August
 1) Switch to side project
 
+23.August
+1) pre-processing module via scanpy
+
+26.August
+1) finish work from last week. :D
+
+
+
 
 
