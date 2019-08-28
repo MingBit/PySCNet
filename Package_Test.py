@@ -12,7 +12,6 @@ from __future__ import absolute_import
 
 import pandas as pd
 import numpy as np
-import copy
 import sys
 sys.path.append('/home/mwu/MING_V9T/PhD_Pro/PySCNet/')
 import _pickle as pk
@@ -21,7 +20,6 @@ from PySCNet.BuildNet import gne_dockercaller as gdocker
 from PySCNet.NetEnrich import graph_toolkit as gt
 from PySCNet.Plotting import show_net as sn
 import Eva_Test
-import copy
 import matplotlib.pyplot as plt
 
 #path = '/Users/angelawu/Desktop/PhD_Pro/TODOLIST/BN_Test/SC_Published_Data/'
