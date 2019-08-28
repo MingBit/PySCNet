@@ -5,7 +5,7 @@ import rpy2.robjects as ro
 from rpy2.robjects.conversion import localconverter
 
 
-def _create_seurat(expr, design, result_file, **kwargs):
+def seurat_pipeline(expr, design, **kwargs):
 
         """ seurat pipeline for QC, clustering and marker gene detection
         """
@@ -25,30 +25,38 @@ def _create_seurat(expr, design, result_file, **kwargs):
 
         #Seurat pipeline
         r('''
+          set.seed(1)
           Seurat_pipe <- function(sc_df, Design){
-                          Seurat_obj = CreateSeuratObject(raw.data = sc_df, normalization.method = 'LogNormalize', meta.data =
+                         Seurat_Obj = CreateSeuratObject(raw.data = sc_df, normalization.method = 'LogNormalize', meta.data =
                                                           data.frame(row.names = colnames(sc_df),
                                                                      cell_type = Design[colnames(sc_df),]))
 
 
-                         SC3_Sureat@scale.data <- t(scale(t(SC3_Sureat@data)))
-                         SC3_Sureat <- RunPCA(object = SC3_Sureat, pc.genes = rownames(sc_df), pcs.compute = 50,
+                         Seurat_Obj <- FindVariableGenes(object = Seurat_Obj, mean.function = ExpMean, dispersion.function = LogVMR,
+                                                         x.low.cutoff = 0.0125, x.high.cutoff = 3,
+                                                         y.cutoff = 0.5, do.plot = F)
+                         Seurat_Obj <- ScaleData(Seurat_Obj)
+                         Seurat_Obj <- RunPCA(object = Seurat_Obj, pc.genes = rownames(sc_df), pcs.compute = 20,
                                               do.print = TRUE, pcs.print = 1:5, genes.print = 5)
 
-                         SC3_Sureat <- FindClusters(SC3_Sureat, reduction.type = 'pca', dims.use = 1:8, k.param =150,
+                         Seurat_Obj <- FindClusters(Seurat_Obj, reduction.type = 'pca', dims.use = 1:8, k.param =150,
                                                     n.iter =1000)
-                         SC3_Sureat <- RunTSNE(object = SC3_Sureat, reduction.use = "pca", dims.use = 1:8, nthreads = 4,
+                         Seurat_Obj <- RunTSNE(object = Seurat_Obj, reduction.use = "pca", dims.use = 1:8, nthreads = 4,
                                                reduction.name = "FItSNE", reduction.key = "FItSNE_", max_iter = 2000)
 
-                         tmp <- as.factor(as.numeric(SC3_Sureat@ident))
-                         names(tmp) <- SC3_Sureat@cell.names
-                         SC3_Sureat@ident <- tmp
+                         tmp <- as.factor(as.numeric(Seurat_Obj@ident))
+                         names(tmp) <- Seurat_Obj@cell.names
+                         Seurat_Obj@ident <- tmp
 
+                         annotation = data.frame(row.names = SC3_Sureat@cell.names,
+                                                 cell_type = SC3_Sureat@meta.data$cell_type,
+                                                 seurat_cluster = SC3_Sureat@ident)
+                         return(list(cluster = annotation, obj = Seurat_Obj))
 
                         }
           ''')
         Seurat_pipe = ro.globalenv['Seurat_pipe']
         with localconverter(ro.default_converter + pandas2ri.converter):
-                  Seurat_Obj = Seurat_pipe(expr, design)
+                  Seurat_res = Seurat_pipe(expr, design)
 
-        return(Seurat_Obj)
+        return(Seurat_res)

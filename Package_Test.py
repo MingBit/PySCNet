@@ -16,6 +16,7 @@ import sys
 sys.path.append('/home/mwu/MING_V9T/PhD_Pro/PySCNet/')
 import _pickle as pk
 from PySCNet.Preprocessing import gnetdata
+from PySCNet.Preprocessing import general_pipeline as pipeline
 from PySCNet.BuildNet import gne_dockercaller as gdocker
 from PySCNet.NetEnrich import graph_toolkit as gt
 from PySCNet.Plotting import show_net as sn
@@ -240,3 +241,23 @@ sn.static_netShow(obj, '/home/mwu/test_7.pdf', figure_size=[5,2], scale=2, node_
 sn.dynamic_netShow(obj, filename='/home/mwu/test.html')
 #simulate linkage table
 tmp = pd.DataFrame()
+
+path = '/home/mwu/MING_V9T/SS_Run30/SS_Run30_UMI_Based/'
+
+
+design = pd.read_csv(path + 'UMI_SS_Run30_Filterby_Gene500_UMI5000_Design.csv', delimiter = ' ', index_col = 0)
+expr = pd.read_csv(path + 'UMI_SS_Run30_Filterby_Gene500_UMI5000.csv', delimiter=' ', index_col = 0)
+
+test_gnet = gnetdata.Gnetdata(expr)
+test_gnet.CellAttrs['Design'] = design
+
+test_gnet = pipeline.run_pipeline(test_gnet)
+scanpy_gnet = pipeline.run_pipeline(test_gnet, pipeline = 'scanpy')
+test_gnet.CellAttrs['Design']
+scanpy_gnet.CellAttrs['Design']
+
+
+
+
+
+

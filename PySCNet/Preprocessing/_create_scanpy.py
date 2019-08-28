@@ -1,29 +1,29 @@
 import scanpy.api as sc
 import numpy as np
 import anndata
+import pandas as pd
 
 
 
 
 
-
-def _create_scanpy(expr, feature, **kwargs):
+def scanpy_pipeline(expr):
         """ scanpy pipeline for QC, clustering, marker gene identification
         """
         adata = anndata.AnnData(expr.T)
-        adata.var = feature
+        adata.var = pd.DataFrame(index=expr.index)
 
         #filtering
-        sc.pp.filter_cells(adata, **kwargs)
-        sc.pp.filter_genes(adata, **kwargs)
+        sc.pp.filter_cells(adata, min_genes=500)
+        sc.pp.filter_genes(adata, min_counts=50)
 
-        mito_genes = adata.var_names.str.startswith('MT-')
-        adata.obs['percent_mito'] = np.sum(
-                        adata[:, mito_genes].X, axis=1).A1 / np.sum(adata.X, axis=1).A1
-
-        adata.obs['n_counts'] = adata.X.sum(axis=1).A1
-        adata = adata[adata.obs['n_genes'] < 3000, :]
-        adata = adata[adata.obs['percent_mito'] < 0.05, :]
+#        mito_genes = adata.var_names.str.startswith('MT-')
+#        adata.obs['percent_mito'] = np.sum(
+#                        adata[:, mito_genes].X, axis=1).A1 / np.sum(adata.X, axis=1).A1
+#
+#        adata.obs['n_counts'] = adata.X.sum(axis=1).A1
+#        adata = adata[adata.obs['n_genes'] < 3000, :]
+#        adata = adata[adata.obs['percent_mito'] < 0.05, :]
 
         #normalize
         sc.pp.normalize_per_cell(adata, counts_per_cell_after=1e4)
@@ -34,17 +34,19 @@ def _create_scanpy(expr, feature, **kwargs):
                               min_mean = 0.025, max_mean = 2, min_disp = 0.4)
 
         adata_filter = adata [:,adata.var['highly_variable']]
-        sc.pp.scale(adata_filter, max_value=10)
+
+        sc.pp.scale(adata_filter, max_value=10, copy=True)
 
         #pca and clustering
-        sc.tl.pca(adata)
+        sc.tl.pca(adata_filter)
         sc.pp.neighbors(adata_filter, n_neighbors=50, n_pcs=20)
         sc.tl.louvain(adata_filter)
         sc.tl.tsne(adata_filter)
         sc.tl.umap(adata_filter)
 
         #find marker gene
-        sc.tl.rank_genes_groups(adata, 'louvain', method='wilcoxon')
+        sc.tl.rank_genes_groups(adata_filter, 'louvain', method='wilcoxon')
 #        adata.write(result_file)
 
-        return(adata)
+        return(adata_filter)
+
