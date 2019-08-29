@@ -155,6 +155,9 @@ There are four modules:
 26.August
 1) finish work from last week. :D
 
+29.August
+1) switch to PNAS and NC papers. :D
+2) update NN knowledge
 
 
 
