@@ -159,6 +159,10 @@ There are four modules:
 1) switch to PNAS and NC papers. :D
 2) update NN knowledge
 
+2.Sept
+1) re-do GRN plot with smart gene features
+
+
 
 
 
