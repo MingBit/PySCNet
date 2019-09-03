@@ -162,7 +162,8 @@ There are four modules:
 2.Sept
 1) re-do GRN plot with smart gene features
 
-
-
+3.Sept
+1) Optimize Random walk
+2) Optimize Rshiny
 
 

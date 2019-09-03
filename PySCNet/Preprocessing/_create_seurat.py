@@ -12,7 +12,7 @@ def seurat_pipeline(expr, design, **kwargs):
         utils = rpackages.importr('utils')
         utils.chooseCRANmirror(ind = 16)
         package_names = ('M3Drop', 'scater', 'tibble', 'ggpubr', 'dplyr', 'data.table',
-                        'SingleCellExperiment', 'openxlsx', 'Seurat', 'base', 'Matrix')
+                        'SingleCellExperiment', 'openxlsx', 'Seurat', 'base', 'Matrix', 'Rtsne')
 
         names_to_install = [x for x in package_names if not rpackages.isinstalled(x)]
 
@@ -42,7 +42,7 @@ def seurat_pipeline(expr, design, **kwargs):
                          Seurat_Obj <- FindClusters(Seurat_Obj, reduction.type = 'pca', dims.use = 1:8, k.param =150,
                                                     n.iter =1000)
                          Seurat_Obj <- RunTSNE(object = Seurat_Obj, reduction.use = "pca", dims.use = 1:8, nthreads = 4,
-                                               reduction.name = "FItSNE", reduction.key = "FItSNE_", max_iter = 2000)
+                                               reduction.name = "FItSNE", reduction.key = "FItSNE_", max_iter = 2000, check_duplicates = FALSE)
 
                          tmp <- as.factor(as.numeric(Seurat_Obj@ident))
                          names(tmp) <- Seurat_Obj@cell.names
@@ -55,6 +55,7 @@ def seurat_pipeline(expr, design, **kwargs):
 
                         }
           ''')
+
         Seurat_pipe = ro.globalenv['Seurat_pipe']
         with localconverter(ro.default_converter + pandas2ri.converter):
                   Seurat_res = Seurat_pipe(expr, design)
