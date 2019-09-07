@@ -11,8 +11,8 @@ def seurat_pipeline(expr, design, **kwargs):
         """
         utils = rpackages.importr('utils')
         utils.chooseCRANmirror(ind = 16)
-        package_names = ('M3Drop', 'scater', 'tibble', 'ggpubr', 'dplyr', 'data.table',
-                        'SingleCellExperiment', 'openxlsx', 'Seurat', 'base', 'Matrix', 'Rtsne')
+        package_names = ('M3Drop', 'tibble', 'ggpubr', 'dplyr', 'data.table',
+                        'SingleCellExperiment', 'openxlsx', 'Seurat', 'Rtsne', 'scater')
 
         names_to_install = [x for x in package_names if not rpackages.isinstalled(x)]
 
@@ -20,6 +20,7 @@ def seurat_pipeline(expr, design, **kwargs):
                 utils.install_packages(StrVector(names_to_install))
 
         for package in package_names:
+                print(package)
                 vars()[package] = rpackages.importr(package)
 
 
@@ -48,16 +49,17 @@ def seurat_pipeline(expr, design, **kwargs):
                          names(tmp) <- Seurat_Obj@cell.names
                          Seurat_Obj@ident <- tmp
 
-                         annotation = data.frame(row.names = SC3_Sureat@cell.names,
-                                                 cell_type = SC3_Sureat@meta.data$cell_type,
-                                                 seurat_cluster = SC3_Sureat@ident)
+                         annotation = data.frame(row.names = Seurat_Obj@cell.names,
+                                                 cell_type = Seurat_Obj@meta.data$cell_type,
+                                                 seurat_cluster = Seurat_Obj@ident)
                          return(list(cluster = annotation, obj = Seurat_Obj))
 
                         }
           ''')
 
         Seurat_pipe = ro.globalenv['Seurat_pipe']
+        print('start seurat pipeline')
         with localconverter(ro.default_converter + pandas2ri.converter):
-                  Seurat_res = Seurat_pipe(expr, design)
+                Seurat_res = Seurat_pipe(expr, design)
 
         return(Seurat_res)

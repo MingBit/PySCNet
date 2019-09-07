@@ -166,4 +166,7 @@ There are four modules:
 1) Optimize Random walk
 2) Optimize Rshiny
 
+6.Spet
+1) Finish work from last time :(
+
 

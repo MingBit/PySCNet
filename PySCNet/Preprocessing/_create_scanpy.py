@@ -39,7 +39,7 @@ def scanpy_pipeline(expr):
 
         #pca and clustering
         sc.tl.pca(adata_filter)
-        sc.pp.neighbors(adata_filter, n_neighbors=50, n_pcs=20)
+        sc.pp.neighbors(adata_filter, n_neighbors=150, n_pcs=20)
         sc.tl.louvain(adata_filter)
         sc.tl.tsne(adata_filter)
         sc.tl.umap(adata_filter)
