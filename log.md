@@ -173,4 +173,10 @@ There are four modules:
 1) Ideas: Compressive sensing and sparse coding or encoding
 2) Re-think about reconstructing GRNs from sparse data. Not must be deep learning.
 
+10.Sept - 24.Sept
+1) Ahh! I got lost in my PhD and couldn't come back for this..
+2) Not sure if I'll still work on this..
 
+25.Sept
+1) fix Docker bug
+2) Random walk with re-start

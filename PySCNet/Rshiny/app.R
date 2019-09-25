@@ -252,3 +252,4 @@ app <- shinyApp(
   }
 )
 
+runApp()

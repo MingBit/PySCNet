@@ -14,8 +14,8 @@ def scanpy_pipeline(expr):
         adata.var = pd.DataFrame(index=expr.index)
 
         #filtering
-        sc.pp.filter_cells(adata, min_genes=500)
-        sc.pp.filter_genes(adata, min_counts=50)
+        sc.pp.filter_cells(adata, min_genes = 500)
+        sc.pp.filter_genes(adata, min_counts = 50)
 
 #        mito_genes = adata.var_names.str.startswith('MT-')
 #        adata.obs['percent_mito'] = np.sum(
@@ -23,15 +23,14 @@ def scanpy_pipeline(expr):
 #
 #        adata.obs['n_counts'] = adata.X.sum(axis=1).A1
 #        adata = adata[adata.obs['n_genes'] < 3000, :]
-#        adata = adata[adata.obs['percent_mito'] < 0.05, :]
+#        adata = adata[adata.obs['percent_mito'] < 0.0ls 5, :]
 
         #normalize
         sc.pp.normalize_per_cell(adata, counts_per_cell_after=1e4)
         sc.pp.log1p(adata)
 
         #gene selection
-        sc.pp.highly_variable_genes(adata,
-                              min_mean = 0.025, max_mean = 2, min_disp = 0.4)
+        sc.pp.highly_variable_genes(adata)
 
         adata_filter = adata [:,adata.var['highly_variable']]
 
@@ -39,7 +38,7 @@ def scanpy_pipeline(expr):
 
         #pca and clustering
         sc.tl.pca(adata_filter)
-        sc.pp.neighbors(adata_filter, n_neighbors=150, n_pcs=20)
+        sc.pp.neighbors(adata_filter, n_neighbors=200, n_pcs=20)
         sc.tl.louvain(adata_filter)
         sc.tl.tsne(adata_filter)
         sc.tl.umap(adata_filter)
