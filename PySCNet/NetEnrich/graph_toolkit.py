@@ -35,7 +35,7 @@ def get_centrality(gnetdata):
         centralities['betweenness'] = pd.DataFrame.from_dict(list(nx.betweenness_centrality(G).items()))[1]
         centralities['closeness'] = pd.DataFrame.from_dict(list(nx.closeness_centrality(G).items()))[1]
         centralities['degree'] = pd.DataFrame.from_dict(list(nx.degree_centrality(G).items()))[1]
-        centralities['pageRank'] = pd.DataFrame.from_dict(list(nx.degree_centrality(G).items()))[1]
+        centralities['pageRank'] = pd.DataFrame.from_dict(list(nx.pagerank(G).items()))[1]
 
         gnetdata.NetAttrs['centralities'] = centralities
         return(gnetdata)

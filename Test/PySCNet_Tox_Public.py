@@ -103,7 +103,7 @@ Tox_gne_GENIE3.CellAttrs['Design']['cell_type'] = ['WT' for i in range(4451)]
 Tox_gne_GENIE3.save_as('/home/mwu/MING_V9T/PhD_Pro/Test/Tox_Public_scData/WT_Tox_Selected_MarkerGenes.pk')
 
 
-tmp = gnetdata.load_Gnetdata_object('/home/mwu/MING_V9T/PhD_Pro/Test/Tox_Public_scData/Tox_Selected_MarkerGenes.pk')
+tmp2 = gnetdata.load_Gnetdata_object('/home/mwu/MING_V9T/PhD_Pro/Test/Tox_Public_scData/Tox_Selected_MarkerGenes.pk')
 
 
 

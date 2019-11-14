@@ -39,7 +39,6 @@ def supervised_random_walk(gnetdata, start, supervisedby = 'pageRank', steps = 1
 
 
 
-
 # =============================================================================
 #   To do list: random walk based on starting and ending point
 # =============================================================================

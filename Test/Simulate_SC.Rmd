@@ -1,0 +1,23 @@
+---
+title: "Simulate_SC"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+gene_interaction <- data.frame(Gene = paste0('g', c(1:300)), stringsAsFactors = F)
+
+part_1 <- lapply(c(1:300), function(x) {x = x+1; sample(gene_interaction$Gene, sample(1:5,1))})
+part_2 <- lapply(c(1:300), function(x) {x = x+1; sample(gene_interaction$Gene, sample(1:2,1))})
+
+gene_interaction$Rule <- unlist(lapply(c(1:300), function(x) {paste0('( ',toString(unlist(part_1[x])), ' ) and not ( ', toString(unlist(part_2[x])), ' )')}))
+
+
+write.table(gene_interaction, '~/MING_V9T/PhD_Pro/Test/Simulation/BoolODE_Data/Sim_Gene_Rules_G300.txt', sep = '\t', quote = F, row.names = F)
+
+```
+

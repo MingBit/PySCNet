@@ -61,6 +61,7 @@ def test_run(links, Ref_links, input_dataset, filename = None):
         fpr, tpr, thresholds = metrics.roc_curve(actual_ref['value'], links['weight'])
 
         return (fpr, tpr, auc)
+    
 #        plt.plot([0,1], [0,1], linestyle = '--')
 #        plt.plot(fpr, tpr, marker = '.')
 #        plt.title('ROC: AUC = {0:0.2f}'.format(auc))
@@ -69,21 +70,21 @@ def test_run(links, Ref_links, input_dataset, filename = None):
 #        plt.close()
 
         #PR curve
-#        average_precision = metrics.average_precision_score(actual_ref['value'], links['weight'])
-#
-#        precision, recall, threshold = metrics.precision_recall_curve(actual_ref['value'], links['weight'])
-#        plt.step(recall, precision, color='b', alpha=0.2,
-#         where='post')
-#        plt.fill_between(recall, precision, step='post', alpha=0.2,
-#                     color='b')
-#
-#        plt.xlabel('Recall')
-#        plt.ylabel('Precision')
-#        plt.ylim([0.0, 1.05])
-#        plt.xlim([0.0, 1.0])
-#        plt.title('Precision-Recall curve: AP={0:0.2f}'.format(average_precision))
-#
-#        plt.savefig(filename + '_PR.png')
-#        plt.close()
+        average_precision = metrics.average_precision_score(actual_ref['value'], links['weight'])
+
+        precision, recall, threshold = metrics.precision_recall_curve(actual_ref['value'], links['weight'])
+        plt.step(recall, precision, color='b', alpha=0.2,
+         where='post')
+        plt.fill_between(recall, precision, step='post', alpha=0.2,
+                     color='b')
+
+        plt.xlabel('Recall')
+        plt.ylabel('Precision')
+        plt.ylim([0.0, 1.05])
+        plt.xlim([0.0, 1.0])
+        plt.title('Precision-Recall curve: AP={0:0.2f}'.format(average_precision))
+
+        plt.savefig(filename + '_PR.png')
+        plt.close()
 
 

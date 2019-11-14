@@ -180,3 +180,10 @@ There are four modules:
 25.Sept
 1) fix Docker bug
 2) Random walk with re-start
+
+30.Sept
+1) try VAE
+
+14.Oct
+1) graph embedding python
+2) SPT and MST implementation

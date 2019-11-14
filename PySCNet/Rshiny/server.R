@@ -104,7 +104,7 @@ server = function(input, output) {
   #   selectInput('gene_module', 'Select Gene Module', choices = as.list(unique(links$cell_clusterid)), selected = 'All')
   #   
   # })
-  # 
+  
   output$links <- DT::renderDataTable({
     
     links <- get_links() 
