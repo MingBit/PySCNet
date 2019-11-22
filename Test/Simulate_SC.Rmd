@@ -5,19 +5,125 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(stringr)
 ```
 
 ```{r}
+#network topology with linear, cycle and bifurcation
+network_design <- function(gene_list, toppology = 'linear', nrepeat = 1){
+  
+  linear_function <- function(gene_list_1){
+    gene_interaction_linear <- data.frame(Gene = gene_list_1, stringsAsFactors = F, 
+                                          Rule = unlist(lapply(c(gene_list_1[-1], gene_list_1[length(gene_list_1) - 1]), function(x) {paste0('( ', x, ' )')})))
+    return(gene_interaction_linear)
+  }
+  
+  circle_function <- function(gene_list_1){
+    gene_interaction_circle <- data.frame(Gene = gene_list_1,stringsAsFactors = F,
+                                          Rule = unlist(lapply(gene_list_1[c(2:length(gene_list_1),1)], function(x) {paste0('( ', x, ' )')})))
+    return(gene_interaction_circle)
+  }
+  
+  star_function <- function(gene_list_1){
+    gene_interaction_star <- data.frame(Gene = gene_list_1, stringsAsFactors = F,
+                                        Rule = c(paste0('( ',toString(paste0(gene_list_1[-1], 'or')), ' )'), 
+                                                 rep(paste0('( ', gene_list_1[1], ' )'), length(gene_list_1)-1)))
+    
+    gene_interaction_star$Rule[1] <- paste0(str_sub(gsub("or,"," or", gene_interaction_star$Rule[1]), end = -5), ' )')
+    
+    return(gene_interaction_star)
+  }
+  
+  tree_function <- function(gene_list_1){
+    Gene = c()
+    Rule = c()
+    
+    for(i in c(1:length(gene_list_1))){
+      Gene = c(Gene, gene_list_1[i])
+      if(i > length(gene_list_1)/2){
+        Rule = c(Rule, paste0('( ', gene_list_1[floor(i/2)], ' )'))
+      }else if (i == length(gene_list_1)/2){
+        Rule = c(Rule, paste0('( ', gene_list_1[floor(i/2)],' or ', gene_list_1[i*2], ' )'))
+      }else{
+        Rule = c(Rule, paste0('( ', gene_list_1[floor(i/2)], ' or ', gene_list_1[i*2], ' or ',
+                              gene_list_1[i*2+1], ' )'))
+      }
+    }
+    Rule[1] = paste0('(',str_sub(Rule[1], start = 6))
+    gene_interaction_tree = data.frame(Gene = Gene, Rule = Rule, stringsAsFactors = F)
+    return(gene_interaction_tree)
+  }
+  
+  funllyConnected_function <- function(gene_list_1){
+    Rule = c()
+    for(i in c(1:length(gene_list_1))){
+      tmp = paste0('( ', toString(unlist(lapply(gene_list_1[-i], function(x) {paste0(x, 'or')}))), ' )')
+      tmp = paste0(str_sub(gsub("or,"," or", tmp), end = -5), ' )')
+      
+      Rule = c(Rule, tmp)
+    }
+    gene_interaction_fullyConnected <- data.frame(Gene = gene_list_1,
+                                                  Rule = Rule, stringsAsFactors = F)
+    return(gene_interaction_fullyConnected)
+  }
+  
+  random_function <- function(gene_list_1, or_num = 3, and_num = 2){
+    gene_interaction_random <- data.frame(Gene = gene_list_1, stringsAsFactors = F)
 
-gene_interaction <- data.frame(Gene = paste0('g', c(1:300)), stringsAsFactors = F)
+    part_1 <- lapply(c(1:length(gene_list_1)), function(x) {x = x+1; sample(gene_interaction_random$Gene, sample(1:or_num,1))})
+    part_2 <- lapply(c(1:length(gene_list_1)), function(x) {x = x+1; sample(gene_interaction_random$Gene, sample(1:and_num,1))})
 
-part_1 <- lapply(c(1:300), function(x) {x = x+1; sample(gene_interaction$Gene, sample(1:5,1))})
-part_2 <- lapply(c(1:300), function(x) {x = x+1; sample(gene_interaction$Gene, sample(1:2,1))})
+    gene_interaction_random$Rule <- unlist(lapply(c(1:length(gene_list_1)), 
+                                           function(x) {paste0('( ','( ',gsub(","," or",toString(unlist(part_1[x]))), ' ) and not ( ',
+                                                                         gsub(",", " or",toString(unlist(part_2[x]))), ' )', ' )')}))
+    
+    return(gene_interaction_random)
+  }
+  
+  gene_interaction = data.frame(matrix(ncol = 3, nrow = 0))
+  colnames(gene_interaction) <- c('Gene', 'Rule', 'Topology')
+  for(i in c(1:nrepeat)){
+      gene_list_1 = paste0(gene_list, 'rp',i)
+      tmp_df = switch (toppology,
+                'linear' = linear_function(gene_list_1),
+                'star' = star_function(gene_list_1),
+                'tree' = tree_function(gene_list_1),
+                'circle' = circle_function(gene_list_1),
+                'connected' = funllyConnected_function(gene_list_1),
+                'random' = random_function(gene_list_1))
+      tmp_df$Topology = rep(toppology, nrow(tmp_df))
+      gene_interaction = rbind(gene_interaction, tmp_df)
+  }
+  return(gene_interaction)
+}
 
-gene_interaction$Rule <- unlist(lapply(c(1:300), function(x) {paste0('( ',toString(unlist(part_1[x])), ' ) and not ( ', toString(unlist(part_2[x])), ' )')}))
+
+G50 = rbind(network_design(gene_list = paste0('g', c(1:5)), nrepeat = 1, toppology = 'linear'),
+            network_design(gene_list = paste0('g', c(6:10)), nrepeat = 1, toppology = 'star'),
+            network_design(gene_list = paste0('g', c(11:15)), nrepeat = 1, toppology = 'tree'),
+            network_design(gene_list = paste0('g', c(16:20)), nrepeat = 1, toppology = 'circle'),
+            network_design(gene_list = paste0('g', c(21:25)), nrepeat = 1, toppology = 'connected'),
+            network_design(gene_list = paste0('g', c(26:50)), nrepeat = 1, toppology = 'random'))
+
+G300 = rbind(network_design(gene_list = paste0('g', c(1:10)), nrepeat = 3, toppology = 'linear'),
+            network_design(gene_list = paste0('g', c(11:20)), nrepeat = 3, toppology = 'star'),
+            network_design(gene_list = paste0('g', c(21:30)), nrepeat = 3, toppology = 'tree'),
+            network_design(gene_list = paste0('g', c(31:40)), nrepeat = 3, toppology = 'circle'),
+            network_design(gene_list = paste0('g', c(41:50)), nrepeat = 3, toppology = 'connected'),
+            network_design(gene_list = paste0('g', c(51:100)), nrepeat = 3, toppology = 'random'))
 
 
-write.table(gene_interaction, '~/MING_V9T/PhD_Pro/Test/Simulation/BoolODE_Data/Sim_Gene_Rules_G300.txt', sep = '\t', quote = F, row.names = F)
+G1000 = rbind(network_design(gene_list = paste0('g', c(1:10)), nrepeat = 10, toppology = 'linear'),
+            network_design(gene_list = paste0('g', c(11:20)), nrepeat = 10, toppology = 'star'),
+            network_design(gene_list = paste0('g', c(21:30)), nrepeat = 10, toppology = 'tree'),
+            network_design(gene_list = paste0('g', c(31:40)), nrepeat = 10, toppology = 'circle'),
+            network_design(gene_list = paste0('g', c(41:50)), nrepeat = 10, toppology = 'connected'),
+            network_design(gene_list = paste0('g', c(51:100)), nrepeat = 10, toppology = 'random'))
+
+# test = network_design(gene_list = paste0('g', c(1:20)), nrepeat = 1, toppology = 'linear')
+
+write.table(G1000, '~/MING_V9T/PhD_Pro/Test/Simulation/BoolODE_Data/G1000.txt', 
+            sep = '\t', quote = F, row.names = F)
 
 ```
 

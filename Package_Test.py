@@ -61,8 +61,8 @@ Ecoli_G50_C200 = pd.read_csv(path_2 + 'G50_C200/Ecoli-1_dream4_timeseries.tsv', 
 Ecoli_G50_C200_Ref = pd.read_csv(path_2 + 'G50_C200/')
 
 #Simlated data from BOOLODE
-BODE_Expr = pd.read_csv('/home/mwu/MING_V9T/PhD_Pro/Test/BoolODE_Data/ExpressionData.csv', sep = ',', index_col = 0)
-BODE_Ref = pd.read_csv('/home/mwu/MING_V9T/PhD_Pro/Test/BoolODE_Data/refNetwork.csv', sep = ',', index_col = None)
+BODE_Expr = pd.read_csv('/home/mwu/MING_V9T/PhD_Pro/Test/Simulation/BoolODE_Data/G300_C1000/ExpressionData.csv', sep = ',', index_col = 0)
+BODE_Ref = pd.read_csv('/home/mwu/MING_V9T/PhD_Pro/Test/Simulation/BoolODE_Data/G300_C1000/refNetwork.csv', sep = ',', index_col = None)
 BODE_Ref['value'] = 1
 BODE_Ref = BODE_Ref.drop(columns = 'Type')
 BODE_Ref.columns = ['node1', 'node2', 'value']
@@ -75,6 +75,7 @@ Sim1_gne = gnetdata.Gnetdata(Sim_1)
 Sim2_gne = gnetdata.Gnetdata(Sim_2)
 ESC_gne = gnetdata.Gnetdata(ESC_Data)
 HSC_gne = gnetdata.Gnetdata(HSC_Data)
+BODE_gne = gnetdata.Gnetdata(BODE_Expr)
 
 #gne_tmp_GENIE3 = gdocker.rundocker(tmp_gne.deepcopy, method='GENIE3')
 gne_Sim1_PIDC = gdocker.rundocker(Sim1_gne.deepcopy, method = 'PIDC')
@@ -101,10 +102,18 @@ gne_HSC_CORR = gdocker.rundocker(HSC_gne.deepcopy, method = 'CORR')
 time_point = pd.DataFrame({'cell_id': list(HSC_Data.columns), 'time_point': [1 for i in range(HSC_gne.shape[1])]})
 gne_HSC_SCODE = gdocker.rundocker(HSC_gne.deepcopy, method = 'SCODE', time_point = time_point)
 
-gne_HSC_PIDC.save_as(path + 'gnetData/HSC_PIDC.pk')
-gne_HSC_GENIE3.save_as(path + 'gnetData/HSC_GENIE3.pk')
-gne_HSC_CORR.save_as(path + 'gnetData/HSC_CORR.pk')
-gne_HSC_SCODE.save_as(path + 'gnetData/HSC_SCODE.pk')
+gne_BODE_PIDC = gdocker.rundocker(BODE_gne.deepcopy, method = 'PIDC')
+gne_BODE_GENIE3 = gdocker.rundocker(BODE_gne.deepcopy, method = 'GENIE3')
+gne_BODE_CORR = gdocker.rundocker(BODE_gne.deepcopy, method = 'CORR')
+time_point = pd.DataFrame({'cell_id': list(BODE_Expr.columns), 'time_point': [1 for i in range(BODE_Expr.shape[1])]})
+gne_BODE_SCODE = gdocker.rundocker(BODE_gne.deepcopy, method = 'SCODE', time_point = time_point)
+
+gne_BODE_PIDC.save_as(path + 'gne_BODE_PIDC.pk')
+gne_BODE_GENIE3.save_as(path + 'gne_BODE_GENIE3.pk')
+gne_BODE_CORR.save_as(path + 'gne_BODE_CORR.pk')
+#gne_HSC_SCODE.save_as(path + 'gnetData/HSC_SCODE.pk')
+
+
 
 
 #Add node centralities
@@ -150,10 +159,10 @@ gne_Sim2_GENIE3 = gnetdata.load_Gnetdata_object(path + 'gnetData/Sim2_GENIE3.pk'
 gne_Sim2_CORR = gnetdata.load_Gnetdata_object(path + 'gnetData/Sim2_CORR.pk')
 gne_Sim2_SCODE = gnetdata.load_Gnetdata_object(path + 'gnetData/Sim2_SCODE.pk')
 
-gne_HSC_CORR = gnetdata.load_Gnetdata_object(path + 'gnetData/HSC_CORR.pk')
-gne_HSC_PIDC = gnetdata.load_Gnetdata_object(path + 'gnetData/HSC_PIDC.pk')
-gne_HSC_GENIE3 = gnetdata.load_Gnetdata_object(path + 'gnetData/HSC_GENIE3.pk')
-gne_HSC_SCODE = gnetdata.load_Gnetdata_object(path + 'gnetData/HSC_SCODE.pk')
+gne_HSC_CORR = gnetdata.load_Gnetdata_object(path + 'gnetData/ESC_CORR.pk')
+gne_HSC_PIDC = gnetdata.load_Gnetdata_object(path + 'gnetData/ESC_PIDC.pk')
+gne_HSC_GENIE3 = gnetdata.load_Gnetdata_object(path + 'gnetData/ESC_GENIE3.pk')
+gne_HSC_SCODE = gnetdata.load_Gnetdata_object(path + 'gnetData/ESC_SCODE.pk')
 
 #Sim1_links_dict = {'genie3': build_table(gne_Sim1_GENIE3), 'corr': build_table(gne_Sim1_CORR),
 #              'pidc': build_table(gne_Sim1_PIDC), 'scode': build_table(gne_Sim1_SCODE)}
@@ -181,6 +190,9 @@ ESC_links_dict = {'genie3': gne_ESC_GENIE3.NetAttrs['links'], 'corr': gne_ESC_CO
 HSC_links_dict = {'genie3': gne_HSC_GENIE3.NetAttrs['links'], 'corr': gne_HSC_CORR.NetAttrs['links'],
               'pidc': gne_HSC_PIDC.NetAttrs['links'], 'scode': gne_HSC_SCODE.NetAttrs['links']}
 
+BODE_links_dict = {'genie3': gne_BODE_GENIE3.NetAttrs['links'], 'corr': gne_BODE_CORR.NetAttrs['links'],
+              'pidc': gne_BODE_PIDC.NetAttrs['links']}
+
 
 Eclass = gt.ensemble_classifier(Sim2_links_dict, threshold=0.5, model = 'autoSK', seed = 5)
 Eclass_pos = Eclass.sort_values('weight', ascending = False).head(500)
@@ -198,13 +210,14 @@ PIDC_fpr, PIDC_tpr, PIDC_auc = Eva_Test.test_run(links = gne_Sim2_PIDC.NetAttrs[
                                            Ref_links=Sim_2_Ref, input_dataset = Sim_2)
 
 GENIE3_fpr, GENIE3_tpr, GENIE3_auc = Eva_Test.test_run(links = gne_Sim2_GENIE3.NetAttrs['links'].sort_values('weight', ascending = False).head(500),
-                                                       Ref_links=Sim_2_Ref, input_dataset = Sim_2)
+                                           Ref_links=Sim_2_Ref, input_dataset = Sim_2)
 
 CORR_fpr, CORR_tpr, CORR_auc = Eva_Test.test_run(links = gne_Sim2_CORR.NetAttrs['links'].sort_values('weight', ascending = False).head(500),
                                            Ref_links=Sim_2_Ref, input_dataset = Sim_2)
 
-SCODE_fpr, SCODE_tpr, SCODE_auc = Eva_Test.test_run(links = gne_Sim2_SCODE.NetAttrs['links'].sort_values('weight', ascending = False).head(500),
-                                           Ref_links=Sim_2_Ref, input_dataset = Sim_2)
+SCODE_fpr, SCODE_tpr, SCODE_auc = Eva_Test.test_run(links = gne_HSC_SCODE.NetAttrs['links'].sort_values('weight', ascending = False).head(500),
+                                           Ref_links=HSC_Ref, input_dataset = HSC_Data)
+
 
 #######################test for node2vec################################
 tmp = model_node2vec._build_coexp_graph(Sim_2)
@@ -214,11 +227,11 @@ DL_fpr = dict()
 DL_tpr = dict()
 DL_auc = dict()
 
-for dimensions in [5,10]:
+for dimensions in [32]:
     for walk_length in [10,20]:
         for num_walks in [3000]:
             
-            tmp1 = my_node2vec.my_node2vec(HSC_Data, p = 1, q = 0.5, walk_len=walk_length, 
+            tmp1 = my_node2vec.my_node2vec(Sim_2, p = 1, q = 0.25, walk_len=walk_length, 
                                         num_walks=num_walks, size=dimensions)
 #            tmp1 = model_node2vec._build_node2vec_model(tmp, p = 1, q = 4, walk_length=walk_length, 
 #                                        num_walks=num_walks, dimensions=dimensions, method='cosine', workers = 12)
@@ -232,25 +245,25 @@ for dimensions in [5,10]:
             
             
             tmp_fpr, tmp_tpr, tmp_auc = Eva_Test.test_run(links = tmp1[tmp1['weight'] > np.quantile(tmp1['weight'], 0.90)],
-                                       Ref_links=HSC_Ref, input_dataset = HSC_Data)
+                                       Ref_links=Sim_2_Ref, input_dataset = Sim_2)
             DL_fpr['dims_' + str(dimensions) + 'walk_len_' + str(walk_length) + 'num_walks_' + str(num_walks)] = tmp_fpr
             DL_tpr['dims_' + str(dimensions) + 'walk_len_' + str(walk_length) + 'num_walks_' + str(num_walks)] = tmp_tpr
             DL_auc['dims_' + str(dimensions) + 'walk_len_' + str(walk_length) + 'num_walks_' + str(num_walks)] = tmp_auc
             
 #########################test for node2vec###############################
 
-fpr_dict = {'Auto_ML': Auto_RF_fpr, 'RF': RF_fpr, 'GENIE3': GENIE3_fpr, 'PIDC': PIDC_fpr, 'CORR': CORR_fpr, 'SCODE': SCODE_fpr, 'Node2Vec': DL_fpr}
-tpr_dict = {'Auto_ML': Auto_RF_tpr, 'RF': RF_tpr, 'GENIE3': GENIE3_tpr, 'PIDC': PIDC_tpr, 'CORR': CORR_tpr, 'SCODE': SCODE_tpr, 'Node2Vec': DL_tpr}
-auc_dict = {'Auto_ML': Auto_RF_auc, 'RF': RF_auc, 'GENIE3': GENIE3_auc, 'PIDC': PIDC_auc, 'CORR': CORR_auc, 'SCODE': SCODE_auc, 'Node2Vec': DL_auc}
+fpr_dict = {'GENIE3': GENIE3_fpr, 'PIDC': PIDC_fpr, 'CORR': CORR_fpr, 'Node2Vec': DL_fpr['dims_32walk_len_20num_walks_3000']}
+tpr_dict = {'GENIE3': GENIE3_tpr, 'PIDC': PIDC_tpr, 'CORR': CORR_tpr,  'Node2Vec': DL_tpr['dims_32walk_len_20num_walks_3000']}
+auc_dict = {'GENIE3': GENIE3_auc, 'PIDC': PIDC_auc, 'CORR': CORR_auc, 'Node2Vec': DL_auc['dims_32walk_len_20num_walks_3000']}
 
 import seaborn as sns
 colors = sns.color_palette().as_hex()[1:8]
 plt.figure(figsize = (8,8))
-#for i, color in zip(['Auto_ML', 'RF', 'GENIE3', 'PIDC', 'CORR', 'SCODE', 'Node2Vec'], colors):
-#        plt.plot(fpr_dict[i], tpr_dict[i], color = color, label = 'ROC curve of method {0} (area = {1:0.2f})'.format(i, auc_dict[i]))
+for i, color in zip(list(auc_dict.keys()), colors):
+        plt.plot(fpr_dict[i], tpr_dict[i], color = color, label = 'ROC curve of method {0} (area = {1:0.2f})'.format(i, auc_dict[i]))
 
-for i, color in zip(list(DL_auc.keys()), colors):
-        plt.plot(DL_fpr[i], DL_tpr[i], color = color, label =  'ROC of method {0} (area = {1:0.2f})'.format(i, DL_auc[i]))
+#for i, color in zip(list(DL_auc.keys()), colors):
+#        plt.plot(DL_fpr[i], DL_tpr[i], color = color, label =  'ROC of method {0} (area = {1:0.2f})'.format(i, DL_auc[i]))
 
 #plt.plot(RF_fpr, RF_tpr)
 plt.plot([0, 1], [0, 1], 'k--')
@@ -261,33 +274,8 @@ plt.ylabel('True Positive Rate', fontsize = 20)
 plt.title('Sim2: Algorithms performance', fontsize = 25)
 plt.legend(loc="lower right")
 
-plt.savefig('/home/mwu/HSC.pdf')
+plt.savefig('/home/mwu/Sim2.pdf')
 plt.close()
-
-
-#PR curve
-from sklearn import metrics
-average_precision = metrics.average_precision_score(actual_ref['value'], links['weight'])
-
-precision, recall, threshold = metrics.precision_recall_curve(actual_ref['value'], links['weight'])
-plt.step(recall, precision, color='b', alpha=0.2,
- where='post')
-plt.fill_between(recall, precision, step='post', alpha=0.2,
-             color='b')
-
-plt.xlabel('Recall')
-plt.ylabel('Precision')
-plt.ylim([0.0, 1.05])
-plt.xlim([0.0, 1.0])
-plt.title('Precision-Recall curve: AP={0:0.2f}'.format(average_precision))
-
-plt.savefig(filename + '_PR.png')
-plt.close()
-
-
-
-
-
 
 
 
@@ -327,9 +315,4 @@ scanpy_gnet = pipeline.run_pipeline(test_gnet, pipeline = 'scanpy')
 test_gnet.CellAttrs['Design']
 scanpy_gnet.CellAttrs['Design']
 
-#graphembedding methods
-import GraphEmbedding as GEM
-
-edgelist = node2vec._build_coexp_graph(Sim_2)
-G = nx.from_pandas_edgelist(edgelist, 'source', 'target', edge_attr = 'weight')
 
