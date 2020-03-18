@@ -26,7 +26,7 @@ run_corr <- function(Expr, pcor_type = c('pcor', 'spcor', 'cosine'), method, out
   cc = as.data.frame(as.table(cc))
   cc = na.omit(cc)
   colnames(cc) = c('source', 'target', 'weight')
-  write.table(cc, output, row.names = F, quote = F, sep = '\t')
+  write.table(cc, output, row.names = F, quote = F, sep = '\t', col.name = F)
 } 
 
 Expr = read.csv(args[1], sep ='\t', header = T, row.names = 1)

@@ -113,7 +113,7 @@ def static_netShow(gnetdata, filename, scale = 4, figure_size = [20,10],
                                 nx.draw_networkx_edge_labels(net, pos, {(start, neighbors[i]): str(i)},
                                                                   font_color=colors[2], font_size = 4)
         else:
-                nx.draw_networkx(net, pos, node_color = 'grey', **kwargs)
+                nx.draw_networkx(net, pos, **kwargs)
 
         mpl.rcParams['figure.figsize'] = figure_size
         plt.savefig(filename)

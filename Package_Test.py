@@ -21,8 +21,8 @@ from PySCNet.Plotting import show_net as sn
 import Eva_Test
 import matplotlib.pyplot as plt
 import networkx as nx
-from PySCNet.BuildNet.Models import my_node2vec
-from PySCNet.BuildNet.Models import model_node2vec
+from PySCNet.BuildNet import gne_modelcaller as gmodel
+
 
 path = '/home/mwu/MING_V9T/PhD_Pro/TODOLIST/BN_Test/SC_Published_Data/'
 #HSC_Data = pd.read_excel(path + 'HSC_DATA/Moignard_HSC_Data.xlsx', index_col = 0, sheetname = 0)
@@ -300,19 +300,5 @@ sn.static_netShow(obj, '/home/mwu/test_7.pdf', figure_size=[5,2], scale=2, node_
 sn.dynamic_netShow(obj, filename='/home/mwu/test.html')
 #simulate linkage table
 tmp = pd.DataFrame()
-
-path = '/home/mwu/MING_V9T/SS_Run30/SS_Run30_UMI_Based/'
-
-
-design = pd.read_csv(path + 'UMI_SS_Run30_Filterby_Gene500_UMI5000_Design.csv', delimiter = ' ', index_col = 0)
-expr = pd.read_csv(path + 'UMI_SS_Run30_Filterby_Gene500_UMI5000.csv', delimiter=' ', index_col = 0)
-
-test_gnet = gnetdata.Gnetdata(expr)
-test_gnet.CellAttrs['Design'] = design
-
-test_gnet = pipeline.run_pipeline(test_gnet)
-scanpy_gnet = pipeline.run_pipeline(test_gnet, pipeline = 'scanpy')
-test_gnet.CellAttrs['Design']
-scanpy_gnet.CellAttrs['Design']
 
 

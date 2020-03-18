@@ -1,18 +1,25 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Nov 12 10:52:31 2019
+Created on Tue Jan 21 16:26:19 2020
 
-@author: angelawu
+@author: mwu
 """
+
 import networkx as nx
 import numpy as np
 import gensim
 import pandas as pd
 import sklearn.metrics as sm
-from tqdm import tqdm, trange
+from tqdm import tqdm
 from functools import reduce
 import multiprocessing as mp
+from tensorflow.keras.models import Sequential, Model
+from tensorflow.keras.layers import Input, Dense, Conv2D, Flatten, MaxPool2D
+import tensorflow.keras
+from sklearn.model_selection import train_test_split
+from sklearn.manifold import MDS
+
 
 def _build_coexp_graph(ExpMatrix, method = 'pearson', return_graph = False):
     
@@ -121,7 +128,7 @@ def _biased_randomWalk_2(args):
                 
 #            next_node = neighours[prob_list.index(max(prob_list))]
 #            inner.update(1)
-            vec_tmp.append(np.random.choice(neighours, size = 1, 
+            vec_tmp.append(np.random.choice(neighours, size = 1, replace = False,
                                             p = [x / sum(prob_list) for x in prob_list])[0])        
             vec_len = vec_len + 1            
         outer.update(1)    
@@ -137,10 +144,73 @@ def _build_NN_Model(vector_list, dimensions, **parameter_list) -> gensim.models.
     """
     return(gensim.models.Word2Vec(vector_list, size = dimensions, **parameter_list))
     
+def _x_y_generator(Expr_df, gene, cell = None, test_size = .6):
+
+    if(cell is None):
+        return train_test_split(Expr_df.drop(columns = gene), Expr_df[gene], test_size = test_size)
+
+    elif(gene is None):
+        return train_test_split(Expr_df.drop(index = cell).transpose(), Expr_df.loc[cell], test_size = test_size)
+
+    else:
+        print('check if gene or cell is NONE!')
+        
+        
+
+def _build_DNN_Model(Expr, vector_list, dimensions, ref_list, **parameter_list):
+    """build deep neural network to convert vectors from random walk
+    """
+    batch_size = 128
+    epochs = 100
+    encoding_dim = 32
     
-def my_node2vec(Expr, method = 'pearson', p = 1, q = 1, 
+    num_genes = Expr.shape[0]
+    embedding = MDS(1)
+    gene_var = dict(zip(Expr.index, embedding.fit_transform(Expr))) 
+#    vector_df = np.array(list([gene_var[i] for i in sub_list] for sub_list in vector_list)).reshape(300,1000,15,1)
+    vector_df = np.array(list([gene_var[i] for i in sub_list] for sub_list in vector_list)).reshape(300,1000,15)
+    ref_list = matrix
+    x_train, x_test, y_train, y_test = train_test_split(vector_df, ref_list, test_size = .2)
+    
+
+    model = Sequential()
+
+#########################build CNN##################################
+#    model.add(Conv2D(32, kernel_size=(3, 3),
+#                     activation='relu',
+#                     input_shape=(1000,15,1)))
+#    
+#    model.add(Conv2D(64, (3, 3), activation='relu'))
+#    model.add(MaxPooling2D(pool_size=(2, 2)))
+#    model.add(Dropout(0.25))
+#    model.add(Flatten())
+#    model.add(Dense(128, activation='relu'))
+#    model.add(Dropout(0.5))
+#    model.add(Dense(300, activation='softmax'))
+
+#########################build fully connected NN##################################
+    model.add(Dense(128, input_dim = (15), activation = 'relu'))
+    model.add(Dense(64, activation = 'relu'))
+    model.add(Dense(32, activation = 'relu'))
+    model.add(Dense(16, activation = 'sigmoid'))
+
+    model.compile(loss=tensorflow.keras.losses.categorical_crossentropy,
+                  optimizer=tensorflow.keras.optimizers.Adadelta(),
+                  metrics=['accuracy'])
+    
+    model.fit(x_train, y_train,
+              batch_size=batch_size,
+              epochs=epochs,
+              verbose=1,
+              validation_data=(x_test, y_test))
+    score = model.evaluate(x_test, y_test, verbose=0)
+    print('Test loss:', score[0])
+    print('Test accuracy:', score[1])
+    
+    
+def run_node2vec(Expr, method = 'pearson', p = 1, q = 1, 
                 walk_len = 20, num_walks = 100, size = 32, 
-                workers = 8, **parameters_list):
+                workers = 4, **parameters_list):
     """call above functions to build node2vec """
     
     graph = _build_coexp_graph(Expr, method = method, return_graph = True)
@@ -160,24 +230,33 @@ def my_node2vec(Expr, method = 'pearson', p = 1, q = 1,
                                                        walk_len_list, num_walks_list, 
                                                        p_list, q_list)))
     
-    node2vec_model = _build_NN_Model(vector_list, dimensions = size, **parameters_list)
-    node_vector = dict()
-    for node in list(graph.nodes):
-        node_vector[node] = node2vec_model.wv.get_vector(node)
+#    pdb.set_trace()
+#    node2vec_model = _build_NN_Model(vector_list, dimensions = size, **parameters_list)
+#    node_vector = dict()
+#    for node in list(graph.nodes):
+#        node_vector[node] = node2vec_model.wv.get_vector(node)
+#    
+#    node2vec_corr = _build_coexp_graph(pd.DataFrame.from_dict(node_vector).T)
+#    pool.close()
+    return(vector_list)
     
-    node2vec_corr = _build_coexp_graph(pd.DataFrame.from_dict(node_vector).T)
-    pool.close()
-    return(node2vec_corr)
+
+Sim_gne = gnetdata.Gnetdata(Sim)    
+vector_list = run_node2vec(Sim, walk_len = 15, num_walks = 1000, size = 5, workers = 12)
+
+import _pickle as pk
+with open('/home/mwu/G300_vector_list.pk', 'wb') as f:
+    pk.dump(vector_list, f)
     
     
-#tmp = my_node2vec(G.ExpMatrix, p = 1, q = 0.5, walk_len=80, 
-#                  num_walks=10, size=20, window = 10, 
-#                  min_count = 1, batch_words = 4, method='cosine')
+matrix = pd.DataFrame(np.zeros((Sim.shape[0], Sim.shape[0])), index = list(Sim.index), columns = list(Sim.index))
 
+for i in range(Sim_Ref.shape[0]):
+    matrix[Sim_Ref.loc[i].node1][Sim_Ref.loc[i].node2] = 1
+    matrix[Sim_Ref.loc[i].node2][Sim_Ref.loc[i].node1] = 1
 
-
+matrix = (np.array(matrix)).reshape(300,300)
 
  
     
   
-                
