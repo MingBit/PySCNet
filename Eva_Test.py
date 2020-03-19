@@ -61,7 +61,7 @@ def test_run(links, Ref_links, input_dataset, filename = None):
     avg_pre = metrics.average_precision_score(Comp_Links['weight_y'].abs(), Comp_Links['weight_x'].abs())
         
 
-    return ([fpr, tpr, pre, recall, auc, avg_pre])
+    return ([fpr, tpr, pre, recall, auc, avg_pre, Precision, Recall, F1_Score])
     
 
 
