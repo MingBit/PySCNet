@@ -54,14 +54,13 @@ def test_run(links, Ref_links, input_dataset, filename = None):
     
     Comp_Links = pd.merge(links, Ref_links, on = ['source', 'target'], how = 'right').fillna(0)
 
-    
     auc = metrics.roc_auc_score(np.array(Comp_Links['weight_y'].abs()), np.array(Comp_Links['weight_x'].abs()))
     fpr, tpr, threshold_1 = metrics.roc_curve(Comp_Links['weight_y'].abs(), Comp_Links['weight_x'].abs())
     pre, recall, threshold_2 = metrics.precision_recall_curve(Comp_Links['weight_y'].abs(), Comp_Links['weight_x'].abs())
-    avg_pre = metrics.average_precision_score(Comp_Links['weight_y'].abs(), Comp_Links['weight_x'].abs())
-        
+    # avg_pre = metrics.average_precision_score(Comp_Links['weight_y'].abs(), Comp_Links['weight_x'].abs())
+    avg_pre_auc = metrics.auc(recall, pre)
 
-    return ([fpr, tpr, pre, recall, auc, avg_pre, Precision, Recall, F1_Score])
+    return ([fpr, tpr, pre, recall, auc, avg_pre_auc, Precision, Recall, F1_Score])
     
 
 
