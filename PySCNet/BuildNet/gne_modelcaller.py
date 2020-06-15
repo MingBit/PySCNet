@@ -14,12 +14,11 @@ Created on Mon Nov 18 14:51:43 2019
 @author: mwu
 """
 
-from PySCNet.BuildNet import gne_dockercaller as gdocker
-from PySCNet.BuildNet.Models import model_node2vec
+from PySCNet.BuildNet.Models import model_node2vec as nv
 
 
-def call_node2vec(gnetdata, reference_links, method, p, q, dim_list, walk_list, num_walks_list,
-                  workers, n_pc, cell_clusterid=None):
+def call_node2vec(gnetdata, reference_links, p, q, dim_list, walk_list, num_walks_list,
+                  workers, n_pc, param_grid, use_ref=True, cell_clusterid=None, **kwargs):
     if cell_clusterid is not None:
 
         cell_info = gnetdata.CellAttrs
@@ -30,9 +29,15 @@ def call_node2vec(gnetdata, reference_links, method, p, q, dim_list, walk_list, 
     for dimensions in dim_list:
         for walk_length in walk_list:
             for num_walks in num_walks_list:
-                links = model_node2vec.run_node2vec(Expr, reference_links, method, p=p, q=q, walk_len=walk_length,
-                                                    num_walks=num_walks, size=dimensions, workers=workers, n_pc=n_pc)
-
-    #                links = gdocker._remove_duplicate(links)
+                node_matrix = nv.run_node2vec(Expr, p=p, q=q, size=dimensions, walk_len=walk_length,
+                                              num_walks=num_walks, workers=workers, n_comp=n_pc, **kwargs)
+                if use_ref:
+                    links = nv._binary_classifier(embedded_node=node_matrix, reference_links=reference_links,
+                                                  select_n=0,
+                                                  use_ref=True, param_grid=param_grid)
+                else:
+                    links = nv._binary_classifier(embedded_node=node_matrix, reference_links=reference_links,
+                                                  select_n=int(reference_links.shape[0] * 0.25),
+                                                  param_grid=param_grid)
     gnetdata._add_netattr('links', links)
     return (gnetdata)
