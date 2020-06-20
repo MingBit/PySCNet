@@ -8,6 +8,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="R Skeletons" level="application" />
     <orderEntry type="library" name="R User Library" level="project" />
+    <orderEntry type="module" module-name="SCNode2Vec" />
   </component>
   <component name="PyDocumentationSettings">
     <option name="format" value="PLAIN" />

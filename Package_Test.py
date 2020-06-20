@@ -22,7 +22,6 @@ from PySCNet.NetEnrich import graph_toolkit as gt
 from PySCNet.Plotting import show_net as sn
 import matplotlib.pyplot as plt
 import networkx as nx
-from PySCNet.BuildNet import gne_modelcaller as gmodel
 
 path = '/home/mwu/MING_V9T/PhD_Pro/TODOLIST/BN_Test/SC_Published_Data/'
 # HSC_Data = pd.read_excel(path + 'HSC_DATA/Moignard_HSC_Data.xlsx', index_col = 0, sheetname = 0)
@@ -308,7 +307,7 @@ tmp = pd.DataFrame()
 import seaborn as sns
 
 path = os.getenv('HOME') + '/MING_V9T/PhD_Pro/Test/Run36_GRN/MergedState_MarkersGRN/'
-run36_gne_GENIE3 = gnetdata.load_Gnetdata_object(path + 'GENIE3_GRN/run36_gne_GENIE3_allclusters.pk')
+run36_gne_GENIE3 = gnetdata.load_Gnetdata_object(path + 'Node2Vec_GRN/run36_gne_node2vec.pk')
 gene_avg = pd.read_excel(os.getenv('HOME') + '/MING_V9T/PhD_Pro/Test/Run36_GRN/SelectedGene_MergedState_Avg.xlsx',
                          index_col=0)
 

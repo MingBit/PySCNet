@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/PySCNet.iml" filepath="$PROJECT_DIR$/.idea/PySCNet.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../SCNode2Vec/.idea/SCNode2Vec.iml" filepath="$PROJECT_DIR$/../SCNode2Vec/.idea/SCNode2Vec.iml" />
     </modules>
   </component>
 </project>

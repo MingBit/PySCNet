@@ -1,0 +1,12 @@
+numpy
+pandas
+sklearn
+scipy
+scikit-learn
+gensim
+inspect-it
+networkx
+tqdm
+multiprocess
+pickle-mixin
+

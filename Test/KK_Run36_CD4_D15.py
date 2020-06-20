@@ -12,21 +12,20 @@ import itertools
 
 sys.path.append(os.getenv('HOME') + '/MING_V9T/PhD_Pro/PySCNet')
 from pyvis.network import Network
-import scanpy.api as sc
 import pandas as pd
 import copy
 import numpy as np
 from PySCNet.Preprocessing import gnetdata
 from PySCNet.BuildNet import gne_dockercaller as gdocker
-from PySCNet.BuildNet import gne_modelcaller as gmodel
 from PySCNet.NetEnrich import graph_toolkit as gt
 from PySCNet.Plotting import show_net as sn
 
 import importlib
-
+importlib.reload(gdocker)
 
 path = os.getenv('HOME') + '/MING_V9T/KK_Run36/GEO_Submission/mingwu/GEO_mingwu_NGS_scRNA_Run36/ProcessedData/'
 sub_path = os.getenv('HOME') + '//MING_V9T/PhD_Pro/Test/Run36_GRN/'
+
 ##############Run36_D41################
 genesets = ['Tcf7', 'Gzma', 'Gzmb', 'Gzmk', 'Fasl', 'Id2', 'Tbx21', 'Pdcd1',
             'Cd244', 'Cd160', 'Entpd1', 'Klf2', 'S1pr5', 'S1pr1', 'Cx3cr1',
@@ -41,7 +40,7 @@ selected_genes = ['Tbx21', 'Cx3cr1', 'Klf2', 'S1pr1', 'S1pr4', 'Jak', 'Il18r1', 
                   'Il10rb', 'Fyb', 'Tnfsf8', 'Ptpn6', 'Cd84', 'Emb', 'Traf1', 'Cd9', 'Icos', 'Cd72', 'Ptpn11',
                   'Cd69', 'Sh2d1a', 'Penk', 'Slamf6', 'Dgka', 'Inpp4b', 'Tespa1', 'Ifnar2', 'Cxcr3', 'Itgb1',
                   'Prf1', 'Fasl', 'Cd244', 'Chn2', 'Fgl2']
-#
+
 selected_genes = list(set(genesets + selected_genes))
 # markergene = pd.read_excel(sub_path + 'SelectedGene_MergedState_Avg.xlsx')[1:]
 # selected_genes = markergene.geneName
@@ -54,7 +53,8 @@ selected_Expr = Expr[Expr.index.isin(selected_genes)]
 # Expr = Expr[list(cell_info.loc[cell_info.cluster_id.isin(['1'])].index)]
 
 # create gedata object
-Mms_fator = pd.read_csv(os.getenv('HOME') + '/MING_V9T/PhD_Pro/PySCNet/Mus_TF_and_TFcofactor/Mus_musculus_TF.txt', sep='\t')
+Mms_fator = pd.read_csv(os.getenv('HOME') + '/MING_V9T/PhD_Pro/PySCNet/Mus_TF_and_TFcofactor/Mus_musculus_TF.txt',
+                        sep='\t')
 Mms_fator['Symbol'] = [x.upper() for x in list(Mms_fator['Symbol'])]
 gene_info = pd.DataFrame({'Gene': selected_Expr.index,
                           'TF_Gene': ['TF' if x.upper() in list(Mms_fator['Symbol']) else 'Gene' for x in
@@ -79,22 +79,28 @@ param_grid = {
     'criterion': ['gini', 'entropy']
 }
 
-run36_gne_GENIE3 = gdocker.rundocker(run36_gne.deepcopy, method='GENIE3')
-run36_gne_node2vec = gmodel.call_node2vec(gnetdata=run36_gne.deepcopy, reference_links=gne_Ref, p=0.1, q=1,
-                                          dim_list=[10], walk_list=[10], num_walks_list=[1000],
-                                          workers=4, n_pc=10, param_grid=param_grid, use_ref=False)
+parameters = {'reference_links': gne_Ref,
+              'p': 0.1, 'q': 1.0,
+              'size': 5, 'walk_len': 5,
+              'num_walks': 1000,
+              'workers': 10, 'n_pc': 5,
+              'param_grid': param_grid}
 
+run36_gne_PIDC = gdocker.rundocker(run36_gne.deepcopy, method='PIDC')
+run36_gne_GENIE3 = gdocker.rundocker(run36_gne.deepcopy, method='GENIE3')
+run36_gne_GRNBOOST2 = gdocker.rundocker(run36_gne.deepcopy, method='GRNBOOST2')
+run36_gne_NODE2VEC = gdocker.rundocker(run36_gne.deepcopy, method='SCNODE2VEC', parameters=parameters)
 
 Genie3_Links = run36_gne_GENIE3.NetAttrs['links'].reindex(
     run36_gne_GENIE3.NetAttrs['links'].weight.abs().sort_values(ascending=False).index).head(300)
 
-Node2Vec_Links = run36_gne_node2vec.NetAttrs['links'].reindex(
-    run36_gne_node2vec.NetAttrs['links'].weight.abs().sort_values(ascending=False).index).head(300)
+# Node2Vec_Links = run36_gne_node2vec.NetAttrs['links'].reindex(
+#     run36_gne_node2vec.NetAttrs['links'].weight.abs().sort_values(ascending=False).index).head(300)
 
-Genie3_Links.to_excel(sub_path + 'Run36_Genie3_Top300.xlsx')
-Node2Vec_Links.to_excel(sub_path + 'Run36_Node2Vec_Top300_NoRef.xlsx')
-
-Genie3_Links['cell_clusterid'] = ['All' for i in range(Genie3_Links.shape[0])]
+# Genie3_Links.to_excel(sub_path + 'Run36_Genie3_Top300.xlsx')
+# Node2Vec_Links.to_excel(sub_path + 'Run36_Node2Vec_Top300_NoRef.xlsx')
+#
+# Genie3_Links['cell_clusterid'] = ['All' for i in range(Genie3_Links.shape[0])]
 
 # for i in range(5):
 #     print(i + 1)
@@ -110,17 +116,17 @@ Genie3_Links['cell_clusterid'] = ['All' for i in range(Genie3_Links.shape[0])]
 # run36_gne_GENIE3 = gdocker.buildnet(run36_gne_GENIE3, top=300)
 # run36_gne_GENIE3 = gt.get_centrality(run36_gne_GENIE3)
 # run36_gne_GENIE3 = gt.community_detect(run36_gne_GENIE3)
-# run36_gne_GENIE3.save_as(sub_path + 'run36_gne_GENIE3.pk')
-
-run36_gne_node2vec = gdocker.buildnet(run36_gne_node2vec, top=500)
-run36_gne_node2vec = gt.get_centrality(run36_gne_node2vec)
-run36_gne_node2vec = gt.community_detect(run36_gne_node2vec)
-
-run36_gne_node2vec.save_as(sub_path + 'run36_gne_node2vec_NoRef.pk')
+run36_gne_GENIE3.save_as(os.getenv('HOME') + '/run36_gne_GENIE3_test.pk')
+run36_gne_GRNBOOST2.save_as(os.getenv('HOME') + '/run36_gne_GRNBOOST2_test.pk')
+# run36_gne_node2vec = gdocker.buildnet(run36_gne_node2vec, top=500)
+# run36_gne_node2vec = gt.get_centrality(run36_gne_node2vec)
+# run36_gne_node2vec = gt.community_detect(run36_gne_node2vec)
+#
+# run36_gne_node2vec.save_as(sub_path + 'run36_gne_node2vec_NoRef.pk')
 
 # importlib.reload(sn)
 # sn.dynamic_netShow(run36_gne_GENIE3, filename=path + 'run36_genie3_top300.html')
-sn.dynamic_netShow(run36_gne_node2vec, filename=sub_path + 'run36_node2vec_top300_NoRef.html')
+# sn.dynamic_netShow(run36_gne_node2vec, filename=sub_path + 'run36_node2vec_top300_NoRef.html')
 # sn.static_netShow(run36_gne_GENIE3, filename=path + 'run36_genie3_top300.pdf')
 # sn.static_netShow(run36_gne_node2vec, filename=path + 'run36_node2vec_top300.pdf')
 

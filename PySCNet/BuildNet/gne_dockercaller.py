@@ -12,6 +12,7 @@ import os
 import networkx as nx
 import tarfile
 import warnings
+import _pickle as pk
 
 global path
 # path = sys.path[-1] + 'BuildNet/Docker_App/'
@@ -41,10 +42,10 @@ def _remove_duplicate(links):
     nodes = pd.DataFrame(list(set(links_list)), columns=('source', 'target'))
     links = pd.merge(links, nodes, how='right')
 
-    return (links)
+    return links
 
 
-def _rundocker(gnetdata, method, path=path, time_point=None, cell_clusterid=None, Mms_TF=None):
+def _rundocker(gnetdata, method, cell_clusterid=None, Mms_TF=None, **kwargs):
     client = docker.from_env()
     # TODO: remove cell_clusterid???
     if cell_clusterid is not None:
@@ -57,11 +58,10 @@ def _rundocker(gnetdata, method, path=path, time_point=None, cell_clusterid=None
     if Mms_TF is not None:
         pd.DataFrame.to_csv(Mms_TF, path + method + '/Mms_TF.txt', sep='\t', header=False, index=False)
 
-    if time_point is not None:
-        pd.DataFrame.to_csv(time_point, path + method + '/time_point.txt', sep='\t', header=False, index=False)
+    with open(path + method + '/paras.pk', 'wb') as outfile:
+        pk.dump(kwargs, outfile)
 
     pd.DataFrame.to_csv(tmp_expr, path + method + '/Expr.txt', sep='\t')
-
     client.images.build(path=path + method, dockerfile='Dockerfile', tag=method.lower())
     container = client.containers.run(method.lower(), detach=True)
     _copy_to(container_id=container.short_id, src='/' + method + '/links.txt', dst=os.getenv('HOME'))
@@ -70,20 +70,23 @@ def _rundocker(gnetdata, method, path=path, time_point=None, cell_clusterid=None
     container.stop()
     client.containers.prune()
     client.images.prune()
-    os.system('rm ' + path + method + '/Expr.txt')
+    os.system('rm ' + path + method + '/Expr.txt | rm ' + path + method + '/paras.pk')
     raw_links = pd.read_csv(os.getenv('HOME') + '/links.txt', sep='\t', header=None)
     raw_links.columns = ['source', 'target', 'weight']
     #    raw_links = _remove_duplicate(raw_links).fillna(0)
-
     gnetdata._add_netattr('links', raw_links)
     gnetdata._add_netattr_para('method', method)
 
-    return (gnetdata)
+    return gnetdata
 
 
-def rundocker(gnetdata, method, time_point=None, cell_clusterid=None, Mms_TF=None):
+def rundocker(gnetdata, method, cell_clusterid=None, Mms_TF=None, **kwargs):
     if method == 'GENIE3':
         gnetdata = _rundocker(gnetdata, method='GENIE3',
+                              cell_clusterid=cell_clusterid, Mms_TF=Mms_TF)
+
+    elif method == 'GRNBOOST2':
+        gnetdata = _rundocker(gnetdata, method='GRNBOOST2',
                               cell_clusterid=cell_clusterid, Mms_TF=Mms_TF)
 
     elif method == 'PIDC':
@@ -91,39 +94,26 @@ def rundocker(gnetdata, method, time_point=None, cell_clusterid=None, Mms_TF=Non
         gnetdata = _rundocker(gnetdata, method='PIDC',
                               cell_clusterid=cell_clusterid, Mms_TF=Mms_TF)
 
-    elif method == 'JUMP3':
-        gnetdata = _rundocker(gnetdata, method='JUMP3',
-                              cell_clusterid=cell_clusterid, Mms_TF=Mms_TF)
-
-    elif method == "SCODE":
-        gnetdata = _rundocker(gnetdata, method='SCODE', time_point=time_point,
-                              cell_clusterid=cell_clusterid, Mms_TF=Mms_TF)
+    elif method == 'SCNODE2VEC':
+        gnetdata = _rundocker(gnetdata, method='SCNODE2VEC',
+                              cell_clusterid=cell_clusterid, Mms_TF=Mms_TF, **kwargs)
 
     elif method == "CORR":
         gnetdata = _rundocker(gnetdata, method='CORR',
                               cell_clusterid=cell_clusterid, Mms_TF=Mms_TF)
 
-    # TODO: Input data with clusterid
-    elif method == "SINCERA":
-        gnetdata = _rundocker(gnetdata, method='SINCERA',
-                              cell_clusterid=cell_clusterid, Mms_TF=Mms_TF)
-    # TODO: permission issue
-    elif method == "SJARACNE":
-        gnetdata = _rundocker(gnetdata, method='SJARACNE',
-                              cell_clusterid=cell_clusterid, Mms_TF=Mms_TF)
-
     else:
-        raise Exception("valid method: GENIE3, PIDC, SCODE, CORR, SINCERA, SJARACNE, JUMP3")
+        raise Exception("valid method: GENIE3, CORR, PIDC, GRNBOOST2, SCNODE2VEC")
 
-    return (gnetdata)
+    return gnetdata
 
 
 def buildnet(gnetdata, threshold=None, top=None):
-    if ((top is None) & (threshold is not None)):
+    if (top is None) & (threshold is not None):
         links_filter = gnetdata.NetAttrs['links'].loc[gnetdata.NetAttrs['links']['weight'] > threshold]
-    elif ((top is not None) & (threshold is None)):
+    elif (top is not None) & (threshold is None):
         links_filter = gnetdata.NetAttrs['links'].sort_values('weight', ascending=False).head(top)
-    elif ((top is None) & (threshold is None)):
+    elif (top is None) & (threshold is None):
         links_filter = gnetdata.NetAttrs['links']
     else:
         raise Exception("Cannot filter by threshold and top!")
@@ -135,7 +125,7 @@ def buildnet(gnetdata, threshold=None, top=None):
     gnetdata._add_netattr_para('threshold', str(threshold))
     gnetdata._add_netattr_para('top', str(top))
 
-    return (gnetdata)
+    return gnetdata
 
 
 if __name__ == '__main__':

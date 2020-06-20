@@ -9,21 +9,18 @@ RUN apt-get update \
         cmake \
         git \
         curl \
-        unzip \
         vim \
    && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /GENIE3
+WORKDIR /GRNBOOST2
 
-COPY . /GENIE3
-
-#RUN curl https://raw.githubusercontent.com/vahuynh/GENIE3/master/GENIE3_python/GENIE3.py > genie3_raw.py
+COPY . /GRNBOOST2
 
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
 RUN ls ./
 
-RUN ["python", "run_genie3.py"]
+RUN ["python", "run_grnboost2.py"]
 
 
 
