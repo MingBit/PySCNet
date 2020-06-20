@@ -9,18 +9,18 @@ Created on Tue Nov  5 09:21:08 2019
 
 from __future__ import absolute_import
 import sys
-if('/home/mwu/MING_V9T/PhD_Pro/PySCNet/' not in sys.path): sys.path.append('/home/mwu/MING_V9T/PhD_Pro/PySCNet/')
+if('/home/mwu/MING_V9T/PhD_Pro/pyscnet/' not in sys.path): sys.path.append('/home/mwu/MING_V9T/PhD_Pro/pyscnet/')
 import seaborn as sns
 import networkx as nx
 import scanpy.api as sc
 import pandas as pd
 import copy
 import numpy as np
-from PySCNet.Preprocessing import gnetdata
-from PySCNet.BuildNet import gne_dockercaller as gdocker
-from PySCNet.BuildNet import gne_modelcaller as gmodel
-from PySCNet.NetEnrich import graph_toolkit as gt
-from PySCNet.Plotting import show_net as sn
+from pyscnet.Preprocessing import gnetdata
+from pyscnet.BuildNet import gne_dockercaller as gdocker
+from pyscnet.BuildNet import gne_modelcaller as gmodel
+from pyscnet.NetEnrich import graph_toolkit as gt
+from pyscnet.Plotting import show_net as sn
 import anndata as ad
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
@@ -39,7 +39,7 @@ Signatures = pd.read_csv(path + 'Signatures/FastProject_Input/Merge_Signatures.t
 Signatures.columns = ['Signatures_type', 'Symbol']
 Signatures['Symbol'] = [x.upper() for x in list(Signatures['Symbol'])]
 
-Mms_fator = pd.read_csv('/home/mwu/MING_V9T/PhD_Pro/PySCNet/Mus_TF_and_TFcofactor/Mus_musculus_TF.txt', sep = '\t')
+Mms_fator = pd.read_csv('/home/mwu/MING_V9T/PhD_Pro/pyscnet/Mus_TF_and_TFcofactor/Mus_musculus_TF.txt', sep = '\t')
 Mms_fator['Symbol'] = [x.upper() for x in list(Mms_fator['Symbol'])]
 
 #comm = list(Expr.mean(1).sort_values(ascending = False).head(300).index)

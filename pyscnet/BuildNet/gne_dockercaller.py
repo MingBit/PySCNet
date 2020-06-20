@@ -15,9 +15,7 @@ import warnings
 import _pickle as pk
 
 global path
-# path = sys.path[-1] + 'BuildNet/Docker_App/'
 path = os.path.join(os.path.dirname(__file__)) + '/Docker_App/'
-print(path)
 
 
 def _copy_to(container_id, src, dst):

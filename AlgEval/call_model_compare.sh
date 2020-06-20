@@ -11,7 +11,7 @@ do
 	break
 	fi
         echo $filename':'$drop
-        python /home/mwu/MING_V9T/PhD_Pro/PySCNet/model_compare.py $filename 0.1 1.0 $drop
-        python /home/mwu/MING_V9T/PhD_Pro/PySCNet/model_compare.py $filename 1.0 0.1 $drop
+        python /home/mwu/MING_V9T/PhD_Pro/pyscnet/model_compare.py $filename 0.1 1.0 $drop
+        python /home/mwu/MING_V9T/PhD_Pro/pyscnet/model_compare.py $filename 1.0 0.1 $drop
       done
 done

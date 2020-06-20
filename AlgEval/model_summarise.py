@@ -17,8 +17,8 @@ import matplotlib.pyplot as plt
 
 from AlgEval import basic_functions as bf
 from AlgEval import Eva_Test
-sys.path.append(os.getenv("HOME") + '/MING_V9T/PhD_Pro/PySCNet/')
-from PySCNet.Preprocessing import gnetdata
+sys.path.append(os.getenv("HOME") + '/MING_V9T/PhD_Pro/pyscnet/')
+from pyscnet.Preprocessing import gnetdata
 
 
 input_path = os.getenv('HOME') + '/MING_V9T/PhD_Pro/Test/Simulation/Node2Vec_BEELINE_Data_Res/'

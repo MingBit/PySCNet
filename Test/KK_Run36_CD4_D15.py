@@ -10,15 +10,15 @@ import sys
 import os
 import itertools
 
-sys.path.append(os.getenv('HOME') + '/MING_V9T/PhD_Pro/PySCNet')
+sys.path.append(os.getenv('HOME') + '/MING_V9T/PhD_Pro/pyscnet')
 from pyvis.network import Network
 import pandas as pd
 import copy
 import numpy as np
-from PySCNet.Preprocessing import gnetdata
-from PySCNet.BuildNet import gne_dockercaller as gdocker
-from PySCNet.NetEnrich import graph_toolkit as gt
-from PySCNet.Plotting import show_net as sn
+from pyscnet.Preprocessing import gnetdata
+from pyscnet.BuildNet import gne_dockercaller as gdocker
+from pyscnet.NetEnrich import graph_toolkit as gt
+from pyscnet.Plotting import show_net as sn
 
 import importlib
 importlib.reload(gdocker)
@@ -53,7 +53,7 @@ selected_Expr = Expr[Expr.index.isin(selected_genes)]
 # Expr = Expr[list(cell_info.loc[cell_info.cluster_id.isin(['1'])].index)]
 
 # create gedata object
-Mms_fator = pd.read_csv(os.getenv('HOME') + '/MING_V9T/PhD_Pro/PySCNet/Mus_TF_and_TFcofactor/Mus_musculus_TF.txt',
+Mms_fator = pd.read_csv(os.getenv('HOME') + '/MING_V9T/PhD_Pro/pyscnet/Mus_TF_and_TFcofactor/Mus_musculus_TF.txt',
                         sep='\t')
 Mms_fator['Symbol'] = [x.upper() for x in list(Mms_fator['Symbol'])]
 gene_info = pd.DataFrame({'Gene': selected_Expr.index,

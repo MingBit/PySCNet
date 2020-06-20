@@ -5,7 +5,7 @@ Created on Sun Jun 16 20:50:39 2019
 
 @author: mwu
 """
-
+from __future__ import absolute_import
 import networkx as nx
 import pandas as pd
 from community import community_louvain
@@ -13,14 +13,11 @@ import snf
 import numpy as np
 import warnings
 import copy
-
 from functools import reduce
 import networkx.algorithms.traversal as nextra
-from PySCNet.NetEnrich import _de_bruijn as debruijn
-from PySCNet.NetEnrich import _random_walk as rw
-from PySCNet.BuildNet import gne_dockercaller as dc
-# from PySCNet.NetEnrich import _ensemble_classifier as Eclassifier
-from PySCNet.NetEnrich import _bnn_classifier as Bclassifier
+import _de_bruijn as debruijn
+import _random_walk as rw
+# from pyscnet.BuildNet import gne_dockercaller as dc
 
 
 def __init__():
@@ -38,7 +35,7 @@ def get_centrality(gnetdata):
     centralities['pageRank'] = pd.DataFrame.from_dict(list(nx.pagerank(G).items()))[1]
 
     gnetdata.NetAttrs['centralities'] = centralities
-    return (gnetdata)
+    return gnetdata
 
 
 def community_detect(gnetdata):
@@ -54,12 +51,12 @@ def community_detect(gnetdata):
 
     gnetdata.NetAttrs['communities'] = communities
 
-    return (gnetdata)
+    return gnetdata
 
 
 def _linkage_to_adjlink(linkage_table, node_list):
     """convert linkage table to weighted adjacency matrix
-        """
+    """
 
     adjlink_matrix = pd.DataFrame(0, columns=node_list, index=node_list, dtype=np.float)
     #        source, target, score = list(linkage_table.columns)
@@ -86,7 +83,7 @@ def _knn_based_merge(link_1, link_2):
 
     #        Graph = nx.from_numpy_matrix(fused_network)
 
-    return (fused_network)
+    return fused_network
 
 
 def _generate_x_y(links_dict, threshold=0.5):
@@ -114,7 +111,7 @@ def graph_merge(link_1, link_2, method='union'):
         """
     if method == 'union':
         union_links = pd.merge(link_1, link_2, how='outer')
-        dc._remove_duplicate(union_links)
+        # dc._remove_duplicate(union_links)
         mergedlinks = union_links.groupby(['source', 'target'], as_index=False).mean().reindex()
         Graph = nx.from_pandas_edgelist(mergedlinks,
                                         source='source',
@@ -141,7 +138,7 @@ def graph_merge(link_1, link_2, method='union'):
 
         raise Exception('valid method parameter: union, intersection, knn!')
 
-    return (Graph)
+    return Graph
 
 
 def graph_traveral(graph, start, threshold, method='bfs'):
@@ -158,7 +155,7 @@ def graph_traveral(graph, start, threshold, method='bfs'):
     else:
         raise Exception('valid method parameter: bfs, dfs!')
 
-    return (res_path)
+    return res_path
 
 
 def random_walk(gnetdata, start, supervisedby, steps):
@@ -166,7 +163,7 @@ def random_walk(gnetdata, start, supervisedby, steps):
         """
 
     path = rw.supervised_random_walk(gnetdata=gnetdata, start=start, supervisedby=supervisedby, steps=steps)
-    return (path)
+    return path
 
 
 def path_merge(path_1, path_2, k_mer=3, path='Eulerian'):
@@ -176,16 +173,3 @@ def path_merge(path_1, path_2, k_mer=3, path='Eulerian'):
     merged_path = debruijn.output_contigs(g)
 
     return merged_path
-
-
-def bnn_classifier(links_dict, threshold=0.5, test_size=0.4):
-    """predict nodes connection via bayesian neural network
-        """
-
-    X, Y = _generate_x_y(links_dict, threshold=0.5)
-    return (Bclassifier.bnn_classifier(X, Y))
-
-# =============================================================================
-# TODO: def graph_enrichment(gnetdata_1, gnetdata_2, filteredby = 'pageRank'):
-#
-# =============================================================================

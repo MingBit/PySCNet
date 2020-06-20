@@ -13,13 +13,13 @@ import sys
 import os
 import seaborn as sns
 
-sys.path.append('/home/mwu/MING_V9T/PhD_Pro/PySCNet/')
+sys.path.append('/home/mwu/MING_V9T/PhD_Pro/pyscnet/')
 import _pickle as pk
-from PySCNet.Preprocessing import gnetdata
-from PySCNet.Preprocessing import general_pipeline as pipeline
-from PySCNet.BuildNet import gne_dockercaller as gdocker
-from PySCNet.NetEnrich import graph_toolkit as gt
-from PySCNet.Plotting import show_net as sn
+from pyscnet.Preprocessing import gnetdata
+from pyscnet.Preprocessing import general_pipeline as pipeline
+from pyscnet.BuildNet import gne_dockercaller as gdocker
+from pyscnet.NetEnrich import graph_toolkit as gt
+from pyscnet.Plotting import show_net as sn
 import matplotlib.pyplot as plt
 import networkx as nx
 

@@ -6,26 +6,24 @@ from rpy2.robjects.conversion import localconverter
 
 
 def seurat_pipeline(expr, design, **kwargs):
-
-        """ seurat pipeline for QC, clustering and marker gene detection
+    """ seurat pipeline for QC, clustering and marker gene detection
         """
-        utils = rpackages.importr('utils')
-        utils.chooseCRANmirror(ind = 16)
-        package_names = ('M3Drop', 'tibble', 'ggpubr', 'dplyr', 'data.table', 'Matrix', 'base',
-                        'SingleCellExperiment', 'openxlsx', 'Seurat', 'Rtsne', 'scater')
+    utils = rpackages.importr('utils')
+    utils.chooseCRANmirror(ind=16)
+    package_names = ('M3Drop', 'tibble', 'ggpubr', 'dplyr', 'data.table', 'Matrix', 'base',
+                     'SingleCellExperiment', 'openxlsx', 'Seurat', 'Rtsne', 'scater')
 
-        names_to_install = [x for x in package_names if not rpackages.isinstalled(x)]
+    names_to_install = [x for x in package_names if not rpackages.isinstalled(x)]
 
-        if len(names_to_install) > 0:
-                utils.install_packages(StrVector(names_to_install))
+    if len(names_to_install) > 0:
+        utils.install_packages(StrVector(names_to_install))
 
-        for package in package_names:
-                print(package)
-                vars()[package] = rpackages.importr(package)
+    for package in package_names:
+        print(package)
+        vars()[package] = rpackages.importr(package)
 
-
-        #Seurat pipeline
-        r('''
+    # Seurat pipeline
+    r('''
           set.seed(1)
           Seurat_pipe <- function(sc_df, Design){
                          Seurat_Obj = CreateSeuratObject(counts = sc_df, meta.data =
@@ -53,9 +51,9 @@ def seurat_pipeline(expr, design, **kwargs):
                         }
           ''')
 
-        Seurat_pipe = ro.globalenv['Seurat_pipe']
-        print('start seurat pipeline')
-        with localconverter(ro.default_converter + pandas2ri.converter):
-                Seurat_res = Seurat_pipe(expr, design)
+    Seurat_pipe = ro.globalenv['Seurat_pipe']
+    print('start seurat pipeline')
+    with localconverter(ro.default_converter + pandas2ri.converter):
+        Seurat_res = Seurat_pipe(expr, design)
 
-        return(Seurat_res)
+    return Seurat_res

@@ -9,15 +9,15 @@ from __future__ import absolute_import
 import os
 import sys
 
-sys.path.append(os.getenv("HOME") + '/MING_V9T/PhD_Pro/PySCNet/')
+sys.path.append(os.getenv("HOME") + '/MING_V9T/PhD_Pro/pyscnet/')
 
 from importlib import reload
-from PySCNet.Preprocessing import gnetdata
-from PySCNet.BuildNet import gne_dockercaller as gdocker
+from pyscnet.Preprocessing import gnetdata
+from pyscnet.BuildNet import gne_dockercaller as gdocker
 from AlgEval import Eva_Test
 from AlgEval import basic_functions as bf
 import matplotlib.pyplot as plt
-from PySCNet.BuildNet import gne_modelcaller as gmodel
+from pyscnet.BuildNet import gne_modelcaller as gmodel
 from arboreto.utils import load_tf_names
 from arboreto.algo import grnboost2, genie3
 

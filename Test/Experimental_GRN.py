@@ -16,7 +16,7 @@ import copy
 from src import model_compare as compare
 from arboreto.algo import grnboost2, genie3
 import matplotlib.pyplot as plt
-sys.path.append(os.getenv('HOME') + '/MING_V9T/PhD_Pro/PySCNet')
+sys.path.append(os.getenv('HOME') + '/MING_V9T/PhD_Pro/pyscnet')
 import importlib
 importlib.reload(compare)
 

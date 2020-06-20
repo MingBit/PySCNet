@@ -12,13 +12,13 @@ import scipy.io as si
 import pandas as pd
 import numpy as np
 import sys
-sys.path.append('/home/mwu/MING_V9T/PhD_Pro/PySCNet/')
+sys.path.append('/home/mwu/MING_V9T/PhD_Pro/pyscnet/')
 import _pickle as pk
-from PySCNet.Preprocessing import gnetdata
-from PySCNet.Preprocessing import general_pipeline as pipeline
-from PySCNet.BuildNet import gne_dockercaller as gdocker
-from PySCNet.NetEnrich import graph_toolkit as gt
-from PySCNet.Plotting import show_net as sn
+from pyscnet.Preprocessing import gnetdata
+from pyscnet.Preprocessing import general_pipeline as pipeline
+from pyscnet.BuildNet import gne_dockercaller as gdocker
+from pyscnet.NetEnrich import graph_toolkit as gt
+from pyscnet.Plotting import show_net as sn
 import matplotlib.pyplot as plt
 
 path = '/home/mwu/MING_V9T/PhD_Pro/Test/Tox_Public_scData/'
@@ -53,7 +53,7 @@ tmp.extend(['WT' for i in range(len(WT_CellInfo.index))])
 Tox_CellInfo = pd.DataFrame({'cellName': Tox_Expr.columns,
                              'Condition': tmp})
 
-Mms_fator = pd.read_csv('/home/mwu/MING_V9T/PhD_Pro/PySCNet/Mus_TF_and_TFcofactor/Mus_musculus_TF.txt', sep = '\t')
+Mms_fator = pd.read_csv('/home/mwu/MING_V9T/PhD_Pro/pyscnet/Mus_TF_and_TFcofactor/Mus_musculus_TF.txt', sep = '\t')
 Mms_fator['Symbol'] = [x.upper() for x in list(Mms_fator['Symbol'])]
 
 

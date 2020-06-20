@@ -12,7 +12,7 @@ import sys
 import re
 import numpy as np
 
-sys.path.append(os.getenv('HOME') + '/MING_V9T/PhD_Pro/PySCNet')
+sys.path.append(os.getenv('HOME') + '/MING_V9T/PhD_Pro/pyscnet')
 sys.path.append(os.getenv('HOME') + '/MING_V9T/PhD_Pro/SCNode2Vec')
 from src import model_compare as compare
 # from src import model_node2vec as nv
