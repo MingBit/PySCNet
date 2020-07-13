@@ -15,6 +15,5 @@ tqdm
 multiprocess
 pickle-mixin
 community
-snf
-copy
-functools
+snfpy
+

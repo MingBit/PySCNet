@@ -45,16 +45,15 @@ def _remove_duplicate(links):
 
 def _rundocker(gnetdata, method, cell_clusterid=None, Mms_TF=None, **kwargs):
     client = docker.from_env()
-    # TODO: remove cell_clusterid???
+
     if cell_clusterid is not None:
-        #            pd.DataFrame.to_csv(cell_clusterid, path + method + '/cell_clusterid.txt',  sep= '\t', header=False, index=False)
         cell_info = gnetdata.CellAttrs
         tmp_expr = gnetdata.ExpMatrix[list(cell_info.loc[cell_info.cluster_id.isin([cell_clusterid])].index)]
     else:
         tmp_expr = gnetdata.ExpMatrix
 
     if Mms_TF is not None:
-        pd.DataFrame.to_csv(Mms_TF, path + method + '/Mms_TF.txt', sep='\t', header=False, index=False)
+        pd.DataFrame.to_csv(Mms_TF, path + method + '/TF_Names.txt', sep='\t', header=False, index=False)
 
     with open(path + method + '/paras.pk', 'wb') as outfile:
         pk.dump(kwargs, outfile)

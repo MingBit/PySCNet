@@ -18,7 +18,9 @@ from functools import reduce
 from sklearn.ensemble import BaggingClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import GradientBoostingClassifier
-import autosklearn.classification
+
+
+# import autosklearn.classification
 
 
 # def _generate_x_y(links_dict, threshold):
@@ -33,10 +35,10 @@ import autosklearn.classification
 #        avg = df_final.mean(axis = 1)
 #        df_final['Y'] = [(lambda x: 1 if x > threshold else 0)(x) for x in avg]
 #
-##        X = df_final.iloc[:,:-1].iloc[:,2:]
-##        Y = df_final.Y
-##
-##        node_pairs = X['source'] + '_' + X['target']
+#         X = df_final.iloc[:,:-1].iloc[:,2:]
+#         Y = df_final.Y
+#
+#        node_pairs = X['source'] + '_' + X['target']
 #        return (df_final)
 
 
@@ -54,25 +56,21 @@ def ensemble_classifier(X, Y, threshold=0.5, test_size=0.4, seed=3, model='RF', 
 
         model = RandomForestClassifier(n_estimators=num_trees, max_features=max_features, **kwarg)
 
-
     elif model == 'BDT':
         cart = DecisionTreeClassifier()
         model = BaggingClassifier(base_estimator=cart, n_estimators=num_trees, random_state=seed, **kwarg)
 
-
     elif model == 'ET':
         model = ExtraTreesClassifier(n_estimators=num_trees, max_features=max_features, **kwarg)
-
 
     elif model == 'AdaB':
         model = AdaBoostClassifier(n_estimators=num_trees, random_state=seed, **kwarg)
 
-
     elif model == 'SGB':
         model = GradientBoostingClassifier(n_estimators=num_trees, random_state=seed, **kwarg)
 
-    elif model == 'autoSK':
-        model = autosklearn.classification.AutoSklearnClassifier(**kwarg)
+    # elif model == 'autoSK':
+    #     model = autosklearn.classification.AutoSklearnClassifier(**kwarg)
 
     else:
         raise Exception('Valid model: RF, BDT, ET, AdaB, SGB, autoSK')
@@ -85,4 +83,4 @@ def ensemble_classifier(X, Y, threshold=0.5, test_size=0.4, seed=3, model='RF', 
     res_df = pd.DataFrame(
         {'source': x_train.source.append(x_test.source), 'target': x_train.target.append(x_test.target),
          'weight': list(pred_train_prob) + list(pred_test_prob)})
-    return (res_df)
+    return res_df

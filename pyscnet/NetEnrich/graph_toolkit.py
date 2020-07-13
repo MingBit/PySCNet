@@ -13,11 +13,10 @@ import snf
 import numpy as np
 import warnings
 import copy
-from functools import reduce
+# from functools import reduce
 import networkx.algorithms.traversal as nextra
-import _de_bruijn as debruijn
-import _random_walk as rw
-# from pyscnet.BuildNet import gne_dockercaller as dc
+from ._de_bruijn import construct_graph, output_contigs
+from ._random_walk import supervised_random_walk
 
 
 def __init__():
@@ -86,24 +85,24 @@ def _knn_based_merge(link_1, link_2):
     return fused_network
 
 
-def _generate_x_y(links_dict, threshold=0.5):
-    for key in links_dict.keys():
-        links_dict[key] = links_dict[key].fillna(0)
-    dfs = list(links_dict.values())
-    df_final = reduce(lambda left, right: pd.merge(left, right, on=['source', 'target']), dfs)
-    df_final.iloc[:, 2:] = df_final.iloc[:, 2:].abs()
-    rep = (df_final.shape[1] - 2) / len(links_dict)
-    df_final.columns = list(df_final.columns[:2]) + list(np.repeat(list(links_dict.keys()), rep))
-    print(df_final.head(5))
-    avg = df_final.mean(axis=1)
-    #        df_final['Y'] = [(lambda x: 1 if x > avg.quantile(threshold) else 0)(x) for x in avg]
-    df_final['Y'] = [(lambda x: 1 if x > threshold else 0)(x) for x in avg]
-
-    #        X = df_final.iloc[:,:-1].iloc[:,2:]
-    X = df_final.iloc[:, :-1]
-    Y = df_final.Y
-
-    return (X, Y)
+# def _generate_x_y(links_dict, threshold=0.5):
+#     for key in links_dict.keys():
+#         links_dict[key] = links_dict[key].fillna(0)
+#     dfs = list(links_dict.values())
+#     df_final = reduce(lambda left, right: pd.merge(left, right, on=['source', 'target']), dfs)
+#     df_final.iloc[:, 2:] = df_final.iloc[:, 2:].abs()
+#     rep = (df_final.shape[1] - 2) / len(links_dict)
+#     df_final.columns = list(df_final.columns[:2]) + list(np.repeat(list(links_dict.keys()), rep))
+#     print(df_final.head(5))
+#     avg = df_final.mean(axis=1)
+#     #        df_final['Y'] = [(lambda x: 1 if x > avg.quantile(threshold) else 0)(x) for x in avg]
+#     df_final['Y'] = [(lambda x: 1 if x > threshold else 0)(x) for x in avg]
+#
+#     #        X = df_final.iloc[:,:-1].iloc[:,2:]
+#     X = df_final.iloc[:, :-1]
+#     Y = df_final.Y
+#
+#     return X, Y
 
 
 def graph_merge(link_1, link_2, method='union'):
@@ -162,14 +161,14 @@ def random_walk(gnetdata, start, supervisedby, steps):
     """perform supervided random walk for given steps and weights
         """
 
-    path = rw.supervised_random_walk(gnetdata=gnetdata, start=start, supervisedby=supervisedby, steps=steps)
+    path = supervised_random_walk(gnetdata=gnetdata, start=start, supervisedby=supervisedby, steps=steps)
     return path
 
 
 def path_merge(path_1, path_2, k_mer=3, path='Eulerian'):
     """ perform de bruijn graph mapping for ginve two path lists
         """
-    g = debruijn.construct_graph([path_1, path_2], k_mer)
-    merged_path = debruijn.output_contigs(g)
+    g = construct_graph([path_1, path_2], k_mer)
+    merged_path = output_contigs(g)
 
     return merged_path

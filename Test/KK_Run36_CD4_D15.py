@@ -10,7 +10,6 @@ import sys
 import os
 import itertools
 
-sys.path.append(os.getenv('HOME') + '/MING_V9T/PhD_Pro/pyscnet')
 from pyvis.network import Network
 import pandas as pd
 import copy
@@ -21,6 +20,7 @@ from pyscnet.NetEnrich import graph_toolkit as gt
 from pyscnet.Plotting import show_net as sn
 
 import importlib
+
 importlib.reload(gdocker)
 
 path = os.getenv('HOME') + '/MING_V9T/KK_Run36/GEO_Submission/mingwu/GEO_mingwu_NGS_scRNA_Run36/ProcessedData/'
@@ -87,7 +87,9 @@ parameters = {'reference_links': gne_Ref,
               'param_grid': param_grid}
 
 run36_gne_PIDC = gdocker.rundocker(run36_gne.deepcopy, method='PIDC')
-run36_gne_GENIE3 = gdocker.rundocker(run36_gne.deepcopy, method='GENIE3')
+run36_gne_GENIE3 = gdocker.rundocker(run36_gne.deepcopy, method='GENIE3',
+                                     Mms_TF=gene_info[gene_info.TF_Gene == 'TF'].Gene)
+
 run36_gne_GRNBOOST2 = gdocker.rundocker(run36_gne.deepcopy, method='GRNBOOST2')
 run36_gne_NODE2VEC = gdocker.rundocker(run36_gne.deepcopy, method='SCNODE2VEC', parameters=parameters)
 
@@ -144,3 +146,6 @@ run36_gne_GRNBOOST2.save_as(os.getenv('HOME') + '/run36_gne_GRNBOOST2_test.pk')
 #     gt_rw_dt.loc[i] = rw_path
 #
 # gt_rw_dt.to_csv(path + 'cluster_5_wo_CD4UniqueEff_RandomPath_GENIE3.csv', sep=' ')
+
+import pyscnet
+from pyscnet.BuildNet import
