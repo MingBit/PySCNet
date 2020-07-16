@@ -9,6 +9,7 @@ Welcome to pyscnet's documentation!
 .. toctree::
    :maxdepth: 2
 
+   contents
    pyscnet_tutorial
 
 
