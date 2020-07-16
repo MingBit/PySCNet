@@ -1,0 +1,6 @@
+_build
+_static
+_templates
+.idea/
+.DS_Store
+._.DS_Store
