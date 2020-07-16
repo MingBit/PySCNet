@@ -8,7 +8,7 @@ Welcome to pyscnet's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+
    pyscnet_tutorial
 
 
