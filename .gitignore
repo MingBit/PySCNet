@@ -4,3 +4,8 @@ _templates
 .idea/
 .DS_Store
 ._.DS_Store
+data/
+cache/
+result/
+Test/
+dask-worker-space/

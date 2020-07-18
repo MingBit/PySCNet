@@ -187,3 +187,12 @@ There are four modules:
 14.Oct
 1) graph embedding python
 2) SPT and MST implementation
+
+17.Jul
+1) create a pyscnet tutorial
+2) update gnetData
+3) clean BuildNet module
+
+18.Jul
+1) Find consensus GRNs
+2) GE for link prediction 

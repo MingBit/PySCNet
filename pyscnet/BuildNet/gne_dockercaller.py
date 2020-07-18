@@ -43,14 +43,19 @@ def _remove_duplicate(links):
     return links
 
 
-def _rundocker(gnetdata, method, cell_clusterid=None, Mms_TF=None, **kwargs):
+def _rundocker(gnetdata, method, feature=None, cell_clusterid=None, select_by=None, Mms_TF=None, **kwargs):
     client = docker.from_env()
 
-    if cell_clusterid is not None:
-        cell_info = gnetdata.CellAttrs
-        tmp_expr = gnetdata.ExpMatrix[list(cell_info.loc[cell_info.cluster_id.isin([cell_clusterid])].index)]
+    if feature is None:
+        feature = gnetdata.ExpMatrix.index
+
+    if cell_clusterid is None:
+        cell = gnetdata.ExpMatrix.columns
     else:
-        tmp_expr = gnetdata.ExpMatrix
+        cell_info = gnetdata.CellAttrs['CellInfo']
+        cell = list(cell_info.loc[cell_info[select_by].isin([cell_clusterid])].index)
+
+    tmp_expr = gnetdata.ExpMatrix.loc[feature, cell]
 
     if Mms_TF is not None:
         pd.DataFrame.to_csv(Mms_TF, path + method + '/TF_Names.txt', sep='\t', header=False, index=False)
@@ -70,34 +75,33 @@ def _rundocker(gnetdata, method, cell_clusterid=None, Mms_TF=None, **kwargs):
     os.system('rm ' + path + method + '/Expr.txt | rm ' + path + method + '/paras.pk')
     raw_links = pd.read_csv(os.getenv('HOME') + '/links.txt', sep='\t', header=None)
     raw_links.columns = ['source', 'target', 'weight']
-    #    raw_links = _remove_duplicate(raw_links).fillna(0)
-    gnetdata._add_netattr('links', raw_links)
+    gnetdata._add_netattr(method + '_links', raw_links)
     gnetdata._add_netattr_para('method', method)
 
     return gnetdata
 
 
-def rundocker(gnetdata, method, cell_clusterid=None, Mms_TF=None, **kwargs):
+def rundocker(gnetdata, method, feature=None, cell_clusterid=None, select_by=None, Mms_TF=None, **kwargs):
     if method == 'GENIE3':
-        gnetdata = _rundocker(gnetdata, method='GENIE3',
-                              cell_clusterid=cell_clusterid, Mms_TF=Mms_TF)
+        gnetdata = _rundocker(gnetdata, method='GENIE3', feature=feature,
+                              cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF)
 
     elif method == 'GRNBOOST2':
-        gnetdata = _rundocker(gnetdata, method='GRNBOOST2',
-                              cell_clusterid=cell_clusterid, Mms_TF=Mms_TF)
+        gnetdata = _rundocker(gnetdata, method='GRNBOOST2', feature=feature,
+                              cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF)
 
     elif method == 'PIDC':
         # remove genes with 0 counts
-        gnetdata = _rundocker(gnetdata, method='PIDC',
-                              cell_clusterid=cell_clusterid, Mms_TF=Mms_TF)
+        gnetdata = _rundocker(gnetdata, method='PIDC', feature=feature,
+                              cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF)
 
     elif method == 'SCNODE2VEC':
-        gnetdata = _rundocker(gnetdata, method='SCNODE2VEC',
-                              cell_clusterid=cell_clusterid, Mms_TF=Mms_TF, **kwargs)
+        gnetdata = _rundocker(gnetdata, method='SCNODE2VEC', feature=feature,
+                              cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF, **kwargs)
 
     elif method == "CORR":
-        gnetdata = _rundocker(gnetdata, method='CORR',
-                              cell_clusterid=cell_clusterid, Mms_TF=Mms_TF)
+        gnetdata = _rundocker(gnetdata, method='CORR', feature=feature,
+                              cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF)
 
     else:
         raise Exception("valid method: GENIE3, CORR, PIDC, GRNBOOST2, SCNODE2VEC")

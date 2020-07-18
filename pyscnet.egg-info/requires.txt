@@ -16,3 +16,4 @@ multiprocess
 pickle-mixin
 community
 snfpy
+scanpy

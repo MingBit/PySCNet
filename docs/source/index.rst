@@ -9,9 +9,12 @@ Welcome to pyscnet's documentation!
 .. toctree::
    :maxdepth: 2
 
-   contents
-   pyscnet_tutorial
+   :caption: Contents:
 
+   ../../README
+   pyscnet_installation
+   pyscnet_api
+   pyscnet_tutorial
 
 Indices and tables
 ==================
