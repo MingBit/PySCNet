@@ -18,6 +18,17 @@ As shown belows, you can set your own thresholds to build each/all cluster-speci
 ![Create your own GRN](https://github.com/MingBit/PySCNet/blob/master/ShinyApp.gif)
 
 
+# Installation
+1) clone from github:
+`git clone https://github.com/MingBit/PySCNet`
+2) create a new folder and set up:
+`mkdir dist | python setup.py sdist`
+3) install pyscnet:
+`pip install dist/pyscnet-0.0.2.tar.gz`
+
+# Tutorial
+PBMC data preprocessed and analyzed by scanpy as explained in this [tutorial](https://github.com/MingBit/PySCNet/blob/master/tutorial/pyscnet_pbmc.ipynb). 
+
 # TO-DO:
 1) Add an Auto-ML based pipeline to Pre-Processing module;
 2) Collect more GRN methods to BuildNet module;
