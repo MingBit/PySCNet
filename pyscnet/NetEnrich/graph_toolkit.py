@@ -13,48 +13,19 @@ import snf
 import numpy as np
 import warnings
 import copy
-# from functools import reduce
 import networkx.algorithms.traversal as nextra
 from ._de_bruijn import construct_graph, output_contigs
 from ._random_walk import supervised_random_walk
+from ._ensemble_classifier import _generate_x_y, ensemble_classifier
 
 
 def __init__():
     warnings.simplefilter("ignore")
 
 
-def get_centrality(gnetdata):
-    """ returns betweeness, closeness, degree and pageRank
-        """
-    G = gnetdata.NetAttrs['graph']
-    centralities = pd.DataFrame(list(G.nodes), columns=['node'])
-    centralities['betweenness'] = pd.DataFrame.from_dict(list(nx.betweenness_centrality(G).items()))[1]
-    centralities['closeness'] = pd.DataFrame.from_dict(list(nx.closeness_centrality(G).items()))[1]
-    centralities['degree'] = pd.DataFrame.from_dict(list(nx.degree_centrality(G).items()))[1]
-    centralities['pageRank'] = pd.DataFrame.from_dict(list(nx.pagerank(G).items()))[1]
-
-    gnetdata.NetAttrs['centralities'] = centralities
-    return gnetdata
-
-
-def community_detect(gnetdata):
-    """return predicted communities
-        """
-    # TODO: more robust
-    G = gnetdata.NetAttrs['graph']
-    subpara = {}
-    #        colors = sns.color_palette() + sns.color_palette('Paired', 100)
-    partition = community_louvain.best_partition(G, **subpara)
-    communities = pd.DataFrame.from_dict(list(partition.items()))
-    communities.columns = ['node', 'group']
-
-    gnetdata.NetAttrs['communities'] = communities
-
-    return gnetdata
-
-
 def _linkage_to_adjlink(linkage_table, node_list):
-    """convert linkage table to weighted adjacency matrix
+    """
+    convert linkage table to weighted adjacency matrix
     """
 
     adjlink_matrix = pd.DataFrame(0, columns=node_list, index=node_list, dtype=np.float)
@@ -68,76 +39,124 @@ def _linkage_to_adjlink(linkage_table, node_list):
     return np.array(adjlink_matrix)
 
 
-def _knn_based_merge(link_1, link_2):
+def _snf_based_merge(link_1, link_2):
+    """
+    :param link_1:
+    :param link_2:
+    :return:
+    """
     warnings.simplefilter("ignore")
     node_list = list(set(link_1['source']) & set(link_1['target']) & set(link_2['source']) & set(link_2['target']))
-    print(node_list)
-    adjlink_1 = _linkage_to_adjlink(link_1, node_list)
-    adjlink_2 = _linkage_to_adjlink(link_2, node_list)
+
     adjlinks = list()
-    adjlinks.append(adjlink_1)
-    adjlinks.append(adjlink_2)
+    adjlinks.append(_linkage_to_adjlink(link_1, node_list))
+    adjlinks.append(_linkage_to_adjlink(link_2, node_list))
     affinity_matrix = snf.make_affinity(adjlinks)
     fused_network = snf.snf(affinity_matrix)
-
-    #        Graph = nx.from_numpy_matrix(fused_network)
-
-    return fused_network
+    Graph = nx.from_pandas_adjacency(pd.DataFrame(fused_network, index=node_list, columns=node_list))
+    return pd.DataFrame(Graph.edges, columns=['source', 'target'])
 
 
-# def _generate_x_y(links_dict, threshold=0.5):
-#     for key in links_dict.keys():
-#         links_dict[key] = links_dict[key].fillna(0)
-#     dfs = list(links_dict.values())
-#     df_final = reduce(lambda left, right: pd.merge(left, right, on=['source', 'target']), dfs)
-#     df_final.iloc[:, 2:] = df_final.iloc[:, 2:].abs()
-#     rep = (df_final.shape[1] - 2) / len(links_dict)
-#     df_final.columns = list(df_final.columns[:2]) + list(np.repeat(list(links_dict.keys()), rep))
-#     print(df_final.head(5))
-#     avg = df_final.mean(axis=1)
-#     #        df_final['Y'] = [(lambda x: 1 if x > avg.quantile(threshold) else 0)(x) for x in avg]
-#     df_final['Y'] = [(lambda x: 1 if x > threshold else 0)(x) for x in avg]
-#
-#     #        X = df_final.iloc[:,:-1].iloc[:,2:]
-#     X = df_final.iloc[:, :-1]
-#     Y = df_final.Y
-#
-#     return X, Y
+def get_centrality(gnetdata):
+    """
+    Measure node centrality in the network.
+    :param gnetdata: gnetData object
+    :return: gnetData object with 'centralities' added into NetAttrs
+    """
+    G = gnetdata.NetAttrs['graph']
+    centralities = pd.DataFrame(list(G.nodes), columns=['node'])
+    centralities['betweenness'] = pd.DataFrame.from_dict(list(nx.betweenness_centrality(G).items()))[1]
+    centralities['closeness'] = pd.DataFrame.from_dict(list(nx.closeness_centrality(G).items()))[1]
+    centralities['degree'] = pd.DataFrame.from_dict(list(nx.degree_centrality(G).items()))[1]
+    centralities['pageRank'] = pd.DataFrame.from_dict(list(nx.pagerank(G).items()))[1]
+
+    gnetdata.NetAttrs['centralities'] = centralities
+    print('node centralities added into NetAttrs.')
+    return gnetdata
+
+
+def detect_community(gnetdata, **kwargs):
+    """
+    Detect gene modules via louvain community dection algorithm.
+    :param gnetdata: gnetData object
+    :param kwargs: parameters for community_louvain.best_partition
+    :return: gnetData object with 'communities' added into NetAttrs
+    """
+    G = gnetdata.NetAttrs['graph']
+    partition = community_louvain.best_partition(G, **kwargs)
+    communities = pd.DataFrame.from_dict(list(partition.items()))
+    communities.columns = ['node', 'group']
+
+    gnetdata.NetAttrs['communities'] = communities
+    print('gene communities added into NetAttrs')
+    return gnetdata
+
+
+def find_consensus_graph(gnetdata, link_key='all', method='intersection', threshold=None, **kwargs):
+    """
+    Given multiple linkage tables, it predicts consensus links.
+    :param gnetdata: gnetData object
+    :param link_key: key of linkage tables
+    :param method: methods for detecting consensus links. three methods provided: intersection, snf, ensemble
+    :param threshold: set threshold for ensemble classifier training
+    :return: return gnetData object with consensus links updated.
+    """
+    keys = list(filter(lambda x: 'links' in x, gnetdata.NetAttrs.keys())) if link_key == 'all' else link_key
+
+    if method in ['intersection', 'snf']:
+        merged_links = gnetdata.NetAttrs[keys[0]]
+        for i in range(1, len(keys)):
+            merged_links = graph_merge(merged_links, gnetdata.NetAttrs[keys[i]], method=method)
+
+    elif method == 'ensemble':
+        if threshold is None:
+            raise Exception('threshold cannot be none!')
+        links_dict = dict(filter(lambda i:i[0] in keys, gnetdata.NetAttrs.items()))
+        merged_links = ensemble_classifier(_generate_x_y(links_dict, threshold=threshold), **kwargs)
+
+    else:
+        raise Exception('only following methods acceptable : intersection, snf, ensemble')
+
+    gnetdata._add_netattr('consensus', merged_links)
+    return gnetdata
 
 
 def graph_merge(link_1, link_2, method='union'):
-    """it returns the merged network
-        """
+    """
+    Given two graphs, it returns merged graph
+    :param link_1: linkage table of graph_1
+    :param link_2: linkage table of graph_2
+    :param method: method can be 'union', 'intersection' or 'snf'. 'snf' refers to similarity network fusion algorithm.
+    :return: merged graph
+    """
     if method == 'union':
         union_links = pd.merge(link_1, link_2, how='outer')
-        # dc._remove_duplicate(union_links)
         mergedlinks = union_links.groupby(['source', 'target'], as_index=False).mean().reindex()
-        Graph = nx.from_pandas_edgelist(mergedlinks,
-                                        source='source',
-                                        target='target',
-                                        edge_attr=True)
+        # Graph = nx.from_pandas_edgelist(mergedlinks,
+        #                                 source='source',
+        #                                 target='target',
+        #                                 edge_attr=True)
 
     elif method == 'intersection':
-
         link_1_cp = copy.deepcopy(link_1)
         link_1_cp.columns = ['target', 'source', 'weight']
         inter_links_1 = pd.merge(link_1, link_2, how='inner')
         inter_links_2 = pd.merge(link_1_cp, link_2, how='inner')
         inter_links = pd.merge(inter_links_1, inter_links_2, how='outer')
         mergedlinks = inter_links.groupby(['source', 'target'], as_index=False).mean().reindex()
-        Graph = nx.from_pandas_edgelist(mergedlinks,
-                                        source='source',
-                                        target='target',
-                                        edge_attr=True)
-    elif method == 'knn':
+        # Graph = nx.from_pandas_edgelist(mergedlinks,
+        #                                 source='source',
+        #                                 target='target',
+        #                                 edge_attr=True)
+    elif method == 'snf':
 
-        Graph = _knn_based_merge(link_1, link_2)
+        mergedlinks = _snf_based_merge(link_1, link_2)
 
     else:
 
         raise Exception('valid method parameter: union, intersection, knn!')
 
-    return Graph
+    return mergedlinks
 
 
 def graph_traveral(graph, start, threshold, method='bfs'):
@@ -158,16 +177,17 @@ def graph_traveral(graph, start, threshold, method='bfs'):
 
 
 def random_walk(gnetdata, start, supervisedby, steps):
-    """perform supervided random walk for given steps and weights
-        """
-
+    """
+    perform supervided random walk for given steps and weights
+    """
     path = supervised_random_walk(gnetdata=gnetdata, start=start, supervisedby=supervisedby, steps=steps)
     return path
 
 
 def path_merge(path_1, path_2, k_mer=3, path='Eulerian'):
-    """ perform de bruijn graph mapping for ginve two path lists
-        """
+    """
+    perform de bruijn graph mapping for ginve two path lists
+    """
     g = construct_graph([path_1, path_2], k_mer)
     merged_path = output_contigs(g)
 

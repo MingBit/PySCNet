@@ -13,17 +13,17 @@ import copy
 import matplotlib as mpl
 
 
-def dynamic_netShow(gnetdata, filename, **kwargs):
+def dynamic_netShow(gnetdata, filename, link_key, **kwargs):
     """ it returns a html file representing interactive network
         """
     if (gnetdata.NetAttrs['parameters']['threshold'] != 'None'):
         filterby = float(gnetdata.NetAttrs['parameters']['threshold'])
-        link_table = gnetdata.NetAttrs['links'].loc[gnetdata.NetAttrs['links'].weight > filterby]
+        link_table = gnetdata.NetAttrs[link_key].loc[gnetdata.NetAttrs[link_key].weight > filterby]
     elif (gnetdata.NetAttrs['parameters']['top'] != 'None'):
         filterby = int(gnetdata.NetAttrs['parameters']['top'])
-        link_table = gnetdata.NetAttrs['links'].sort_values('weight', ascending=False).head(filterby)
+        link_table = gnetdata.NetAttrs[link_key].sort_values('weight', ascending=False).head(filterby)
     else:
-        link_table = gnetdata.NetAttrs['links']
+        link_table = gnetdata.NetAttrs[link_key]
     node_group = gnetdata.NetAttrs['communities']
 
     net = Network("1200px", '1600px', bgcolor="#222222", font_color="white")
@@ -61,17 +61,17 @@ def dynamic_netShow(gnetdata, filename, **kwargs):
     net.show(filename)
 
 
-def static_netShow(gnetdata, filename, scale=4, figure_size=[20, 10],
+def static_netShow(gnetdata, filename, link_key, scale=4, figure_size=[20, 10],
                    random_path=None, path_highlight=False, neighhours_highlight=False,
                    start=None, **kwargs):
     if gnetdata.NetAttrs['parameters']['threshold'] != 'None':
         filterby = float(gnetdata.NetAttrs['parameters']['threshold'])
-        link_table = gnetdata.NetAttrs['links'].loc[gnetdata.NetAttrs['links'].weight > filterby]
+        link_table = gnetdata.NetAttrs[link_key].loc[gnetdata.NetAttrs[link_key].weight > filterby]
     elif gnetdata.NetAttrs['parameters']['top'] != 'None':
         filterby = int(gnetdata.NetAttrs['parameters']['top'])
-        link_table = gnetdata.NetAttrs['links'].sort_values('weight', ascending=False).head(filterby)
+        link_table = gnetdata.NetAttrs[link_key].sort_values('weight', ascending=False).head(filterby)
     else:
-        link_table = gnetdata.NetAttrs['links']
+        link_table = gnetdata.NetAttrs[link_key]
 
     node_group = copy.deepcopy(gnetdata.NetAttrs['communities'])
     colors = sns.color_palette().as_hex() + sns.color_palette('Paired', 100).as_hex()

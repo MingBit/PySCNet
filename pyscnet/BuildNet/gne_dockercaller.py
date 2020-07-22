@@ -76,8 +76,7 @@ def _rundocker(gnetdata, method, feature=None, cell_clusterid=None, select_by=No
     raw_links = pd.read_csv(os.getenv('HOME') + '/links.txt', sep='\t', header=None)
     raw_links.columns = ['source', 'target', 'weight']
     gnetdata._add_netattr(method + '_links', raw_links)
-    gnetdata._add_netattr_para('method', method)
-
+    print(method + '_links added into NetAttrs')
     return gnetdata
 
 
@@ -109,13 +108,13 @@ def rundocker(gnetdata, method, feature=None, cell_clusterid=None, select_by=Non
     return gnetdata
 
 
-def buildnet(gnetdata, threshold=None, top=None):
+def buildnet(gnetdata, key_links, threshold=None, top=None):
     if (top is None) & (threshold is not None):
-        links_filter = gnetdata.NetAttrs['links'].loc[gnetdata.NetAttrs['links']['weight'] > threshold]
+        links_filter = gnetdata.NetAttrs[key_links].loc[gnetdata.NetAttrs[key_links]['weight'] > threshold]
     elif (top is not None) & (threshold is None):
-        links_filter = gnetdata.NetAttrs['links'].sort_values('weight', ascending=False).head(top)
+        links_filter = gnetdata.NetAttrs[key_links].sort_values('weight', ascending=False).head(top)
     elif (top is None) & (threshold is None):
-        links_filter = gnetdata.NetAttrs['links']
+        links_filter = gnetdata.NetAttrs[key_links]
     else:
         raise Exception("Cannot filter by threshold and top!")
     G = nx.from_pandas_edgelist(links_filter,
@@ -126,6 +125,7 @@ def buildnet(gnetdata, threshold=None, top=None):
     gnetdata._add_netattr_para('threshold', str(threshold))
     gnetdata._add_netattr_para('top', str(top))
 
+    print('graph added into NetAttrs')
     return gnetdata
 
 
