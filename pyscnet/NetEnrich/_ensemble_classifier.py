@@ -67,4 +67,4 @@ def ensemble_classifier(X, Y, test_size=0.4, seed=3, model='RF', max_features=5,
          'target': x_train.target.append(x_test.target),
          'weight': list(pred_train_prob) + list(pred_test_prob)})
 
-    return res_df
+    return res_df[res_df.weight == 1]

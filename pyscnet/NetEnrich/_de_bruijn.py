@@ -1,11 +1,13 @@
-#source code: https://github.com/mitbal/py-debruijn/blob/master/debruijn.py
+# source code: https://github.com/mitbal/py-debruijn/blob/master/debruijn.py
 
 class Node:
     """ Class Node to represent a vertex in the de bruijn graph """
+
     def __init__(self, lab):
         self.label = lab
         self.indegree = 0
         self.outdegree = 0
+
 
 class Edge:
     def __init__(self, lab):
@@ -19,9 +21,9 @@ def construct_graph(reads, k):
 
     for read in reads:
         i = 0
-        while i+k < len(read):
-            v1 = "".join(read[i:i+k])
-            v2 = "".join(read[i+1:i+k+1])
+        while i + k < len(read):
+            v1 = "".join(read[i:i + k])
+            v2 = "".join(read[i + 1:i + k + 1])
             if v1 in edges.keys():
                 vertices[v1].outdegree += 1
                 edges[v1] += [Edge(v2)]
@@ -37,7 +39,8 @@ def construct_graph(reads, k):
                 edges[v2] = []
             i += 1
 
-    return (vertices, edges)
+    return vertices, edges
+
 
 def output_contigs(g):
     """ Perform searching for Eulerian path in the graph to output genome assembly"""

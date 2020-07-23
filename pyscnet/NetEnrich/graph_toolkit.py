@@ -12,7 +12,6 @@ from community import community_louvain
 import snf
 import numpy as np
 import warnings
-import copy
 import networkx.algorithms.traversal as nextra
 from ._de_bruijn import construct_graph, output_contigs
 from ._random_walk import supervised_random_walk
@@ -92,84 +91,89 @@ def detect_community(gnetdata, **kwargs):
     return gnetdata
 
 
-def find_consensus_graph(gnetdata, link_key='all', method='intersection', threshold=None, **kwargs):
+def find_consensus_graph(gnetdata, link_key='all', method='intersection', toprank=100, threshold=None, **kwargs):
     """
     Given multiple linkage tables, it predicts consensus links.
     :param gnetdata: gnetData object
     :param link_key: key of linkage tables
-    :param method: methods for detecting consensus links. three methods provided: intersection, snf, ensemble
-    :param threshold: set threshold for ensemble classifier training
+    :param method: methods for detecting consensus links. two methods provided: intersection, ensemble.
+    Note: intersection is recommended when there are less than 3 linkage tables.
+    :param toprank: top ranked edges for intersection method.
+    :param threshold: set threshold for ensemble method.
     :return: return gnetData object with consensus links updated.
     """
     keys = list(filter(lambda x: 'links' in x, gnetdata.NetAttrs.keys())) if link_key == 'all' else link_key
 
-    if method in ['intersection', 'snf']:
+    if method == 'intersection':
         merged_links = gnetdata.NetAttrs[keys[0]]
         for i in range(1, len(keys)):
-            merged_links = graph_merge(merged_links, gnetdata.NetAttrs[keys[i]], method=method)
+            merged_links = graph_merge(merged_links, gnetdata.NetAttrs[keys[i]], method=method, toprank=toprank)
 
     elif method == 'ensemble':
         if threshold is None:
             raise Exception('threshold cannot be none!')
-        links_dict = dict(filter(lambda i:i[0] in keys, gnetdata.NetAttrs.items()))
-        merged_links = ensemble_classifier(_generate_x_y(links_dict, threshold=threshold), **kwargs)
+        links_dict = dict(filter(lambda i: i[0] in keys, gnetdata.NetAttrs.items()))
+        X, Y = _generate_x_y(links_dict, threshold)
+        merged_links = ensemble_classifier(X, Y, **kwargs)
 
     else:
         raise Exception('only following methods acceptable : intersection, snf, ensemble')
 
+    print('there are {} consensus edges found!'.format(merged_links.shape[0]))
     gnetdata._add_netattr('consensus', merged_links)
+
     return gnetdata
 
 
-def graph_merge(link_1, link_2, method='union'):
+def graph_merge(link_1, link_2, toprank=None, method='union'):
     """
     Given two graphs, it returns merged graph
     :param link_1: linkage table of graph_1
     :param link_2: linkage table of graph_2
+    :param toprank: top edges from each methods for graph_merge
     :param method: method can be 'union', 'intersection' or 'snf'. 'snf' refers to similarity network fusion algorithm.
     :return: merged graph
     """
-    if method == 'union':
-        union_links = pd.merge(link_1, link_2, how='outer')
-        mergedlinks = union_links.groupby(['source', 'target'], as_index=False).mean().reindex()
+
+    if method in ['union', 'intersection']:
+        toprank = min(link_1.shape[0], link_2.shape[0]) if toprank is None else toprank
+        link_1 = link_1.sort_values('weight', ascending=False).head(toprank)
+        link_2 = link_2.sort_values('weight', ascending=False).head(toprank)
+        mergedlinks = pd.merge(link_1.iloc[:, :-1], link_2.iloc[:, :-1], how='outer' if method == 'union' else 'inner')
+        mergedlinks['weight'] = np.repeat(1, mergedlinks.shape[0])
+
+        # mergedlinks = union_links.groupby(['source', 'target'], as_index=False).mean().reindex()
         # Graph = nx.from_pandas_edgelist(mergedlinks,
         #                                 source='source',
         #                                 target='target',
         #                                 edge_attr=True)
 
-    elif method == 'intersection':
-        link_1_cp = copy.deepcopy(link_1)
-        link_1_cp.columns = ['target', 'source', 'weight']
-        inter_links_1 = pd.merge(link_1, link_2, how='inner')
-        inter_links_2 = pd.merge(link_1_cp, link_2, how='inner')
-        inter_links = pd.merge(inter_links_1, inter_links_2, how='outer')
-        mergedlinks = inter_links.groupby(['source', 'target'], as_index=False).mean().reindex()
-        # Graph = nx.from_pandas_edgelist(mergedlinks,
-        #                                 source='source',
-        #                                 target='target',
-        #                                 edge_attr=True)
     elif method == 'snf':
-
         mergedlinks = _snf_based_merge(link_1, link_2)
 
     else:
-
         raise Exception('valid method parameter: union, intersection, knn!')
 
     return mergedlinks
 
 
 def graph_traveral(graph, start, threshold, method='bfs'):
-    """for given network and start point, it generates a path in a specific manner
-        """
+    """
+    Given a graph, it provides graph traversal techniques including breadth-first search (bsf) and depth-first search (dfs)
+    to explore the indireactly gene/tf associations.
+    :param graph: input graph
+    :param start: starting point. It must be one of the graph nodes.
+    :param threshold: the depth-limit
+    :param method: bfs or dfs
+    :return: explored graph.
+    """
 
     if method == 'bfs':
-
         res_path = nextra.bfs_tree(G=graph, source=start, depth_limit=threshold)
 
     elif method == 'dfs':
-
         res_path = nextra.dfs_tree(G=graph, source=start, depth_limit=threshold)
+
     else:
         raise Exception('valid method parameter: bfs, dfs!')
 
@@ -178,7 +182,12 @@ def graph_traveral(graph, start, threshold, method='bfs'):
 
 def random_walk(gnetdata, start, supervisedby, steps):
     """
-    perform supervided random walk for given steps and weights
+    Supervised random walk guided by node centrality attribute.
+    :param gnetdata: gnetData object
+    :param start: starting point. it must be one of the graph nodes.
+    :param supervisedby: 'betweenness', 'closeness', 'degree' and 'pageRank'
+    :param steps: number of steps
+    :return: a list of travelled nodes.
     """
     path = supervised_random_walk(gnetdata=gnetdata, start=start, supervisedby=supervisedby, steps=steps)
     return path
@@ -186,7 +195,7 @@ def random_walk(gnetdata, start, supervisedby, steps):
 
 def path_merge(path_1, path_2, k_mer=3, path='Eulerian'):
     """
-    perform de bruijn graph mapping for ginve two path lists
+    TODO: perform de bruijn graph mapping for ginve two path lists
     """
     g = construct_graph([path_1, path_2], k_mer)
     merged_path = output_contigs(g)
