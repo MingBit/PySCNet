@@ -10,6 +10,5 @@ result/
 Test/
 dask-worker-space/
 .*
-_*
 dist/
 pyscnet.egg-info/
