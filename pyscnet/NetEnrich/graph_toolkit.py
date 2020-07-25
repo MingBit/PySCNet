@@ -96,8 +96,7 @@ def find_consensus_graph(gnetdata, link_key='all', method='intersection', topran
     Given multiple linkage tables, it predicts consensus links.
     :param gnetdata: gnetData object
     :param link_key: key of linkage tables
-    :param method: methods for detecting consensus links. two methods provided: intersection, ensemble.
-    Note: intersection is recommended when there are less than 3 linkage tables.
+    :param method: methods for detecting consensus links. two methods provided: intersection, ensemble. Note: intersection is recommended when there are less than 3 linkage tables.
     :param toprank: top ranked edges for intersection method.
     :param threshold: set threshold for ensemble method.
     :return: return gnetData object with consensus links updated.
@@ -159,8 +158,7 @@ def graph_merge(link_1, link_2, toprank=None, method='union'):
 
 def graph_traveral(graph, start, threshold, method='bfs'):
     """
-    Given a graph, it provides graph traversal techniques including breadth-first search (bsf) and depth-first search (dfs)
-    to explore the indireactly gene/tf associations.
+    Given a graph, it provides graph traversal techniques including breadth-first search (bsf) and depth-first search (dfs) to explore the indireactly gene/tf associations.
     :param graph: input graph
     :param start: starting point. It must be one of the graph nodes.
     :param threshold: the depth-limit
