@@ -80,6 +80,7 @@ pyscnet/NetEnrich/_graph_fusion.py
 pyscnet/NetEnrich/_random_walk.py
 pyscnet/NetEnrich/graph_toolkit.py
 pyscnet/Plotting/__init__.py
+pyscnet/Plotting/geneHeatmap.py
 pyscnet/Plotting/show_net.py
 pyscnet/Preprocessing/__init__.py
 pyscnet/Preprocessing/gnetdata.py
@@ -87,5 +88,8 @@ pyscnet/Rshiny/.Rhistory
 pyscnet/Rshiny/app.R
 pyscnet/Rshiny/server.R
 pyscnet/Rshiny/ui.R
-tutorial/pyscnet_pbmc.ipynb
+tutorial/pyscnet_scanpy.ipynb
+tutorial/pyscnet_stream.ipynb
+tutorial/scanpy_paga.ipynb
 tutorial/scanpy_pbmc.ipynb
+tutorial/stream_trajectory.ipynb

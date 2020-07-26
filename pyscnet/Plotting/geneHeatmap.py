@@ -30,7 +30,7 @@ def geneHeatmap(gnetdata, gene, cell_clusterid, select_by, order_by=None, scale_
 
 
 def geneDynamic(gnetdata, gene, cell_clusterid, select_by, rolling=10, order_by=None, scale_data=True, save_as=None,
-                colors=None, **kwargs):
+                colors=None, legend_size=None, **kwargs):
     cell_info = gnetdata.CellAttrs['CellInfo'] if order_by is None else gnetdata.CellAttrs['CellInfo'].sort_values(
         order_by, ascending=True)
     cell = list(cell_info.loc[cell_info[select_by].isin([cell_clusterid])].index)
@@ -50,10 +50,10 @@ def geneDynamic(gnetdata, gene, cell_clusterid, select_by, rolling=10, order_by=
         #         ax.set_xlabel('Pseudotime', fontsize=20)
         #         ax.set_ylabel('Scaled Expression', fontsize=20)
         ax.axis('off')
-        ax.legend(prop={"size": 30})
+        ax.legend(prop={"size": 10 if legend_size is None else legend_size})
 
     if save_as is not None:
-        plt.savefig(save_as, dpi=100)
+        plt.savefig(save_as)
 
     plt.show()
 

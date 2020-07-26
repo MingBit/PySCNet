@@ -167,10 +167,10 @@ def graph_traveral(graph, start, threshold, method='bfs'):
     """
 
     if method == 'bfs':
-        res_path = nextra.bfs_tree(G=graph, source=start, depth_limit=threshold)
+        res_path = nextra.bfs_tree(graph, start, threshold)
 
     elif method == 'dfs':
-        res_path = nextra.dfs_tree(G=graph, source=start, depth_limit=threshold)
+        res_path = nextra.dfs_tree(graph, start, threshold)
 
     else:
         raise Exception('valid method parameter: bfs, dfs!')

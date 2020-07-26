@@ -116,7 +116,7 @@ def buildnet(gnetdata, key_links, top=None):
                                 source="source",
                                 target="target",
                                 edge_attr=True)
-    gnetdata._add_netattr(key_links + '_graph', G)
+    gnetdata._add_netattr('graph', G)
     gnetdata._add_netattr_para('top', str(top))
 
     print('graph added into NetAttrs')
