@@ -13,16 +13,23 @@ import copy
 import matplotlib as mpl
 
 
-def dynamic_netShow(gnetdata, filename, link_key):
-    """ it returns a html file representing interactive network
-        """
-    if link_key+'_graph' not in gnetdata.NetAttrs.keys():
-        raise Exception(link_key + '_graph does not exist!')
+def dynamic_netShow(gnetdata, filename, node_size=50, html_size=["1200px", "1600px"]):
+    """
+    create a GRN html
+    -------------------------
+    :param gnetdata: Gnetdata object
+    :param filename: str, save as filename
+    :param node_size: int, default 50.
+    :param html_size: list, default ["1200px", "1600px"]
+    :return: None
+    """
+    # if link_key+'_graph' not in gnetdata.NetAttrs.keys():
+    #     raise Exception(link_key + '_graph does not exist!')
 
-    link_table = gnetdata.NetAttrs[link_key]
+    link_table = gnetdata.NetAttrs['graph']
     node_group = gnetdata.NetAttrs['communities']
 
-    net = Network("1200px", '1600px', bgcolor="#222222", font_color="white")
+    net = Network(html_size[0], html_size[1], bgcolor="#222222", font_color="white")
     edge_data = zip(link_table['source'], link_table['target'], link_table['weight'])
 
     colors = sns.color_palette().as_hex() + sns.color_palette('Paired', 100).as_hex()
@@ -49,20 +56,33 @@ def dynamic_netShow(gnetdata, filename, link_key):
     for node in net.nodes:
         node["title"] += " Neighbors:<br>" + "<br>".join(neighbor_map[node["id"]])
         node["value"] = len(neighbor_map[node["id"]])
-        node['size'] = 50
+        node['size'] = node_size
 
     net.show_buttons(filter_='physics')
     net.show(filename)
 
+    return None
 
-def static_netShow(gnetdata, filename, link_key, scale=4, figure_size=[20, 10],
+
+def static_netShow(gnetdata, filename, scale=4, figure_size=[20, 10],
                    random_path=None, path_highlight=False, neighhours_highlight=False,
                    start=None, **kwargs):
+    """
+    create and export GRN graph.
+    ----------------------------------
+    :param gnetdata: Gnetdata object
+    :param filename: str, save as filename
+    :param scale: int, default 4.
+    :param figure_size: list, default [20, 10].
+    :param random_path: list, list of nodes for highlighting.
+    :param path_highlight: bool, default False.
+    :param neighhours_highlight: bool, default False.
+    :param start: str, default None.
+    :param kwargs: additional parameters passed to networkx.draw_networkx()
+    :return: None
+    """
 
-    if link_key+'_graph' not in gnetdata.NetAttrs.keys():
-        raise Exception(link_key + '_graph does not exist!')
-
-    link_table = gnetdata.NetAttrs[link_key]
+    link_table = gnetdata.NetAttrs['graph']
 
     node_group = copy.deepcopy(gnetdata.NetAttrs['communities'])
     colors = sns.color_palette().as_hex() + sns.color_palette('Paired', 100).as_hex()
@@ -102,3 +122,5 @@ def static_netShow(gnetdata, filename, link_key, scale=4, figure_size=[20, 10],
     mpl.rcParams['figure.figsize'] = figure_size
     plt.savefig(filename)
     plt.show()
+
+    return None

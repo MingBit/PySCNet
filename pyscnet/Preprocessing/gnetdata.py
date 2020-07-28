@@ -12,16 +12,17 @@ import pandas as pd
 
 
 class Gnetdata:
-    """ Gnetdata class includes dataset specifically
-        for building GRNs. It consists four sub-classes:
-                1) ExpMatrix: A gene count matrix
-                2) CellAttrs: A dict gives information about cells. eg. cluster_nr, annotation
-                3) GeneAttrs: A dict gives information about genes. eg. module_nr, marker_annotation
-                4) NetAttrs: A dict includes Networks attributes. eg. node centralities.
-        """
+    """
+    Gnetdata class includes dataset specifically
+    ------------------------------------------------
+    for building GRNs. It consists four sub-classes:
+    1) ExpMatrix: A gene count matrix
+    2) CellAttrs: A dict gives information about cells. eg. cluster_nr, annotation
+    3) GeneAttrs: A dict gives information about genes. eg. module_nr, marker_annotation
+    4) NetAttrs: A dict includes Networks attributes. eg. node centralities.
+    """
 
     def __init__(self, ExpMatrix, CellAttrs=None, GeneAttrs=None):
-
         self.ExpMatrix = ExpMatrix
         self.CellAttrs = CellAttrs
         self.GeneAttrs = GeneAttrs
@@ -75,7 +76,12 @@ class Gnetdata:
 
 
 def load_Gnetdata_object(filepath):
-    """load pickle object and export as Gnetdata """
+    """
+    load Gnetdata (pickle) from local
+    ----------------------------------
+    :param filepath: str, default None.
+    :return: Gnetdata
+    """
     with open(filepath, 'rb') as input:
         gnetdata = pk.load(input)
 
@@ -84,9 +90,11 @@ def load_Gnetdata_object(filepath):
 
 def load_from_scanpy(scanpy_obj=None, filepath=None):
     """
-    :param scanpy_obj: adata from scanpy
-    :param filepath: the path to scanpy object
-    :return: gnetData
+    load adata object
+    --------------------------------------------
+    :param scanpy_obj: adata object, default None
+    :param filepath: str, default None. filepath refers to adata object
+    :return: Gnetdata
     """
     if scanpy_obj is not None:
         gnetdata = Gnetdata(pd.DataFrame(scanpy_obj.X.T, index=scanpy_obj.var_names, columns=scanpy_obj.obs_names),

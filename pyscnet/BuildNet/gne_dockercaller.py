@@ -18,7 +18,7 @@ global path
 path = os.path.join(os.path.dirname(__file__)) + '/Docker_App/'
 
 
-def _copy_to(container_id, src, dst):
+def __copy_to(container_id, src, dst):
     client = docker.from_env()
     container = client.containers.get(container_id)
     strm, stat = container.get_archive(src)
@@ -33,7 +33,7 @@ def _copy_to(container_id, src, dst):
     os.remove(os.getenv('HOME') + '/temp.tar')
 
 
-def _remove_duplicate(links):
+def __remove_duplicate(links):
     links_list = sorted(links[['source', 'target']].values.tolist())
     for i in range(len(links_list)):
         links_list[i] = tuple(sorted(links_list[i]))
@@ -43,14 +43,14 @@ def _remove_duplicate(links):
     return links
 
 
-def _rundocker(gnetdata, method, feature=None, cell_clusterid=None, select_by=None, Mms_TF=None, **kwargs):
+def __rundocker(gnetdata, method, cell=None, feature=None, cell_clusterid=None, select_by=None, Mms_TF=None, **kwargs):
     client = docker.from_env()
 
     if feature is None:
         feature = gnetdata.ExpMatrix.index
 
     if cell_clusterid is None:
-        cell = gnetdata.ExpMatrix.columns
+        cell = gnetdata.ExpMatrix.columns if cell is None else cell
     else:
         cell_info = gnetdata.CellAttrs['CellInfo']
         cell = list(cell_info.loc[cell_info[select_by].isin([cell_clusterid])].index)
@@ -66,7 +66,7 @@ def _rundocker(gnetdata, method, feature=None, cell_clusterid=None, select_by=No
     pd.DataFrame.to_csv(tmp_expr, path + method + '/Expr.txt', sep='\t')
     client.images.build(path=path + method, dockerfile='Dockerfile', tag=method.lower())
     container = client.containers.run(method.lower(), detach=True)
-    _copy_to(container_id=container.short_id, src='/' + method + '/links.txt', dst=os.getenv('HOME'))
+    __copy_to(container_id=container.short_id, src='/' + method + '/links.txt', dst=os.getenv('HOME'))
 
     #        client.remove_container(container.short_id)
     container.stop()
@@ -80,46 +80,44 @@ def _rundocker(gnetdata, method, feature=None, cell_clusterid=None, select_by=No
     return gnetdata
 
 
-def rundocker(gnetdata, method, feature=None, cell_clusterid=None, select_by=None, Mms_TF=None, **kwargs):
+def rundocker(gnetdata, method, cell=None, feature=None, cell_clusterid=None, select_by=None, Mms_TF=None, **kwargs):
+    """
+    Call GRN methods via docker.
+    -------------------------------------
+    :param gnetdata: Gnetdata object, default None.
+    :param method: str, default None. methods: [GENIE3, GRNBOOST2, PIDC, CORR]
+    :param cell: list, default None. a list of cell names
+    :param feature: list, default None. a list of gene names
+    :param cell_clusterid: str, default None. cell with cell_clusterid will be selected
+    :param select_by: str, default None. key of filtering cells
+    :param Mms_TF: list, default None. a list of transcription factor names
+    :param kwargs: additional parameters passed to scnode2vec()
+    :return: Gnetdata object with links saved in NetAttrs
+    """
     if method == 'GENIE3':
-        gnetdata = _rundocker(gnetdata, method='GENIE3', feature=feature,
-                              cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF)
+        gnetdata = __rundocker(gnetdata, method='GENIE3', cell=cell, feature=feature,
+                               cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF)
 
     elif method == 'GRNBOOST2':
-        gnetdata = _rundocker(gnetdata, method='GRNBOOST2', feature=feature,
-                              cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF)
+        gnetdata = __rundocker(gnetdata, method='GRNBOOST2', cell=cell, feature=feature,
+                               cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF)
 
     elif method == 'PIDC':
         # remove genes with 0 counts
-        gnetdata = _rundocker(gnetdata, method='PIDC', feature=feature,
-                              cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF)
+        gnetdata = __rundocker(gnetdata, method='PIDC', cell=cell, feature=feature,
+                               cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF)
 
     elif method == 'SCNODE2VEC':
-        gnetdata = _rundocker(gnetdata, method='SCNODE2VEC', feature=feature,
-                              cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF, **kwargs)
+        gnetdata = __rundocker(gnetdata, method='SCNODE2VEC', cell=cell, feature=feature,
+                               cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF, **kwargs)
 
     elif method == "CORR":
-        gnetdata = _rundocker(gnetdata, method='CORR', feature=feature,
-                              cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF)
+        gnetdata = __rundocker(gnetdata, method='CORR', cell=cell, feature=feature,
+                               cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF)
 
     else:
         raise Exception("valid method: GENIE3, CORR, PIDC, GRNBOOST2, SCNODE2VEC")
 
-    return gnetdata
-
-
-def buildnet(gnetdata, key_links, top=None):
-    top = gnetdata.NetAttrs[key_links].shape[0] if top is None else top
-    links_filter = gnetdata.NetAttrs[key_links].sort_values('weight', ascending=False).head(top)
-
-    G = nx.from_pandas_edgelist(links_filter,
-                                source="source",
-                                target="target",
-                                edge_attr=True)
-    gnetdata._add_netattr('graph', G)
-    gnetdata._add_netattr_para('top', str(top))
-
-    print('graph added into NetAttrs')
     return gnetdata
 
 
