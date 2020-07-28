@@ -64,7 +64,7 @@ def dynamic_netShow(gnetdata, filename, node_size=50, html_size=["1200px", "1600
     return None
 
 
-def static_netShow(gnetdata, filename, scale=4, figure_size=[20, 10],
+def static_netShow(gnetdata, filename, scale=4, figure_size=[20, 10], link_key='consensus',
                    random_path=None, path_highlight=False, neighhours_highlight=False,
                    start=None, **kwargs):
     """
@@ -81,8 +81,8 @@ def static_netShow(gnetdata, filename, scale=4, figure_size=[20, 10],
     :param kwargs: additional parameters passed to networkx.draw_networkx()
     :return: None
     """
-
-    link_table = gnetdata.NetAttrs['graph']
+    assert link_key in gnetdata.NetAttrs.keys(), '{} cannot find in NetAttrs'.format(link_key)
+    link_table = gnetdata.NetAttrs[link_key]
 
     node_group = copy.deepcopy(gnetdata.NetAttrs['communities'])
     colors = sns.color_palette().as_hex() + sns.color_palette('Paired', 100).as_hex()

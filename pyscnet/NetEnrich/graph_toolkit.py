@@ -58,10 +58,8 @@ def buildnet(gnetdata, key_links, top=None):
     Given linkage table, build gene correlation graph
     ----------------------------------------------------
     :param gnetdata: Gnetdata object.
-    :param key_links: key of links referring which linkage table for buidling graph
-    :type key_links: str.
-    :param top: default None. top ranked links
-    :type top: int.
+    :param key_links: str, key of links referring which linkage table for buidling graph
+    :param top: int, default None. top ranked links
     :return: Gnetdata object with graph added into NetAttrs
     """
     top = gnetdata.NetAttrs[key_links].shape[0] if top is None else top

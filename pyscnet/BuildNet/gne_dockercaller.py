@@ -9,7 +9,6 @@ from __future__ import absolute_import
 import docker
 import pandas as pd
 import os
-import networkx as nx
 import tarfile
 import warnings
 import _pickle as pk

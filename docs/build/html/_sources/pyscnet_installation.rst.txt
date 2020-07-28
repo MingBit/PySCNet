@@ -1,0 +1,16 @@
+Installation
+==============
+PyPI only
+~~~~~~~~~~~
+Install pyscnet via pypi run::
+
+    pip install pyscnet
+
+Install from Github
+~~~~~~~~~~~~~~~~~~~~
+Install pyscnet via github run::
+
+    git clone https://github.com/MingBit/PySCNet
+    mkdir dist | python setup.py sdist
+    pip install dist/pyscnet-0.0.2.tar.gz
+
