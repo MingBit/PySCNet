@@ -10,6 +10,10 @@ Welcome to pyscnet's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   Readme
+   Install
+   Api
+   Tutorial
 
 
 Indices and tables

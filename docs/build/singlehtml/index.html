@@ -1,0 +1,261 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyscnet 0.0.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home"> pyscnet
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html#document-Readme">PySCNet: Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="index.html#modules">Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#cite">Cite</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#document-Install">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="index.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#pypi">PyPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#github">Github</a></li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">pyscnet</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>pyscnet 0.0.2 documentation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="welcome-to-pyscnet-s-documentation">
+<h1>Welcome to pyscnet’s documentation!<a class="headerlink" href="#welcome-to-pyscnet-s-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<span id="document-Readme"></span><div class="section" id="pyscnet-introduction">
+<h2>PySCNet: Introduction<a class="headerlink" href="#pyscnet-introduction" title="Permalink to this headline">¶</a></h2>
+<p>PySCNet: A tool for reconstructing and analyzing gene regulatory network from single-cell RNA-Seq data</p>
+<div class="section" id="modules">
+<h3>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h3>
+<p>There are four modules:</p>
+<ol class="arabic simple">
+<li><p><strong>Pro-precessing</strong>: initialize a gnetData object consisting of Expression Matrix, Cell Attributes, Gene Attributes and Network Attributes;</p></li>
+<li><p><strong>BuildNet</strong>: reconstruct GRNs by various methods implemented in docker;</p></li>
+<li><p><strong>NetEnrich</strong>: network analysis including consensus network detection, gene module identification and trigger path prediction as well as network fusion;</p></li>
+<li><p><strong>Visulization</strong>: network illustration.</p></li>
+</ol>
+<div class="figure align-default">
+<a class="reference internal image-reference" href="_images/Overview.png"><img alt="_images/Overview.png" src="_images/Overview.png" style="width: 600px;" /></a>
+</div>
+</div>
+<div class="section" id="features">
+<h3>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://github.com/MingBit/PySCNet/blob/master/ShinyApp.gif">Shinyapp</a> is available now for creating your own GRNs.
+Once the cells are grouped into several clusters and linkage tables are generated for each/all clusters, you can export the results
+as pickle object and uplaod onto Shinyapp. Cell attributes, Gene attributes and Network attributes are illustrated here.
+As shown belows, you can set your own thresholds to build each/all cluster-specific GRNs.</p>
+<div class="figure align-default">
+<a class="reference internal image-reference" href="_images/ShinyApp.gif"><img alt="_images/ShinyApp.gif" src="_images/ShinyApp.gif" style="width: 600px;" /></a>
+</div>
+</div>
+<div class="section" id="cite">
+<h3>Cite<a class="headerlink" href="#cite" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>This work has been presented at <a class="reference external" href="https://www.iscb.org/ismbeccb2019">ISMB/ECCB 2019</a></p></li>
+<li><p>Go to <a class="reference external" href="https://f1000research.com/posters/8-1359">my poster</a></p></li>
+</ul>
+</div>
+</div>
+<span id="document-Install"></span><div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="requirements">
+<h3>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h3>
+<p>As pyscnet integrates <a class="reference external" href="https://www.docker.com/">docker</a> for gene regulatory construction, it is necessary to install docker before the installation.
+Check here for <a class="reference external" href="https://docs.docker.com/get-docker/">docker installation</a>.</p>
+</div>
+<div class="section" id="pypi">
+<h3>PyPI<a class="headerlink" href="#pypi" title="Permalink to this headline">¶</a></h3>
+<p>install pyscnet via PyPI</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">pyscnet</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="github">
+<h3>Github<a class="headerlink" href="#github" title="Permalink to this headline">¶</a></h3>
+<p>install pyscnet via github</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">MingBit</span><span class="o">/</span><span class="n">PySCNet</span>
+<span class="n">mkdir</span> <span class="n">dist</span> <span class="o">|</span> <span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">sdist</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">dist</span><span class="o">/</span><span class="n">pyscnet</span><span class="o">-</span><span class="mf">0.0</span><span class="o">.</span><span class="mf">2.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Ming Wu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
