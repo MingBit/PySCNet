@@ -10,10 +10,4 @@ pyscnet.NetEnrich.graph\_toolkit
    :show-inheritance:
 
 
-Module contents
----------------
 
-.. automodule:: pyscnet.NetEnrich
-   :members:
-   :undoc-members:
-   :show-inheritance:

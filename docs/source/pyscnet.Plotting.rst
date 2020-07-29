@@ -18,10 +18,3 @@ pyscnet.Plotting.show\_net
    :show-inheritance:
 
 
-Module contents
----------------
-
-.. automodule:: pyscnet.Plotting
-   :members:
-   :undoc-members:
-   :show-inheritance:

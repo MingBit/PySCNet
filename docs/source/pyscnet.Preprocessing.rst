@@ -9,11 +9,3 @@ pyscnet.Preprocessing.gnetdata
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: pyscnet.Preprocessing
-   :members:
-   :undoc-members:
-   :show-inheritance:

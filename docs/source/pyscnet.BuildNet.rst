@@ -10,10 +10,3 @@ pyscnet.BuildNet.gne\_dockercaller
    :show-inheritance:
 
 
-Module contents
----------------
-
-.. automodule:: pyscnet.BuildNet
-   :members:
-   :undoc-members:
-   :show-inheritance:
