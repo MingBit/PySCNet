@@ -6,9 +6,6 @@ Created on Mon Apr 22 22:50:56 2019
 @author: angelawu
 """
 
-import numpy as np
-import pandas as pd
-
 
 def supervised_random_walk(gnetdata, start, supervisedby='pageRank', steps=10):
     """for given network and node centralities, it performs supervised random walk
@@ -37,7 +34,7 @@ def supervised_random_walk(gnetdata, start, supervisedby='pageRank', steps=10):
             #                        links.loc[links.shape[0] + 1] = [start, go, new_neighbors_score[go]]
             path.append(go)
             start = go
-    return (path)
+    return path
 
 # =============================================================================
 #   To do list: random walk based on starting and ending point

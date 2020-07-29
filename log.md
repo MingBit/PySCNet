@@ -31,7 +31,7 @@ There are four modules:
 2) De bruijn mapping: hamiltonian path, Eulerian path; Overlap layout consensus mapping
 3) Network similarities/matching ranking
 4) GMatch4py???
-5) Similarity network fusion (SNF): https://www.nature.com/articles/nmeth.2810.pdf
+5) Similarity network fusion (SNF)
 
 30.April
 1) Test with two simulated datasets

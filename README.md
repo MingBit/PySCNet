@@ -9,7 +9,7 @@ There are four modules:
 
 ![Overview](https://github.com/MingBit/PySCNet/blob/master/images/Overview.png)
 
-# :tada: :confetti_ball: Create your own GRNs!!!
+# :tada: :confetti_ball: Create your own GRNs
 [Shinyapp](https://github.com/MingBit/PySCNet/blob/master/images/ShinyApp.gif) is available now for creating your own GRNs.
 Once the cells are grouped into several clusters and linkage tables are generated for each/all clusters, you can export the results
 as pickle object and uplaod onto Shinyapp. Cell attributes, Gene attributes and Network attributes are illustrated here.
@@ -26,7 +26,7 @@ As shown belows, you can set your own thresholds to build each/all cluster-speci
 # Tutorial
 PBMC data preprocessed and analyzed by scanpy as explained in this [tutorial](https://github.com/MingBit/PySCNet/blob/master/tutorial/pyscnet_pbmc.ipynb). 
 
-# TO-DO:
+# TO-DO
 1) Add an Auto-ML based pipeline to Pre-Processing module;
 2) Collect more GRN methods to BuildNet module;
 3) Update other network-based algorithms to NetEnrich module;
