@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Introduction &mdash; pyscnet 0.0.2 documentation</title>
+  <title>pyscnet &mdash; pyscnet 0.0.2 documentation</title>
   
 
   
@@ -36,8 +36,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Installation" href="Install.html" />
-    <link rel="prev" title="Welcome to pyscnet’s documentation!" href="index.html" /> 
+    <link rel="next" title="pyscnet.Preprocessing" href="pyscnet.Preprocessing.html" />
+    <link rel="prev" title="API" href="modules.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -83,14 +83,19 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#modules">Modules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#features">Features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#cite">Cite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Readme.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Install.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">pyscnet</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyscnet.Preprocessing.html">pyscnet.Preprocessing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyscnet.BuildNet.html">pyscnet.BuildNet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyscnet.NetEnrich.html">pyscnet.NetEnrich</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyscnet.Plotting.html">pyscnet.Plotting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pyscnet">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Install.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">pyscnet</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="Tutorial.html">Tutorial</a></li>
 </ul>
 
@@ -137,13 +142,15 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Introduction</li>
+          <li><a href="modules.html">API</a> &raquo;</li>
+        
+      <li>pyscnet</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/Readme.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/pyscnet.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -180,38 +187,35 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="introduction">
-<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
-<p>PySCNet: A tool for reconstructing and analyzing gene regulatory network from single-cell RNA-Seq data</p>
-<div class="section" id="modules">
-<h2>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h2>
-<p>There are four modules:</p>
-<ol class="arabic simple">
-<li><p><strong>Pro-precessing</strong>: initialize a gnetData object consisting of Expression Matrix, Cell Attributes, Gene Attributes and Network Attributes;</p></li>
-<li><p><strong>BuildNet</strong>: reconstruct GRNs by various methods implemented in docker;</p></li>
-<li><p><strong>NetEnrich</strong>: network analysis including consensus network detection, gene module identification and trigger path prediction as well as network fusion;</p></li>
-<li><p><strong>Visulization</strong>: network illustration.</p></li>
-</ol>
-<div class="figure align-default">
-<a class="reference internal image-reference" href="_images/Overview.png"><img alt="_images/Overview.png" src="_images/Overview.png" style="width: 600px;" /></a>
-</div>
-</div>
-<div class="section" id="features">
-<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="https://github.com/MingBit/PySCNet/blob/master/ShinyApp.gif">Shinyapp</a> is available now for creating your own GRNs.
-Once the cells are grouped into several clusters and linkage tables are generated for each/all clusters, you can export the results
-as pickle object and uplaod onto Shinyapp. Cell attributes, Gene attributes and Network attributes are illustrated here.
-As shown belows, you can set your own thresholds to build each/all cluster-specific GRNs.</p>
-<div class="figure align-default">
-<a class="reference internal image-reference" href="_images/ShinyApp.gif"><img alt="_images/ShinyApp.gif" src="_images/ShinyApp.gif" style="width: 600px;" /></a>
-</div>
-</div>
-<div class="section" id="cite">
-<h2>Cite<a class="headerlink" href="#cite" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>This work has been presented at <a class="reference external" href="https://www.iscb.org/ismbeccb2019">ISMB/ECCB 2019</a></p></li>
-<li><p>Go to <a class="reference external" href="https://f1000research.com/posters/8-1359">my poster</a></p></li>
+<div class="section" id="pyscnet">
+<h1>pyscnet<a class="headerlink" href="#pyscnet" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pyscnet.Preprocessing.html">pyscnet.Preprocessing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyscnet.Preprocessing.html#module-pyscnet.Preprocessing.gnetdata">pyscnet.Preprocessing.gnetdata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyscnet.Preprocessing.html#module-pyscnet.Preprocessing">Module contents</a></li>
 </ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pyscnet.BuildNet.html">pyscnet.BuildNet</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyscnet.BuildNet.html#module-pyscnet.BuildNet.gne_dockercaller">pyscnet.BuildNet.gne_dockercaller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyscnet.BuildNet.html#module-pyscnet.BuildNet">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pyscnet.NetEnrich.html">pyscnet.NetEnrich</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyscnet.NetEnrich.html#module-pyscnet.NetEnrich.graph_toolkit">pyscnet.NetEnrich.graph_toolkit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyscnet.NetEnrich.html#module-pyscnet.NetEnrich">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pyscnet.Plotting.html">pyscnet.Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyscnet.Plotting.html#module-pyscnet.Plotting.geneHeatmap">pyscnet.Plotting.geneHeatmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyscnet.Plotting.html#module-pyscnet.Plotting.show_net">pyscnet.Plotting.show_net</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyscnet.Plotting.html#module-pyscnet.Plotting">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="module-pyscnet">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pyscnet" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -223,10 +227,10 @@ As shown belows, you can set your own thresholds to build each/all cluster-speci
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="Install.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="pyscnet.Preprocessing.html" class="btn btn-neutral float-right" title="pyscnet.Preprocessing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to pyscnet’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="modules.html" class="btn btn-neutral float-left" title="API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

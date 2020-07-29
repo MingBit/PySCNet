@@ -1,0 +1,353 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyscnet.NetEnrich &mdash; pyscnet 0.0.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> pyscnet
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Readme.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">pyscnet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tutorial.html">Tutorial</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyscnet</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>pyscnet.NetEnrich</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/pyscnet.NetEnrich.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="pyscnet-netenrich">
+<h1>pyscnet.NetEnrich<a class="headerlink" href="#pyscnet-netenrich" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-pyscnet.NetEnrich.graph_toolkit">
+<span id="pyscnet-netenrich-graph-toolkit"></span><h2>pyscnet.NetEnrich.graph_toolkit<a class="headerlink" href="#module-pyscnet.NetEnrich.graph_toolkit" title="Permalink to this headline">¶</a></h2>
+<p>Created on Sun Jun 16 20:50:39 2019</p>
+<p>&#64;author: mwu</p>
+<dl class="py function">
+<dt id="pyscnet.NetEnrich.graph_toolkit.buildnet">
+<code class="sig-prename descclassname">pyscnet.NetEnrich.graph_toolkit.</code><code class="sig-name descname">buildnet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gnetdata</span></em>, <em class="sig-param"><span class="n">key_links</span></em>, <em class="sig-param"><span class="n">top</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/NetEnrich/graph_toolkit.html#buildnet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.NetEnrich.graph_toolkit.buildnet" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gnetdata</strong> – Gnetdata object.</p></li>
+<li><p><strong>key_links</strong> – str, key of links referring which linkage table for buidling graph</p></li>
+<li><p><strong>top</strong> – int, default None. top ranked links</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Gnetdata object with graph added into NetAttrs</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyscnet.NetEnrich.graph_toolkit.detect_community">
+<code class="sig-prename descclassname">pyscnet.NetEnrich.graph_toolkit.</code><code class="sig-name descname">detect_community</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gnetdata</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/NetEnrich/graph_toolkit.html#detect_community"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.NetEnrich.graph_toolkit.detect_community" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gnetdata</strong> – Gnetdata object.</p></li>
+<li><p><strong>kwargs</strong> – additional parameters passed to community_louvain.best_partition()</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Gnetdata object with ‘communities’ added into NetAttrs</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyscnet.NetEnrich.graph_toolkit.find_consensus_graph">
+<code class="sig-prename descclassname">pyscnet.NetEnrich.graph_toolkit.</code><code class="sig-name descname">find_consensus_graph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gnetdata</span></em>, <em class="sig-param"><span class="n">link_key</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'intersection'</span></em>, <em class="sig-param"><span class="n">toprank</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/NetEnrich/graph_toolkit.html#find_consensus_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.NetEnrich.graph_toolkit.find_consensus_graph" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gnetdata</strong> – Gnetdata object.</p></li>
+<li><p><strong>link_key</strong> – str, default all. key referring to linkage table.</p></li>
+<li><p><strong>method</strong> – str, default intersection. methods for detecting consensus links. Note: intersection is recommended when there are less than 3 linkage tables.</p></li>
+<li><p><strong>toprank</strong> – int, default 100. top ranked edges for intersection method.</p></li>
+<li><p><strong>threshold</strong> – int, default None. set threshold for ensemble method.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Gnetdata object with consensus links added into NetAttrs.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyscnet.NetEnrich.graph_toolkit.get_centrality">
+<code class="sig-prename descclassname">pyscnet.NetEnrich.graph_toolkit.</code><code class="sig-name descname">get_centrality</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gnetdata</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/NetEnrich/graph_toolkit.html#get_centrality"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.NetEnrich.graph_toolkit.get_centrality" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>gnetdata</strong> – Gnetdata object.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>gnetData object with ‘centralities’ added into NetAttrs</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyscnet.NetEnrich.graph_toolkit.graph_merge">
+<code class="sig-prename descclassname">pyscnet.NetEnrich.graph_toolkit.</code><code class="sig-name descname">graph_merge</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">link_1</span></em>, <em class="sig-param"><span class="n">link_2</span></em>, <em class="sig-param"><span class="n">toprank</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'union'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/NetEnrich/graph_toolkit.html#graph_merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.NetEnrich.graph_toolkit.graph_merge" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>link_1</strong> – dataframe. linkage table of graph_1</p></li>
+<li><p><strong>link_2</strong> – dataframe. linkage table of graph_2</p></li>
+<li><p><strong>toprank</strong> – int, default None. top edges from each methods for graph_merge</p></li>
+<li><p><strong>method</strong> – str, default union. methods:[union, intersection, snf]. snf refers to similarity network fusion.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dataframe, merged linkage</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyscnet.NetEnrich.graph_toolkit.graph_traveral">
+<code class="sig-prename descclassname">pyscnet.NetEnrich.graph_toolkit.</code><code class="sig-name descname">graph_traveral</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span></em>, <em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">threshold</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'bfs'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/NetEnrich/graph_toolkit.html#graph_traveral"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.NetEnrich.graph_toolkit.graph_traveral" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> – network graph object.</p></li>
+<li><p><strong>start</strong> (<em>str</em>) – str. starting point of graph.</p></li>
+<li><p><strong>threshold</strong> – int. the depth-limit</p></li>
+<li><p><strong>method</strong> – str. bfs or dfs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>explored graph.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyscnet.NetEnrich.graph_toolkit.path_merge">
+<code class="sig-prename descclassname">pyscnet.NetEnrich.graph_toolkit.</code><code class="sig-name descname">path_merge</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path_1</span></em>, <em class="sig-param"><span class="n">path_2</span></em>, <em class="sig-param"><span class="n">k_mer</span><span class="o">=</span><span class="default_value">3</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">'Eulerian'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/NetEnrich/graph_toolkit.html#path_merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.NetEnrich.graph_toolkit.path_merge" title="Permalink to this definition">¶</a></dt>
+<dd><p>TODO: perform de bruijn graph mapping for ginve two path lists</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyscnet.NetEnrich.graph_toolkit.random_walk">
+<code class="sig-prename descclassname">pyscnet.NetEnrich.graph_toolkit.</code><code class="sig-name descname">random_walk</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gnetdata</span></em>, <em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">supervisedby</span></em>, <em class="sig-param"><span class="n">steps</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/NetEnrich/graph_toolkit.html#random_walk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.NetEnrich.graph_toolkit.random_walk" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gnetdata</strong> – Gnetdata object</p></li>
+<li><p><strong>start</strong> – str, starting point of graph.</p></li>
+<li><p><strong>supervisedby</strong> – str, ‘betweenness’, ‘closeness’, ‘degree’ or ‘pageRank’</p></li>
+<li><p><strong>steps</strong> – int, number of steps.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of travelled nodes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyscnet.NetEnrich">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pyscnet.NetEnrich" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Ming Wu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

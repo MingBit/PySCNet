@@ -12,7 +12,7 @@ Welcome to pyscnet's documentation!
 
    Readme
    Install
-   Api
+   modules
    Tutorial
 
 

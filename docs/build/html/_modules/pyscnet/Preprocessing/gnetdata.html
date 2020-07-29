@@ -1,0 +1,303 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyscnet.Preprocessing.gnetdata &mdash; pyscnet 0.0.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> pyscnet
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Readme.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tutorial.html">Tutorial</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pyscnet</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pyscnet.Preprocessing.gnetdata</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pyscnet.Preprocessing.gnetdata</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on Wed May 22 13:53:34 2019</span>
+
+<span class="sd">@author: mwu</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">_pickle</span> <span class="k">as</span> <span class="nn">pk</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+
+<div class="viewcode-block" id="Gnetdata"><a class="viewcode-back" href="../../../pyscnet.Preprocessing.html#pyscnet.Preprocessing.gnetdata.Gnetdata">[docs]</a><span class="k">class</span> <span class="nc">Gnetdata</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gnetdata class includes dataset specifically</span>
+<span class="sd">    ------------------------------------------------</span>
+<span class="sd">    for building GRNs. It consists four sub-classes:</span>
+<span class="sd">    1) ExpMatrix: A gene count matrix</span>
+<span class="sd">    2) CellAttrs: A dict gives information about cells. eg. cluster_nr, annotation</span>
+<span class="sd">    3) GeneAttrs: A dict gives information about genes. eg. module_nr, marker_annotation</span>
+<span class="sd">    4) NetAttrs: A dict includes Networks attributes. eg. node centralities.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ExpMatrix</span><span class="p">,</span> <span class="n">CellAttrs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">GeneAttrs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ExpMatrix</span> <span class="o">=</span> <span class="n">ExpMatrix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CellAttrs</span> <span class="o">=</span> <span class="n">CellAttrs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">GeneAttrs</span> <span class="o">=</span> <span class="n">GeneAttrs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NetAttrs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NetAttrs</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_add_cellattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">CellAttrs</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr</span>
+
+    <span class="k">def</span> <span class="nf">_add_geneattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">GeneAttrs</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr</span>
+
+    <span class="k">def</span> <span class="nf">_add_netattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">NetAttrs</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr</span>
+
+    <span class="k">def</span> <span class="nf">_add_netattr_para</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">NetAttrs</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">][</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;return the shape of ExpMatrix&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ExpMatrix</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;make a deepcopy of gnetData &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; return the shape of ExpMatrix and the keys of CellAttrs, GeneAttrs, NetAttrs&quot;&quot;&quot;</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;Gnetdata object with </span><span class="se">\n</span><span class="s1">ExpMatrix: </span><span class="si">{}</span><span class="s1"> x </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;CellAttrs&#39;</span><span class="p">,</span> <span class="s1">&#39;GeneAttrs&#39;</span><span class="p">,</span> <span class="s1">&#39;NetAttrs&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">at</span> <span class="ow">in</span> <span class="n">attr</span><span class="p">:</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">at</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">at</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Gnetdata.save_as"><a class="viewcode-back" href="../../../pyscnet.Preprocessing.html#pyscnet.Preprocessing.gnetdata.Gnetdata.save_as">[docs]</a>    <span class="k">def</span> <span class="nf">save_as</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outpath</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;save as pickle object &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">outpath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outpath</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+                <span class="n">pk</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;filepath cannot be null!&#39;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="load_Gnetdata_object"><a class="viewcode-back" href="../../../pyscnet.Preprocessing.html#pyscnet.Preprocessing.gnetdata.load_Gnetdata_object">[docs]</a><span class="k">def</span> <span class="nf">load_Gnetdata_object</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    load Gnetdata (pickle) from local</span>
+<span class="sd">    ----------------------------------</span>
+<span class="sd">    :param filepath: str, default None.</span>
+<span class="sd">    :return: Gnetdata</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="nb">input</span><span class="p">:</span>
+        <span class="n">gnetdata</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">gnetdata</span></div>
+
+
+<div class="viewcode-block" id="load_from_scanpy"><a class="viewcode-back" href="../../../pyscnet.Preprocessing.html#pyscnet.Preprocessing.gnetdata.load_from_scanpy">[docs]</a><span class="k">def</span> <span class="nf">load_from_scanpy</span><span class="p">(</span><span class="n">scanpy_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filepath</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    load adata object</span>
+<span class="sd">    --------------------------------------------</span>
+<span class="sd">    :param scanpy_obj: adata object, default None</span>
+<span class="sd">    :param filepath: str, default None. filepath refers to adata object</span>
+<span class="sd">    :return: Gnetdata</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">scanpy_obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">gnetdata</span> <span class="o">=</span> <span class="n">Gnetdata</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">scanpy_obj</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">scanpy_obj</span><span class="o">.</span><span class="n">var_names</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">scanpy_obj</span><span class="o">.</span><span class="n">obs_names</span><span class="p">),</span>
+                            <span class="n">CellAttrs</span><span class="o">=</span><span class="nb">dict</span><span class="p">({</span><span class="s1">&#39;CellInfo&#39;</span><span class="p">:</span> <span class="n">scanpy_obj</span><span class="o">.</span><span class="n">obs</span><span class="p">}),</span>
+                            <span class="n">GeneAttrs</span><span class="o">=</span><span class="nb">dict</span><span class="p">({</span><span class="s1">&#39;GeneInfo&#39;</span><span class="p">:</span> <span class="n">scanpy_obj</span><span class="o">.</span><span class="n">var</span><span class="p">}))</span>
+
+    <span class="k">elif</span> <span class="n">filepath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="nb">input</span><span class="p">:</span>
+            <span class="n">scanpy_obj</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+            <span class="n">gnetdata</span> <span class="o">=</span> <span class="n">Gnetdata</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">scanpy_obj</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">scanpy_obj</span><span class="o">.</span><span class="n">var_names</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">scanpy_obj</span><span class="o">.</span><span class="n">obs_names</span><span class="p">),</span>
+                                <span class="n">CellAttrs</span><span class="o">=</span><span class="nb">dict</span><span class="p">({</span><span class="s1">&#39;CellInfo&#39;</span><span class="p">:</span> <span class="n">scanpy_obj</span><span class="o">.</span><span class="n">obs</span><span class="p">}),</span>
+                                <span class="n">GeneAttrs</span><span class="o">=</span><span class="nb">dict</span><span class="p">({</span><span class="s1">&#39;GeneInfo&#39;</span><span class="p">:</span> <span class="n">scanpy_obj</span><span class="o">.</span><span class="n">var</span><span class="p">}))</span>
+
+    <span class="k">return</span> <span class="n">gnetdata</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Ming Wu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

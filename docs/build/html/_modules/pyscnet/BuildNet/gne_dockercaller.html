@@ -1,0 +1,316 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyscnet.BuildNet.gne_dockercaller &mdash; pyscnet 0.0.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> pyscnet
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Readme.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tutorial.html">Tutorial</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pyscnet</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pyscnet.BuildNet.gne_dockercaller</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pyscnet.BuildNet.gne_dockercaller</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on Fri May 31 12:51:34 2019</span>
+
+<span class="sd">@author: mwu</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">import</span> <span class="nn">docker</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">tarfile</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">_pickle</span> <span class="k">as</span> <span class="nn">pk</span>
+
+<span class="k">global</span> <span class="n">path</span>
+<span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/Docker_App/&#39;</span>
+
+
+<span class="k">def</span> <span class="nf">__copy_to</span><span class="p">(</span><span class="n">container_id</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">):</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">docker</span><span class="o">.</span><span class="n">from_env</span><span class="p">()</span>
+    <span class="n">container</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">containers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">container_id</span><span class="p">)</span>
+    <span class="n">strm</span><span class="p">,</span> <span class="n">stat</span> <span class="o">=</span> <span class="n">container</span><span class="o">.</span><span class="n">get_archive</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;HOME&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;/temp.tar&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">strm</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">thisTar</span> <span class="o">=</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">TarFile</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">thisTar</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="s1">&#39;links.txt&#39;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">dst</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;HOME&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;/temp.tar&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">__remove_duplicate</span><span class="p">(</span><span class="n">links</span><span class="p">):</span>
+    <span class="n">links_list</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">links</span><span class="p">[[</span><span class="s1">&#39;source&#39;</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">links_list</span><span class="p">)):</span>
+        <span class="n">links_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">links_list</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">links_list</span><span class="p">)),</span> <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;source&#39;</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">))</span>
+    <span class="n">links</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">links</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">links</span>
+
+
+<span class="k">def</span> <span class="nf">__rundocker</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">feature</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cell_clusterid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">select_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Mms_TF</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">docker</span><span class="o">.</span><span class="n">from_env</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">feature</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">feature</span> <span class="o">=</span> <span class="n">gnetdata</span><span class="o">.</span><span class="n">ExpMatrix</span><span class="o">.</span><span class="n">index</span>
+
+    <span class="k">if</span> <span class="n">cell_clusterid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">cell</span> <span class="o">=</span> <span class="n">gnetdata</span><span class="o">.</span><span class="n">ExpMatrix</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">cell</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cell</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cell_info</span> <span class="o">=</span> <span class="n">gnetdata</span><span class="o">.</span><span class="n">CellAttrs</span><span class="p">[</span><span class="s1">&#39;CellInfo&#39;</span><span class="p">]</span>
+        <span class="n">cell</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cell_info</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cell_info</span><span class="p">[</span><span class="n">select_by</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="n">cell_clusterid</span><span class="p">])]</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+
+    <span class="n">tmp_expr</span> <span class="o">=</span> <span class="n">gnetdata</span><span class="o">.</span><span class="n">ExpMatrix</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">feature</span><span class="p">,</span> <span class="n">cell</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">Mms_TF</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">Mms_TF</span><span class="p">,</span> <span class="n">path</span> <span class="o">+</span> <span class="n">method</span> <span class="o">+</span> <span class="s1">&#39;/TF_Names.txt&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="n">method</span> <span class="o">+</span> <span class="s1">&#39;/paras.pk&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+        <span class="n">pk</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span>
+
+    <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">tmp_expr</span><span class="p">,</span> <span class="n">path</span> <span class="o">+</span> <span class="n">method</span> <span class="o">+</span> <span class="s1">&#39;/Expr.txt&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span> <span class="o">+</span> <span class="n">method</span><span class="p">,</span> <span class="n">dockerfile</span><span class="o">=</span><span class="s1">&#39;Dockerfile&#39;</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+    <span class="n">container</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">containers</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">detach</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">__copy_to</span><span class="p">(</span><span class="n">container_id</span><span class="o">=</span><span class="n">container</span><span class="o">.</span><span class="n">short_id</span><span class="p">,</span> <span class="n">src</span><span class="o">=</span><span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">method</span> <span class="o">+</span> <span class="s1">&#39;/links.txt&#39;</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;HOME&#39;</span><span class="p">))</span>
+
+    <span class="c1">#        client.remove_container(container.short_id)</span>
+    <span class="n">container</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">containers</span><span class="o">.</span><span class="n">prune</span><span class="p">()</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">prune</span><span class="p">()</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;rm &#39;</span> <span class="o">+</span> <span class="n">path</span> <span class="o">+</span> <span class="n">method</span> <span class="o">+</span> <span class="s1">&#39;/Expr.txt | rm &#39;</span> <span class="o">+</span> <span class="n">path</span> <span class="o">+</span> <span class="n">method</span> <span class="o">+</span> <span class="s1">&#39;/paras.pk&#39;</span><span class="p">)</span>
+    <span class="n">raw_links</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;HOME&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;/links.txt&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">raw_links</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">,</span> <span class="s1">&#39;weight&#39;</span><span class="p">]</span>
+    <span class="n">gnetdata</span><span class="o">.</span><span class="n">_add_netattr</span><span class="p">(</span><span class="n">method</span> <span class="o">+</span> <span class="s1">&#39;_links&#39;</span><span class="p">,</span> <span class="n">raw_links</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">method</span> <span class="o">+</span> <span class="s1">&#39;_links added into NetAttrs&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">gnetdata</span>
+
+
+<div class="viewcode-block" id="rundocker"><a class="viewcode-back" href="../../../pyscnet.BuildNet.html#pyscnet.BuildNet.gne_dockercaller.rundocker">[docs]</a><span class="k">def</span> <span class="nf">rundocker</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">feature</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cell_clusterid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">select_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Mms_TF</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Call GRN methods via docker.</span>
+<span class="sd">    -------------------------------------</span>
+<span class="sd">    :param gnetdata: Gnetdata object, default None.</span>
+<span class="sd">    :param method: str, default None. methods: [GENIE3, GRNBOOST2, PIDC, CORR]</span>
+<span class="sd">    :param cell: list, default None. a list of cell names</span>
+<span class="sd">    :param feature: list, default None. a list of gene names</span>
+<span class="sd">    :param cell_clusterid: str, default None. cell with cell_clusterid will be selected</span>
+<span class="sd">    :param select_by: str, default None. key of filtering cells</span>
+<span class="sd">    :param Mms_TF: list, default None. a list of transcription factor names</span>
+<span class="sd">    :param kwargs: additional parameters passed to scnode2vec()</span>
+<span class="sd">    :return: Gnetdata object with links saved in NetAttrs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;GENIE3&#39;</span><span class="p">:</span>
+        <span class="n">gnetdata</span> <span class="o">=</span> <span class="n">__rundocker</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;GENIE3&#39;</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">cell</span><span class="p">,</span> <span class="n">feature</span><span class="o">=</span><span class="n">feature</span><span class="p">,</span>
+                               <span class="n">cell_clusterid</span><span class="o">=</span><span class="n">cell_clusterid</span><span class="p">,</span> <span class="n">select_by</span><span class="o">=</span><span class="n">select_by</span><span class="p">,</span> <span class="n">Mms_TF</span><span class="o">=</span><span class="n">Mms_TF</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;GRNBOOST2&#39;</span><span class="p">:</span>
+        <span class="n">gnetdata</span> <span class="o">=</span> <span class="n">__rundocker</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;GRNBOOST2&#39;</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">cell</span><span class="p">,</span> <span class="n">feature</span><span class="o">=</span><span class="n">feature</span><span class="p">,</span>
+                               <span class="n">cell_clusterid</span><span class="o">=</span><span class="n">cell_clusterid</span><span class="p">,</span> <span class="n">select_by</span><span class="o">=</span><span class="n">select_by</span><span class="p">,</span> <span class="n">Mms_TF</span><span class="o">=</span><span class="n">Mms_TF</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;PIDC&#39;</span><span class="p">:</span>
+        <span class="c1"># remove genes with 0 counts</span>
+        <span class="n">gnetdata</span> <span class="o">=</span> <span class="n">__rundocker</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;PIDC&#39;</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">cell</span><span class="p">,</span> <span class="n">feature</span><span class="o">=</span><span class="n">feature</span><span class="p">,</span>
+                               <span class="n">cell_clusterid</span><span class="o">=</span><span class="n">cell_clusterid</span><span class="p">,</span> <span class="n">select_by</span><span class="o">=</span><span class="n">select_by</span><span class="p">,</span> <span class="n">Mms_TF</span><span class="o">=</span><span class="n">Mms_TF</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SCNODE2VEC&#39;</span><span class="p">:</span>
+        <span class="n">gnetdata</span> <span class="o">=</span> <span class="n">__rundocker</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;SCNODE2VEC&#39;</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">cell</span><span class="p">,</span> <span class="n">feature</span><span class="o">=</span><span class="n">feature</span><span class="p">,</span>
+                               <span class="n">cell_clusterid</span><span class="o">=</span><span class="n">cell_clusterid</span><span class="p">,</span> <span class="n">select_by</span><span class="o">=</span><span class="n">select_by</span><span class="p">,</span> <span class="n">Mms_TF</span><span class="o">=</span><span class="n">Mms_TF</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;CORR&quot;</span><span class="p">:</span>
+        <span class="n">gnetdata</span> <span class="o">=</span> <span class="n">__rundocker</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;CORR&#39;</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">cell</span><span class="p">,</span> <span class="n">feature</span><span class="o">=</span><span class="n">feature</span><span class="p">,</span>
+                               <span class="n">cell_clusterid</span><span class="o">=</span><span class="n">cell_clusterid</span><span class="p">,</span> <span class="n">select_by</span><span class="o">=</span><span class="n">select_by</span><span class="p">,</span> <span class="n">Mms_TF</span><span class="o">=</span><span class="n">Mms_TF</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;valid method: GENIE3, CORR, PIDC, GRNBOOST2, SCNODE2VEC&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">gnetdata</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Ming Wu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

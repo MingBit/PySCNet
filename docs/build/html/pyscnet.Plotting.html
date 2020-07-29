@@ -1,0 +1,345 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyscnet.Plotting &mdash; pyscnet 0.0.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> pyscnet
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Readme.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">pyscnet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tutorial.html">Tutorial</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyscnet</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>pyscnet.Plotting</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/pyscnet.Plotting.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="pyscnet-plotting">
+<h1>pyscnet.Plotting<a class="headerlink" href="#pyscnet-plotting" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-pyscnet.Plotting.geneHeatmap">
+<span id="pyscnet-plotting-geneheatmap"></span><h2>pyscnet.Plotting.geneHeatmap<a class="headerlink" href="#module-pyscnet.Plotting.geneHeatmap" title="Permalink to this headline">¶</a></h2>
+<p>Created on Thu May  9 11:32:32 2019
+&#64;author: mwu</p>
+<dl class="py function">
+<dt id="pyscnet.Plotting.geneHeatmap.geneCorrelation">
+<code class="sig-prename descclassname">pyscnet.Plotting.geneHeatmap.</code><code class="sig-name descname">geneCorrelation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gnetdata</span></em>, <em class="sig-param"><span class="n">gene</span></em>, <em class="sig-param"><span class="n">cell_clusterid</span></em>, <em class="sig-param"><span class="n">select_by</span></em>, <em class="sig-param"><span class="n">order_by</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scale_data</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_as</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">figsize</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/Plotting/geneHeatmap.html#geneCorrelation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.Plotting.geneHeatmap.geneCorrelation" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gnetdata</strong> – Gnetdata object</p></li>
+<li><p><strong>gene</strong> – list, default None.</p></li>
+<li><p><strong>cell_clusterid</strong> – str, default None. cell with cell_clusterid will be selected</p></li>
+<li><p><strong>select_by</strong> – str, default None. key of filtering cells</p></li>
+<li><p><strong>order_by</strong> – str, default None. key of ordering cells</p></li>
+<li><p><strong>scale_data</strong> – bool, default True. whether or not scale the data</p></li>
+<li><p><strong>save_as</strong> – str, default None. filepath+filename</p></li>
+<li><p><strong>figsize</strong> – list, default None. a list of int defining figure size</p></li>
+<li><p><strong>kwargs</strong> – additional parameters passed to seaborn.clustermap()</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyscnet.Plotting.geneHeatmap.geneDynamic">
+<code class="sig-prename descclassname">pyscnet.Plotting.geneHeatmap.</code><code class="sig-name descname">geneDynamic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gnetdata</span></em>, <em class="sig-param"><span class="n">gene</span></em>, <em class="sig-param"><span class="n">cell_clusterid</span></em>, <em class="sig-param"><span class="n">select_by</span></em>, <em class="sig-param"><span class="n">rolling</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">order_by</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scale_data</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_as</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">colors</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">legend_size</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/Plotting/geneHeatmap.html#geneDynamic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.Plotting.geneHeatmap.geneDynamic" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gnetdata</strong> – Gnetdata object</p></li>
+<li><p><strong>gene</strong> – list, default None.</p></li>
+<li><p><strong>cell_clusterid</strong> – str, default None. cell with cell_clusterid will be selected</p></li>
+<li><p><strong>select_by</strong> – str, default None. key of filtering cells</p></li>
+<li><p><strong>order_by</strong> – str, default None. key of ordering cells</p></li>
+<li><p><strong>rolling</strong> – int, default 10. rolling window calculation</p></li>
+<li><p><strong>scale_data</strong> – bool, default True. whether or not scale the data</p></li>
+<li><p><strong>save_as</strong> – str, default None. filepath+filename</p></li>
+<li><p><strong>colors</strong> – list, default None. list of string denoting color map</p></li>
+<li><p><strong>legend_size</strong> – list, default None. specify legend size</p></li>
+<li><p><strong>kwargs</strong> – additional parameters passed to matplotlib.pyplot.plot()</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>none</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyscnet.Plotting.geneHeatmap.geneHeatmap">
+<code class="sig-prename descclassname">pyscnet.Plotting.geneHeatmap.</code><code class="sig-name descname">geneHeatmap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gnetdata</span></em>, <em class="sig-param"><span class="n">gene</span></em>, <em class="sig-param"><span class="n">cell_clusterid</span></em>, <em class="sig-param"><span class="n">select_by</span></em>, <em class="sig-param"><span class="n">order_by</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scale_data</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">cmap</span><span class="o">=</span><span class="default_value">'RdBu'</span></em>, <em class="sig-param"><span class="n">save_as</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/Plotting/geneHeatmap.html#geneHeatmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.Plotting.geneHeatmap.geneHeatmap" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gnetdata</strong> – Gnetdata object, default None</p></li>
+<li><p><strong>gene</strong> – list, default None.</p></li>
+<li><p><strong>cell_clusterid</strong> – str, default None. cell with cell_clusterid will be selected</p></li>
+<li><p><strong>select_by</strong> – str, default None. key of filtering cells</p></li>
+<li><p><strong>order_by</strong> – str, default None. key of ordering cells</p></li>
+<li><p><strong>scale_data</strong> – bool, default True. whether or not scale the data</p></li>
+<li><p><strong>cmap</strong> – str, default ‘RdBu’. string denoting colors in clustermap</p></li>
+<li><p><strong>save_as</strong> – str, default None. filepath+filename</p></li>
+<li><p><strong>kwargs</strong> – additional parameters passed to seaborn.clustermap()</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyscnet.Plotting.show_net">
+<span id="pyscnet-plotting-show-net"></span><h2>pyscnet.Plotting.show_net<a class="headerlink" href="#module-pyscnet.Plotting.show_net" title="Permalink to this headline">¶</a></h2>
+<p>Created on Thu May  9 11:32:32 2019
+&#64;author: mwu</p>
+<dl class="py function">
+<dt id="pyscnet.Plotting.show_net.dynamic_netShow">
+<code class="sig-prename descclassname">pyscnet.Plotting.show_net.</code><code class="sig-name descname">dynamic_netShow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gnetdata</span></em>, <em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">node_size</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">html_size</span><span class="o">=</span><span class="default_value">['1200px', '1600px']</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/Plotting/show_net.html#dynamic_netShow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.Plotting.show_net.dynamic_netShow" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gnetdata</strong> – Gnetdata object</p></li>
+<li><p><strong>filename</strong> – str, save as filename</p></li>
+<li><p><strong>node_size</strong> – int, default 50.</p></li>
+<li><p><strong>html_size</strong> – list, default [“1200px”, “1600px”]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyscnet.Plotting.show_net.static_netShow">
+<code class="sig-prename descclassname">pyscnet.Plotting.show_net.</code><code class="sig-name descname">static_netShow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gnetdata</span></em>, <em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">scale</span><span class="o">=</span><span class="default_value">4</span></em>, <em class="sig-param"><span class="n">figure_size</span><span class="o">=</span><span class="default_value">[20, 10]</span></em>, <em class="sig-param"><span class="n">link_key</span><span class="o">=</span><span class="default_value">'consensus'</span></em>, <em class="sig-param"><span class="n">random_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">path_highlight</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">neighhours_highlight</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">start</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/Plotting/show_net.html#static_netShow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.Plotting.show_net.static_netShow" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gnetdata</strong> – Gnetdata object</p></li>
+<li><p><strong>filename</strong> – str, save as filename</p></li>
+<li><p><strong>scale</strong> – int, default 4.</p></li>
+<li><p><strong>figure_size</strong> – list, default [20, 10].</p></li>
+<li><p><strong>random_path</strong> – list, list of nodes for highlighting.</p></li>
+<li><p><strong>path_highlight</strong> – bool, default False.</p></li>
+<li><p><strong>neighhours_highlight</strong> – bool, default False.</p></li>
+<li><p><strong>start</strong> – str, default None.</p></li>
+<li><p><strong>kwargs</strong> – additional parameters passed to networkx.draw_networkx()</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyscnet.Plotting">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pyscnet.Plotting" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Ming Wu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

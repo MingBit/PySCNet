@@ -1,0 +1,407 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyscnet.NetEnrich.graph_toolkit &mdash; pyscnet 0.0.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> pyscnet
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Readme.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tutorial.html">Tutorial</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pyscnet</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pyscnet.NetEnrich.graph_toolkit</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pyscnet.NetEnrich.graph_toolkit</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on Sun Jun 16 20:50:39 2019</span>
+
+<span class="sd">@author: mwu</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">community</span> <span class="kn">import</span> <span class="n">community_louvain</span>
+<span class="kn">import</span> <span class="nn">snf</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">networkx.algorithms.traversal</span> <span class="k">as</span> <span class="nn">nextra</span>
+<span class="kn">from</span> <span class="nn">._de_bruijn</span> <span class="kn">import</span> <span class="n">construct_graph</span><span class="p">,</span> <span class="n">output_contigs</span>
+<span class="kn">from</span> <span class="nn">._random_walk</span> <span class="kn">import</span> <span class="n">supervised_random_walk</span>
+<span class="kn">from</span> <span class="nn">._ensemble_classifier</span> <span class="kn">import</span> <span class="n">_generate_x_y</span><span class="p">,</span> <span class="n">ensemble_classifier</span>
+
+
+<span class="k">def</span> <span class="fm">__init__</span><span class="p">():</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">__linkage_to_adjlink</span><span class="p">(</span><span class="n">linkage_table</span><span class="p">,</span> <span class="n">node_list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    convert linkage table to weighted adjacency matrix</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">adjlink_matrix</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">node_list</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">node_list</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="c1">#        source, target, score = list(linkage_table.columns)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">linkage_table</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">linkage_table</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="ow">in</span> <span class="n">node_list</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">linkage_table</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="ow">in</span> <span class="n">node_list</span><span class="p">):</span>
+            <span class="n">adjlink_matrix</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">linkage_table</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]][</span><span class="n">linkage_table</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">linkage_table</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">adjlink_matrix</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">linkage_table</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]][</span><span class="n">linkage_table</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">linkage_table</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">break</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">adjlink_matrix</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">__snf_based_merge</span><span class="p">(</span><span class="n">link_1</span><span class="p">,</span> <span class="n">link_2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    snf network merge based on Wang, Bo, et al. Nature methods 11.3 (2014): 333.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+    <span class="n">node_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">link_1</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">link_1</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">link_2</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">link_2</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]))</span>
+
+    <span class="n">adjlinks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="n">adjlinks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">__linkage_to_adjlink</span><span class="p">(</span><span class="n">link_1</span><span class="p">,</span> <span class="n">node_list</span><span class="p">))</span>
+    <span class="n">adjlinks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">__linkage_to_adjlink</span><span class="p">(</span><span class="n">link_2</span><span class="p">,</span> <span class="n">node_list</span><span class="p">))</span>
+    <span class="n">affinity_matrix</span> <span class="o">=</span> <span class="n">snf</span><span class="o">.</span><span class="n">make_affinity</span><span class="p">(</span><span class="n">adjlinks</span><span class="p">)</span>
+    <span class="n">fused_network</span> <span class="o">=</span> <span class="n">snf</span><span class="o">.</span><span class="n">snf</span><span class="p">(</span><span class="n">affinity_matrix</span><span class="p">)</span>
+    <span class="n">Graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">from_pandas_adjacency</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">fused_network</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">node_list</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">node_list</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">Graph</span><span class="o">.</span><span class="n">edges</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">])</span>
+
+
+<div class="viewcode-block" id="buildnet"><a class="viewcode-back" href="../../../pyscnet.NetEnrich.html#pyscnet.NetEnrich.graph_toolkit.buildnet">[docs]</a><span class="k">def</span> <span class="nf">buildnet</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">key_links</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given linkage table, build gene correlation graph</span>
+<span class="sd">    ----------------------------------------------------</span>
+<span class="sd">    :param gnetdata: Gnetdata object.</span>
+<span class="sd">    :param key_links: str, key of links referring which linkage table for buidling graph</span>
+<span class="sd">    :param top: int, default None. top ranked links</span>
+<span class="sd">    :return: Gnetdata object with graph added into NetAttrs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">top</span> <span class="o">=</span> <span class="n">gnetdata</span><span class="o">.</span><span class="n">NetAttrs</span><span class="p">[</span><span class="n">key_links</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">top</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">top</span>
+    <span class="n">links_filter</span> <span class="o">=</span> <span class="n">gnetdata</span><span class="o">.</span><span class="n">NetAttrs</span><span class="p">[</span><span class="n">key_links</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;weight&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">top</span><span class="p">)</span>
+
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">from_pandas_edgelist</span><span class="p">(</span><span class="n">links_filter</span><span class="p">,</span>
+                                <span class="n">source</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span>
+                                <span class="n">target</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span>
+                                <span class="n">edge_attr</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">gnetdata</span><span class="o">.</span><span class="n">_add_netattr</span><span class="p">(</span><span class="s1">&#39;graph&#39;</span><span class="p">,</span> <span class="n">G</span><span class="p">)</span>
+    <span class="n">gnetdata</span><span class="o">.</span><span class="n">_add_netattr_para</span><span class="p">(</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">top</span><span class="p">))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;graph added into NetAttrs&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">gnetdata</span></div>
+
+
+<div class="viewcode-block" id="get_centrality"><a class="viewcode-back" href="../../../pyscnet.NetEnrich.html#pyscnet.NetEnrich.graph_toolkit.get_centrality">[docs]</a><span class="k">def</span> <span class="nf">get_centrality</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Measure node centrality in the network.</span>
+<span class="sd">    ---------------------------------------</span>
+<span class="sd">    :param gnetdata: Gnetdata object.</span>
+<span class="sd">    :return: gnetData object with &#39;centralities&#39; added into NetAttrs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">gnetdata</span><span class="o">.</span><span class="n">NetAttrs</span><span class="p">[</span><span class="s1">&#39;graph&#39;</span><span class="p">]</span>
+    <span class="n">centralities</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;node&#39;</span><span class="p">])</span>
+    <span class="n">centralities</span><span class="p">[</span><span class="s1">&#39;betweenness&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">betweenness_centrality</span><span class="p">(</span><span class="n">G</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()))[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">centralities</span><span class="p">[</span><span class="s1">&#39;closeness&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">closeness_centrality</span><span class="p">(</span><span class="n">G</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()))[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">centralities</span><span class="p">[</span><span class="s1">&#39;degree&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">degree_centrality</span><span class="p">(</span><span class="n">G</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()))[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">centralities</span><span class="p">[</span><span class="s1">&#39;pageRank&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">pagerank</span><span class="p">(</span><span class="n">G</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()))[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">gnetdata</span><span class="o">.</span><span class="n">NetAttrs</span><span class="p">[</span><span class="s1">&#39;centralities&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">centralities</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;node centralities added into NetAttrs.&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">gnetdata</span></div>
+
+
+<div class="viewcode-block" id="detect_community"><a class="viewcode-back" href="../../../pyscnet.NetEnrich.html#pyscnet.NetEnrich.graph_toolkit.detect_community">[docs]</a><span class="k">def</span> <span class="nf">detect_community</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Detect gene modules via louvain community dection algorithm.</span>
+<span class="sd">    -------------------------------------------------------------</span>
+<span class="sd">    :param gnetdata: Gnetdata object.</span>
+<span class="sd">    :param kwargs: additional parameters passed to community_louvain.best_partition()</span>
+<span class="sd">    :return: Gnetdata object with &#39;communities&#39; added into NetAttrs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">gnetdata</span><span class="o">.</span><span class="n">NetAttrs</span><span class="p">[</span><span class="s1">&#39;graph&#39;</span><span class="p">]</span>
+    <span class="n">partition</span> <span class="o">=</span> <span class="n">community_louvain</span><span class="o">.</span><span class="n">best_partition</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">communities</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">partition</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+    <span class="n">communities</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;node&#39;</span><span class="p">,</span> <span class="s1">&#39;group&#39;</span><span class="p">]</span>
+
+    <span class="n">gnetdata</span><span class="o">.</span><span class="n">NetAttrs</span><span class="p">[</span><span class="s1">&#39;communities&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">communities</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;gene communities added into NetAttrs&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">gnetdata</span></div>
+
+
+<div class="viewcode-block" id="find_consensus_graph"><a class="viewcode-back" href="../../../pyscnet.NetEnrich.html#pyscnet.NetEnrich.graph_toolkit.find_consensus_graph">[docs]</a><span class="k">def</span> <span class="nf">find_consensus_graph</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">link_key</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;intersection&#39;</span><span class="p">,</span> <span class="n">toprank</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given multiple linkage tables, it predicts consensus links.</span>
+<span class="sd">    ------------------------------------------------------------</span>
+<span class="sd">    :param gnetdata: Gnetdata object.</span>
+<span class="sd">    :param link_key: str, default all. key referring to linkage table.</span>
+<span class="sd">    :param method: str, default intersection. methods for detecting consensus links. Note: intersection is recommended when there are less than 3 linkage tables.</span>
+<span class="sd">    :param toprank: int, default 100. top ranked edges for intersection method.</span>
+<span class="sd">    :param threshold: int, default None. set threshold for ensemble method.</span>
+<span class="sd">    :return: Gnetdata object with consensus links added into NetAttrs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;intersection&#39;</span><span class="p">,</span> <span class="s1">&#39;snf&#39;</span><span class="p">,</span> <span class="s1">&#39;ensemble&#39;</span><span class="p">],</span> <span class="s1">&#39;only following methods acceptable : intersection, snf, ensemble&#39;</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s1">&#39;links&#39;</span> <span class="ow">in</span> <span class="n">x</span><span class="p">,</span> <span class="n">gnetdata</span><span class="o">.</span><span class="n">NetAttrs</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span> <span class="k">if</span> <span class="n">link_key</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span> <span class="k">else</span> <span class="n">link_key</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;intersection&#39;</span><span class="p">:</span>
+        <span class="n">merged_links</span> <span class="o">=</span> <span class="n">gnetdata</span><span class="o">.</span><span class="n">NetAttrs</span><span class="p">[</span><span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)):</span>
+            <span class="n">merged_links</span> <span class="o">=</span> <span class="n">graph_merge</span><span class="p">(</span><span class="n">merged_links</span><span class="p">,</span> <span class="n">gnetdata</span><span class="o">.</span><span class="n">NetAttrs</span><span class="p">[</span><span class="n">keys</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">toprank</span><span class="o">=</span><span class="n">toprank</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;ensemble&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">threshold</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;threshold cannot be none!&#39;</span><span class="p">)</span>
+        <span class="n">links_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">,</span> <span class="n">gnetdata</span><span class="o">.</span><span class="n">NetAttrs</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+        <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">_generate_x_y</span><span class="p">(</span><span class="n">links_dict</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+        <span class="n">merged_links</span> <span class="o">=</span> <span class="n">ensemble_classifier</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;there are </span><span class="si">{}</span><span class="s1"> consensus edges found!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">merged_links</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">gnetdata</span><span class="o">.</span><span class="n">_add_netattr</span><span class="p">(</span><span class="s1">&#39;consensus&#39;</span><span class="p">,</span> <span class="n">merged_links</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">gnetdata</span></div>
+
+
+<div class="viewcode-block" id="graph_merge"><a class="viewcode-back" href="../../../pyscnet.NetEnrich.html#pyscnet.NetEnrich.graph_toolkit.graph_merge">[docs]</a><span class="k">def</span> <span class="nf">graph_merge</span><span class="p">(</span><span class="n">link_1</span><span class="p">,</span> <span class="n">link_2</span><span class="p">,</span> <span class="n">toprank</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;union&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given two graphs, it returns merged graph.</span>
+<span class="sd">    ----------------------------------------------</span>
+<span class="sd">    :param link_1: dataframe. linkage table of graph_1</span>
+<span class="sd">    :param link_2: dataframe. linkage table of graph_2</span>
+<span class="sd">    :param toprank: int, default None. top edges from each methods for graph_merge</span>
+<span class="sd">    :param method: str, default union. methods:[union, intersection, snf]. snf refers to similarity network fusion.</span>
+<span class="sd">    :return: dataframe, merged linkage</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;union&#39;</span><span class="p">,</span> <span class="s1">&#39;intersection&#39;</span><span class="p">,</span> <span class="s1">&#39;snf&#39;</span><span class="p">],</span> <span class="s1">&#39;valid method parameter: union, intersection, knn!&#39;</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;union&#39;</span><span class="p">,</span> <span class="s1">&#39;intersection&#39;</span><span class="p">]:</span>
+        <span class="n">toprank</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">link_1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">link_2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="n">toprank</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">toprank</span>
+        <span class="n">link_1</span> <span class="o">=</span> <span class="n">link_1</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;weight&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">toprank</span><span class="p">)</span>
+        <span class="n">link_2</span> <span class="o">=</span> <span class="n">link_2</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;weight&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">toprank</span><span class="p">)</span>
+        <span class="n">mergedlinks</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">link_1</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">link_2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;outer&#39;</span> <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;union&#39;</span> <span class="k">else</span> <span class="s1">&#39;inner&#39;</span><span class="p">)</span>
+        <span class="n">mergedlinks</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">mergedlinks</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;snf&#39;</span><span class="p">:</span>
+        <span class="n">mergedlinks</span> <span class="o">=</span> <span class="n">__snf_based_merge</span><span class="p">(</span><span class="n">link_1</span><span class="p">,</span> <span class="n">link_2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mergedlinks</span></div>
+
+
+<div class="viewcode-block" id="graph_traveral"><a class="viewcode-back" href="../../../pyscnet.NetEnrich.html#pyscnet.NetEnrich.graph_toolkit.graph_traveral">[docs]</a><span class="k">def</span> <span class="nf">graph_traveral</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;bfs&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a graph, it provides graph traversal techniques including breadth-first search (bsf) and depth-first search (dfs) to explore hidden gene/tf associations.</span>
+<span class="sd">    -----------------------------------------------------------------------------</span>
+<span class="sd">    :param graph: network graph object.</span>
+<span class="sd">    :param start: str. starting point of graph.</span>
+<span class="sd">    :type start: str</span>
+<span class="sd">    :param threshold: int. the depth-limit</span>
+<span class="sd">    :param method: str. bfs or dfs</span>
+<span class="sd">    :return: explored graph.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;bfs&#39;</span><span class="p">,</span> <span class="s1">&#39;dfs&#39;</span><span class="p">],</span> <span class="s1">&#39;valid method parameters: bfs, dfs!&#39;</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;bfs&#39;</span><span class="p">:</span>
+        <span class="n">res_path</span> <span class="o">=</span> <span class="n">nextra</span><span class="o">.</span><span class="n">bfs_tree</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;dfs&#39;</span><span class="p">:</span>
+        <span class="n">res_path</span> <span class="o">=</span> <span class="n">nextra</span><span class="o">.</span><span class="n">dfs_tree</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">res_path</span></div>
+
+
+<div class="viewcode-block" id="random_walk"><a class="viewcode-back" href="../../../pyscnet.NetEnrich.html#pyscnet.NetEnrich.graph_toolkit.random_walk">[docs]</a><span class="k">def</span> <span class="nf">random_walk</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">supervisedby</span><span class="p">,</span> <span class="n">steps</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Supervised random walk guided by node centrality attribute.</span>
+<span class="sd">    ------------------------------------------------------------</span>
+<span class="sd">    :param gnetdata: Gnetdata object</span>
+<span class="sd">    :param start: str, starting point of graph.</span>
+<span class="sd">    :param supervisedby: str, &#39;betweenness&#39;, &#39;closeness&#39;, &#39;degree&#39; or &#39;pageRank&#39;</span>
+<span class="sd">    :param steps: int, number of steps.</span>
+<span class="sd">    :return: a list of travelled nodes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">supervised_random_walk</span><span class="p">(</span><span class="n">gnetdata</span><span class="o">=</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">supervisedby</span><span class="o">=</span><span class="n">supervisedby</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="n">steps</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">path</span></div>
+
+
+<div class="viewcode-block" id="path_merge"><a class="viewcode-back" href="../../../pyscnet.NetEnrich.html#pyscnet.NetEnrich.graph_toolkit.path_merge">[docs]</a><span class="k">def</span> <span class="nf">path_merge</span><span class="p">(</span><span class="n">path_1</span><span class="p">,</span> <span class="n">path_2</span><span class="p">,</span> <span class="n">k_mer</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;Eulerian&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TODO: perform de bruijn graph mapping for ginve two path lists</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">construct_graph</span><span class="p">([</span><span class="n">path_1</span><span class="p">,</span> <span class="n">path_2</span><span class="p">],</span> <span class="n">k_mer</span><span class="p">)</span>
+    <span class="n">merged_path</span> <span class="o">=</span> <span class="n">output_contigs</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">merged_path</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Ming Wu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

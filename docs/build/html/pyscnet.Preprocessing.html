@@ -1,0 +1,321 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyscnet.Preprocessing &mdash; pyscnet 0.0.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="pyscnet.BuildNet" href="pyscnet.BuildNet.html" />
+    <link rel="prev" title="pyscnet" href="pyscnet.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> pyscnet
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Readme.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Install.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="pyscnet.html">pyscnet</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">pyscnet.Preprocessing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#module-pyscnet.Preprocessing.gnetdata">pyscnet.Preprocessing.gnetdata</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-pyscnet.Preprocessing">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyscnet.BuildNet.html">pyscnet.BuildNet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyscnet.NetEnrich.html">pyscnet.NetEnrich</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyscnet.Plotting.html">pyscnet.Plotting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyscnet.html#module-pyscnet">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Tutorial.html">Tutorial</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyscnet</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">API</a> &raquo;</li>
+        
+          <li><a href="pyscnet.html">pyscnet</a> &raquo;</li>
+        
+      <li>pyscnet.Preprocessing</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/pyscnet.Preprocessing.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="pyscnet-preprocessing">
+<h1>pyscnet.Preprocessing<a class="headerlink" href="#pyscnet-preprocessing" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-pyscnet.Preprocessing.gnetdata">
+<span id="pyscnet-preprocessing-gnetdata"></span><h2>pyscnet.Preprocessing.gnetdata<a class="headerlink" href="#module-pyscnet.Preprocessing.gnetdata" title="Permalink to this headline">¶</a></h2>
+<p>Created on Wed May 22 13:53:34 2019</p>
+<p>&#64;author: mwu</p>
+<dl class="py class">
+<dt id="pyscnet.Preprocessing.gnetdata.Gnetdata">
+<em class="property">class </em><code class="sig-prename descclassname">pyscnet.Preprocessing.gnetdata.</code><code class="sig-name descname">Gnetdata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ExpMatrix</span></em>, <em class="sig-param"><span class="n">CellAttrs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">GeneAttrs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/Preprocessing/gnetdata.html#Gnetdata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.Preprocessing.gnetdata.Gnetdata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>for building GRNs. It consists four sub-classes:
+1) ExpMatrix: A gene count matrix
+2) CellAttrs: A dict gives information about cells. eg. cluster_nr, annotation
+3) GeneAttrs: A dict gives information about genes. eg. module_nr, marker_annotation
+4) NetAttrs: A dict includes Networks attributes. eg. node centralities.</p>
+<dl class="py method">
+<dt id="pyscnet.Preprocessing.gnetdata.Gnetdata.deepcopy">
+<em class="property">property </em><code class="sig-name descname">deepcopy</code><a class="headerlink" href="#pyscnet.Preprocessing.gnetdata.Gnetdata.deepcopy" title="Permalink to this definition">¶</a></dt>
+<dd><p>make a deepcopy of gnetData</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyscnet.Preprocessing.gnetdata.Gnetdata.info">
+<em class="property">property </em><code class="sig-name descname">info</code><a class="headerlink" href="#pyscnet.Preprocessing.gnetdata.Gnetdata.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the shape of ExpMatrix and the keys of CellAttrs, GeneAttrs, NetAttrs</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyscnet.Preprocessing.gnetdata.Gnetdata.save_as">
+<code class="sig-name descname">save_as</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">outpath</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/Preprocessing/gnetdata.html#Gnetdata.save_as"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.Preprocessing.gnetdata.Gnetdata.save_as" title="Permalink to this definition">¶</a></dt>
+<dd><p>save as pickle object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyscnet.Preprocessing.gnetdata.Gnetdata.shape">
+<em class="property">property </em><code class="sig-name descname">shape</code><a class="headerlink" href="#pyscnet.Preprocessing.gnetdata.Gnetdata.shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the shape of ExpMatrix</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyscnet.Preprocessing.gnetdata.load_Gnetdata_object">
+<code class="sig-prename descclassname">pyscnet.Preprocessing.gnetdata.</code><code class="sig-name descname">load_Gnetdata_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filepath</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/Preprocessing/gnetdata.html#load_Gnetdata_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.Preprocessing.gnetdata.load_Gnetdata_object" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filepath</strong> – str, default None.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Gnetdata</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyscnet.Preprocessing.gnetdata.load_from_scanpy">
+<code class="sig-prename descclassname">pyscnet.Preprocessing.gnetdata.</code><code class="sig-name descname">load_from_scanpy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scanpy_obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">filepath</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/Preprocessing/gnetdata.html#load_from_scanpy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.Preprocessing.gnetdata.load_from_scanpy" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scanpy_obj</strong> – adata object, default None</p></li>
+<li><p><strong>filepath</strong> – str, default None. filepath refers to adata object</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Gnetdata</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyscnet.Preprocessing">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pyscnet.Preprocessing" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="pyscnet.BuildNet.html" class="btn btn-neutral float-right" title="pyscnet.BuildNet" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="pyscnet.html" class="btn btn-neutral float-left" title="pyscnet" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Ming Wu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
