@@ -3,8 +3,8 @@ Installation
 
 Requirements
 --------------
-As pyscnet integrates `docker`_ for gene regulatory construction, it is necessary to install docker before the installation.
-Check here for `docker installation`_.
+.. note::
+    As pyscnet integrates `docker`_ for gene regulatory construction, it is necessary to install docker before the installation. Check here for `docker installation`_.
 
 
 PyPI

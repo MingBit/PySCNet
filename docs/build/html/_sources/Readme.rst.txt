@@ -12,7 +12,7 @@ There are four modules:
 3) **NetEnrich**: network analysis including consensus network detection, gene module identification and trigger path prediction as well as network fusion;
 4) **Visulization**: network illustration.
 
-.. figure:: ../../Overview.png
+.. figure:: ../../images/Overview.png
     :width: 600
 
 Features
@@ -22,7 +22,7 @@ Once the cells are grouped into several clusters and linkage tables are generate
 as pickle object and uplaod onto Shinyapp. Cell attributes, Gene attributes and Network attributes are illustrated here.
 As shown belows, you can set your own thresholds to build each/all cluster-specific GRNs.
 
-.. figure:: ../../ShinyApp.gif
+.. figure:: ../../images/ShinyApp.gif
     :width: 600
 
 Cite
