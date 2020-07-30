@@ -1,0 +1,11 @@
+numpy
+pandas
+sklearn
+scipy
+scikit-learn
+dask
+distributed
+xlrd
+fsspec>=0.3.3
+arboreto
+
