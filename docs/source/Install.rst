@@ -17,13 +17,13 @@ install pyscnet via PyPI
 
 Github
 --------------
-install pyscnet via github
+install develop version pyscnet via github
 
 .. code-block::
 
     git clone https://github.com/MingBit/PySCNet
     mkdir dist | python setup.py sdist
-    pip install dist/pyscnet-0.0.2.tar.gz
+    pip install dist/pyscnet-0.0.3.tar.gz
 
 
 .. _docker: https://www.docker.com/

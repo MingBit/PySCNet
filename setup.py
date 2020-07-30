@@ -9,13 +9,12 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pyscnet",
-    version="0.0.2",
+    version="0.0.3",
     author="Ming Wu",
     license='MIT',
     author_email="ming.wu@tum.de",
     description="A tool for reconstructing and analyzing gene regulatory network from single-cell RNA-Seq data",
     url="https://github.com/MingBit/PySCNet",
-    download_url="https://github.com/MingBit/PySCNet/archive/v0.0.1.tar.gz",
     packages=setuptools.find_packages(),
     install_requires=required,
     include_package_data=True,
