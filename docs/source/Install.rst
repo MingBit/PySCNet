@@ -15,6 +15,27 @@ install pyscnet via PyPI
 
     pip install pyscnet
 
+
+.. warning::
+    It might occurs package version conflicts.
+
+To address this issue, you can create a new/clean conda environment
+
+.. code-block::
+
+    #create new environment with python3.6
+    conda create --name pyscnet_env python=3.6
+
+    #activate pyscnet_env
+    conda activate pyscnet_env
+
+    #install pyscnet
+    pip install pyscnet
+
+    #go to python
+    import pyscnet
+
+
 Github
 --------------
 install develop version pyscnet via github
