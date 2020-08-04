@@ -23,7 +23,7 @@ copyright = '2020, Ming Wu'
 author = 'Ming Wu'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.2'
+release = '0.0.3'
 
 
 # -- General configuration ---------------------------------------------------

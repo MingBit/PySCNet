@@ -13,20 +13,21 @@ import copy
 import matplotlib as mpl
 
 
-def dynamic_netShow(gnetdata, filename, node_size=50, html_size=["1200px", "1600px"]):
+def dynamic_netShow(gnetdata, filename,  link_key = 'consensus', node_size=50, html_size=["1200px", "1600px"]):
     """
     create a GRN html
     -------------------------
     :param gnetdata: Gnetdata object
     :param filename: str, save as filename
+    :param link_key: str, key of link table
     :param node_size: int, default 50.
     :param html_size: list, default ["1200px", "1600px"]
     :return: None
     """
-    # if link_key+'_graph' not in gnetdata.NetAttrs.keys():
-    #     raise Exception(link_key + '_graph does not exist!')
+    if link_key not in gnetdata.NetAttrs.keys():
+        raise Exception(link_key + 'does not exist!')
 
-    link_table = gnetdata.NetAttrs['graph']
+    link_table = gnetdata.NetAttrs['link_key']
     node_group = gnetdata.NetAttrs['communities']
 
     net = Network(html_size[0], html_size[1], bgcolor="#222222", font_color="white")
@@ -74,6 +75,7 @@ def static_netShow(gnetdata, filename, scale=4, figure_size=[20, 10], link_key='
     :param filename: str, save as filename
     :param scale: int, default 4.
     :param figure_size: list, default [20, 10].
+    :param link_key: the key of link table.
     :param random_path: list, list of nodes for highlighting.
     :param path_highlight: bool, default False.
     :param neighhours_highlight: bool, default False.
