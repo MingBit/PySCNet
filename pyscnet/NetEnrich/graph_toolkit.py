@@ -137,7 +137,7 @@ def find_consensus_graph(gnetdata, link_key='all', method='intersection', topran
             raise Exception('threshold cannot be none!')
         links_dict = dict(filter(lambda i: i[0] in keys, gnetdata.NetAttrs.items()))
         X, Y = _generate_x_y(links_dict, threshold)
-        merged_links = ensemble_classifier(X, Y, **kwargs)
+        merged_links = ensemble_classifier(X, Y, toprank=toprank, **kwargs)
 
     print('there are {} consensus edges found!'.format(merged_links.shape[0]))
     gnetdata._add_netattr('consensus', merged_links)
@@ -161,13 +161,13 @@ def graph_merge(link_1, link_2, toprank=None, method='union'):
         toprank = min(link_1.shape[0], link_2.shape[0]) if toprank is None else toprank
         link_1 = link_1.sort_values('weight', ascending=False).head(toprank)
         link_2 = link_2.sort_values('weight', ascending=False).head(toprank)
-        mergedlinks = pd.merge(link_1.iloc[:, :-1], link_2.iloc[:, :-1], how='outer' if method == 'union' else 'inner')
-        mergedlinks['weight'] = np.repeat(1, mergedlinks.shape[0])
+        mergedlinks = pd.merge(link_1, link_2,  on=['source', 'target'], how='outer' if method == 'union' else 'inner').fillna(0)
+        mergedlinks['weight'] = mergedlinks.mean(axis=1)
 
     elif method == 'snf':
         mergedlinks = __snf_based_merge(link_1, link_2)
 
-    return mergedlinks
+    return mergedlinks[['source', 'target', 'weight']]
 
 
 def graph_traveral(graph, start, threshold, method='bfs'):

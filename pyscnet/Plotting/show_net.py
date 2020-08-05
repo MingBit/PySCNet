@@ -13,7 +13,7 @@ import copy
 import matplotlib as mpl
 
 
-def dynamic_netShow(gnetdata, filename,  link_key = 'consensus', node_size=50, html_size=["1200px", "1600px"]):
+def dynamic_netShow(gnetdata, filename, link_key='consensus', node_size=50, html_size=["1200px", "1600px"]):
     """
     create a GRN html
     -------------------------
@@ -24,10 +24,9 @@ def dynamic_netShow(gnetdata, filename,  link_key = 'consensus', node_size=50, h
     :param html_size: list, default ["1200px", "1600px"]
     :return: None
     """
-    if link_key not in gnetdata.NetAttrs.keys():
-        raise Exception(link_key + 'does not exist!')
+    assert link_key in gnetdata.NetAttrs.keys(), link_key + 'does not exist'
 
-    link_table = gnetdata.NetAttrs['link_key']
+    link_table = gnetdata.NetAttrs[link_key]
     node_group = gnetdata.NetAttrs['communities']
 
     net = Network(html_size[0], html_size[1], bgcolor="#222222", font_color="white")

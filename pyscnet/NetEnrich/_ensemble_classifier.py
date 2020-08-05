@@ -16,6 +16,7 @@ from functools import reduce
 from sklearn.ensemble import BaggingClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.metrics import brier_score_loss
 
 
 def _generate_x_y(links_dict, threshold):
@@ -35,7 +36,7 @@ def _generate_x_y(links_dict, threshold):
     return X, Y
 
 
-def ensemble_classifier(X, Y, test_size=0.4, seed=3, model='RF', max_features=5, num_trees=100, **kwarg):
+def ensemble_classifier(X, Y, toprank, test_size=0.4, seed=3, model='RF', max_features=5, num_trees=100, **kwarg):
 
     x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=test_size)
     if X.shape[1] - 2 < max_features: max_features = X.shape[1] - 2
@@ -60,11 +61,14 @@ def ensemble_classifier(X, Y, test_size=0.4, seed=3, model='RF', max_features=5,
         raise Exception('Valid model: RF, BDT, ET, AdaB, SGB')
 
     model.fit(x_train.iloc[:, 2:], y_train)
-    pred_train_prob = model.predict_proba(x_train.iloc[:, 2:])[:, 1]
-    pred_test_prob = model.predict_proba(x_test.iloc[:, 2:])[:, 1]
+    pred_train_prob = model.predict_proba(x_train.iloc[:, 2:])[:, 0]
+    pred_test_prob = model.predict_proba(x_test.iloc[:, 2:])[:, 0]
+    losses_train = [brier_score_loss(y_train, [y for x in range(len(y_train))]) for y in pred_train_prob]
+    losses_test = [brier_score_loss(y_test, [y for x in range(len(y_test))]) for y in pred_test_prob]
+
     res_df = pd.DataFrame(
         {'source': x_train.source.append(x_test.source),
          'target': x_train.target.append(x_test.target),
-         'weight': list(pred_train_prob) + list(pred_test_prob)})
+         'weight': losses_train + losses_test})
 
-    return res_df[res_df.weight == 1]
+    return res_df.sort_values('weight', ascending=False).head(toprank)
