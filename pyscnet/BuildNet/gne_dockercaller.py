@@ -42,7 +42,8 @@ def __remove_duplicate(links):
     return links
 
 
-def __rundocker(gnetdata, method, cell=None, feature=None, cell_clusterid=None, select_by=None, Mms_TF=None, **kwargs):
+def __rundocker(gnetdata, method, cell=None, feature=None, cell_clusterid=None, select_by=None,
+                Mms_TF=None, directed=True, **kwargs):
     client = docker.from_env()
 
     if feature is None:
@@ -74,12 +75,14 @@ def __rundocker(gnetdata, method, cell=None, feature=None, cell_clusterid=None, 
     os.system('rm ' + path + method + '/Expr.txt | rm ' + path + method + '/paras.pk')
     raw_links = pd.read_csv(os.getenv('HOME') + '/links.txt', sep='\t', header=None)
     raw_links.columns = ['source', 'target', 'weight']
+    if directed is False: raw_links = __remove_duplicate(raw_links)
     gnetdata._add_netattr(method + '_links', raw_links)
     print(method + '_links added into NetAttrs')
     return gnetdata
 
 
-def rundocker(gnetdata, method, cell=None, feature=None, cell_clusterid=None, select_by=None, Mms_TF=None, **kwargs):
+def rundocker(gnetdata, method, cell=None, feature=None, cell_clusterid=None, select_by=None,
+              Mms_TF=None, directed=True, **kwargs):
     """
     Call GRN methods via docker.
     -------------------------------------
@@ -90,29 +93,30 @@ def rundocker(gnetdata, method, cell=None, feature=None, cell_clusterid=None, se
     :param cell_clusterid: str, default None. cell with cell_clusterid will be selected
     :param select_by: str, default None. key of filtering cells
     :param Mms_TF: list, default None. a list of transcription factor names
+    :param directed: bool, default True.
     :param kwargs: additional parameters passed to scnode2vec()
     :return: Gnetdata object with links saved in NetAttrs
     """
     if method == 'GENIE3':
         gnetdata = __rundocker(gnetdata, method='GENIE3', cell=cell, feature=feature,
-                               cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF)
+                               cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF, directed=directed)
 
     elif method == 'GRNBOOST2':
         gnetdata = __rundocker(gnetdata, method='GRNBOOST2', cell=cell, feature=feature,
-                               cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF)
+                               cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF, directed=directed)
 
     elif method == 'PIDC':
         # remove genes with 0 counts
         gnetdata = __rundocker(gnetdata, method='PIDC', cell=cell, feature=feature,
-                               cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF)
+                               cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF, directed=directed)
 
     elif method == 'SCNODE2VEC':
         gnetdata = __rundocker(gnetdata, method='SCNODE2VEC', cell=cell, feature=feature,
-                               cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF, **kwargs)
+                               cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF, directed=directed, **kwargs)
 
     elif method == "CORR":
         gnetdata = __rundocker(gnetdata, method='CORR', cell=cell, feature=feature,
-                               cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF)
+                               cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF, directed=directed)
 
     else:
         raise Exception("valid method: GENIE3, CORR, PIDC, GRNBOOST2, SCNODE2VEC")
