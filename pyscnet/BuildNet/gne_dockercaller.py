@@ -112,7 +112,8 @@ def rundocker(gnetdata, method, cell=None, feature=None, cell_clusterid=None, se
 
     elif method == 'SCNODE2VEC':
         gnetdata = __rundocker(gnetdata, method='SCNODE2VEC', cell=cell, feature=feature,
-                               cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF, directed=directed, **kwargs)
+                               cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF, directed=directed,
+                               **kwargs)
 
     elif method == "CORR":
         gnetdata = __rundocker(gnetdata, method='CORR', cell=cell, feature=feature,
