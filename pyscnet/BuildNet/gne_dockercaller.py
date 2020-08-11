@@ -33,6 +33,7 @@ def __copy_to(container_id, src, dst):
 
 
 def __remove_duplicate(links):
+
     links_list = sorted(links[['source', 'target']].values.tolist())
     for i in range(len(links_list)):
         links_list[i] = tuple(sorted(links_list[i]))
@@ -97,6 +98,8 @@ def rundocker(gnetdata, method, cell=None, feature=None, cell_clusterid=None, se
     :param kwargs: additional parameters passed to scnode2vec()
     :return: Gnetdata object with links saved in NetAttrs
     """
+    assert method in ['GENIE3', 'CORR', 'PIDC', 'GRNBOOST2', 'SCNODE2VEC'], "valid method: GENIE3, CORR, PIDC, GRNBOOST2, SCNODE2VEC"
+
     if method == 'GENIE3':
         gnetdata = __rundocker(gnetdata, method='GENIE3', cell=cell, feature=feature,
                                cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF, directed=directed)
@@ -115,12 +118,9 @@ def rundocker(gnetdata, method, cell=None, feature=None, cell_clusterid=None, se
                                cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF, directed=directed,
                                **kwargs)
 
-    elif method == "CORR":
+    else:
         gnetdata = __rundocker(gnetdata, method='CORR', cell=cell, feature=feature,
                                cell_clusterid=cell_clusterid, select_by=select_by, Mms_TF=Mms_TF, directed=directed)
-
-    else:
-        raise Exception("valid method: GENIE3, CORR, PIDC, GRNBOOST2, SCNODE2VEC")
 
     return gnetdata
 

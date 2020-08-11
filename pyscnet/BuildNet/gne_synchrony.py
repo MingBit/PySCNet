@@ -29,8 +29,8 @@ def __butter_bandpass_filter(data, low_cut, high_cut, fs, order=5):
 def __synchrony_cal(df, low_cut, high_cut, fs, order):
     d1 = df.iloc[:, :1].interpolate().values
     d2 = df.iloc[:, :2].interpolate().values
-    y1 = __butter_bandpass_filter(d1, lowcut=low_cut, highcut=high_cut, fs=fs, order=order)
-    y2 = __butter_bandpass_filter(d2, lowcut=low_cut, highcut=high_cut, fs=fs, order=order)
+    y1 = __butter_bandpass_filter(d1, low_cut, high_cut, fs, order)
+    y2 = __butter_bandpass_filter(d2, low_cut, high_cut, fs, order)
 
     al1 = np.angle(hilbert(y1), deg=False)
     al2 = np.angle(hilbert(y2), deg=False)
