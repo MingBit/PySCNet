@@ -54,7 +54,6 @@ def __window_rolling(df, window_size):
 def get_synchrony(gnetdata, method, cell=None, feature=None, cell_clusterid=None, select_by=None,
                   fs=50., low_cut=2, high_cut=15, order=5, window_size=[50]):
     """
-
     :param gnetdata: Gnetdata object, default None.
     :param method: str, default None. methods: [window_rolling, phase_synchrony]
     :param cell: list, default None. a list of cell names
