@@ -40,8 +40,8 @@ def geneHeatmap(gnetdata, gene, cell_clusterid, select_by, order_by=None, scale=
     if save_as is not None:
         sns_plot.savefig(save_as)
 
-    plt.show()
-    return None
+    # plt.show()
+    return sns_plot
 
 
 def geneDynamic(gnetdata, gene, cell_clusterid, select_by, rolling=10, order_by=None, scale_data=True, save_as=None,
@@ -87,8 +87,8 @@ def geneDynamic(gnetdata, gene, cell_clusterid, select_by, rolling=10, order_by=
     if save_as is not None:
         plt.savefig(save_as)
 
-    plt.show()
-    return None
+    # plt.show()
+    return ax
 
 
 def geneCorrelation(gnetdata, gene, cell_clusterid, select_by, order_by=None, scale_data=True,
@@ -119,10 +119,10 @@ def geneCorrelation(gnetdata, gene, cell_clusterid, select_by, order_by=None, sc
     mask = np.triu(np.ones_like(corr, dtype=np.bool))
     cmap = sns.diverging_palette(220, 10, as_cmap=True)
     fig, ax = plt.subplots(figsize=[10, 10] if figsize is None else figsize)
-    sns.heatmap(corr, mask=mask, cmap=cmap, vmax=.3, center=0, **kwargs)
+    sns_heatmap = sns.heatmap(corr, mask=mask, cmap=cmap, vmax=.3, center=0, **kwargs)
 
     if save_as is not None:
         plt.savefig(save_as)
 
-    plt.show()
-    return None
+    # plt.show()
+    return sns_heatmap
