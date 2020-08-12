@@ -13,31 +13,29 @@ import copy
 import matplotlib as mpl
 
 
-def dynamic_netShow(gnetdata, filename, link_key='consensus', node_size=50, html_size=["1200px", "1600px"]):
+def dynamic_netShow(gnetdata, filename, node_size=50, html_size=["1200px", "1600px"]):
     """
     create a GRN html
     -------------------------
     :param gnetdata: Gnetdata object
     :param filename: str, save as filename
-    :param link_key: str, key of link table
     :param node_size: int, default 50.
     :param html_size: list, default ["1200px", "1600px"]
     :return: None
     """
-    assert link_key in gnetdata.NetAttrs.keys(), link_key + 'does not exist'
+    assert 'graph' in gnetdata.NetAttrs.keys(), 'graph is empty!'
 
-    link_table = gnetdata.NetAttrs[link_key]
     node_group = gnetdata.NetAttrs['communities']
+    graph = gnetdata.NetAttrs['graph']
 
     net = Network(html_size[0], html_size[1], bgcolor="#222222", font_color="white")
-    edge_data = zip(link_table['source'], link_table['target'], link_table['weight'])
-
+    edge_data = zip(list(graph.edges), list(graph[x[0]][x[1]]['weight'] for x in graph.edges))
     colors = sns.color_palette().as_hex() + sns.color_palette('Paired', 100).as_hex()
 
     for e in edge_data:
-        src = e[0]
-        dst = e[1]
-        w = e[2]
+        src = e[0][0]
+        dst = e[0][1]
+        w = e[1]
 
         if node_group is not None:
             src_color = int(node_group[node_group['node'] == src]['group'])
@@ -64,9 +62,9 @@ def dynamic_netShow(gnetdata, filename, link_key='consensus', node_size=50, html
     return None
 
 
-def static_netShow(gnetdata, filename, scale=4, figure_size=[20, 10], link_key='consensus',
-                   random_path=None, path_highlight=False, neighhours_highlight=False,
-                   start=None, **kwargs):
+def __static_netShow(gnetdata, filename, scale=4, figure_size=[20, 10],
+                     random_path=None, path_highlight=False, neighhours_highlight=False,
+                     start=None, **kwargs):
     """
     create and export GRN graph.
     ----------------------------------
@@ -82,14 +80,13 @@ def static_netShow(gnetdata, filename, scale=4, figure_size=[20, 10], link_key='
     :param kwargs: additional parameters passed to networkx.draw_networkx()
     :return: None
     """
-    assert link_key in gnetdata.NetAttrs.keys(), '{} cannot find in NetAttrs'.format(link_key)
-    link_table = gnetdata.NetAttrs[link_key]
+    assert 'graph' in gnetdata.NetAttrs.keys(), 'graph is empty!'
 
     node_group = copy.deepcopy(gnetdata.NetAttrs['communities'])
     colors = sns.color_palette().as_hex() + sns.color_palette('Paired', 100).as_hex()
     node_color = [colors[n] for n in list(node_group.group)]
 
-    net = nx.from_pandas_edgelist(link_table)
+    net = gnetdata.NetAttrs['graph']
     pos = nx.kamada_kawai_layout(net, scale=scale)
 
     if path_highlight:

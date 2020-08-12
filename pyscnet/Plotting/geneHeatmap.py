@@ -13,7 +13,7 @@ import pandas as pd
 import numpy as np
 
 
-def geneHeatmap(gnetdata, gene, cell_clusterid, select_by, order_by=None, scale_data=True, cmap='RdBu', save_as=None,
+def geneHeatmap(gnetdata, gene, cell_clusterid, select_by, order_by=None, scale=True, cmap='RdBu', save_as=None,
                 **kwargs):
     """
     Create Heatmap showing gene expression in individual cells along pseudotime
@@ -23,7 +23,7 @@ def geneHeatmap(gnetdata, gene, cell_clusterid, select_by, order_by=None, scale_
     :param cell_clusterid: str, default None. cell with cell_clusterid will be selected
     :param select_by: str, default None. key of filtering cells
     :param order_by: str, default None. key of ordering cells
-    :param scale_data: bool, default True. whether or not scale the data
+    :param scale: bool, default True. whether or not scale the data
     :param cmap: str, default 'RdBu'. string denoting colors in clustermap
     :param save_as: str, default None. filepath+filename
     :param kwargs: additional parameters passed to seaborn.clustermap()
@@ -34,7 +34,7 @@ def geneHeatmap(gnetdata, gene, cell_clusterid, select_by, order_by=None, scale_
     cell = list(cell_info.loc[cell_info[select_by].isin([cell_clusterid])].index)
     sub_Expr = pd.DataFrame(preprocessing.scale(gnetdata.ExpMatrix),
                             index=gnetdata.ExpMatrix.index, columns=gnetdata.ExpMatrix.columns).loc[gene, cell] \
-        if scale_data else gnetdata.ExpMatrix.loc[gene, cell]
+        if scale else gnetdata.ExpMatrix.loc[gene, cell]
     sns_plot = sns.clustermap(sub_Expr, cmap=cmap, xticklabels=False, **kwargs)
 
     if save_as is not None:
