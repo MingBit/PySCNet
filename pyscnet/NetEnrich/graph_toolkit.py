@@ -68,7 +68,7 @@ def buildnet(gnetdata, key_links, top=None):
     G = nx.from_pandas_edgelist(links_filter,
                                 source="source",
                                 target="target",
-                                edge_attr=True)
+                                edge_attr='weight')
     gnetdata._add_netattr('graph', G)
     gnetdata._add_netattr_para('top', str(top))
 
