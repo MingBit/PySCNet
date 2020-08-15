@@ -5,7 +5,7 @@
 """
 
 from __future__ import absolute_import
-from .__nx2gt import nx2gt
+from ._nx2gt import nx2gt
 import graph_tool.all as gt
 
 import seaborn as sns
