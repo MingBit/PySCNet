@@ -117,6 +117,8 @@ def net_matrix_plot(gnetdata, filename=None, highlight_path=None, **kwarg):
     graph = nx2gt(gnetdata.NetAttrs['graph'])
     node_group = gnetdata.NetAttrs['communities']
 
+    ngroup = graph.new_vertex_property('int')
+
     labels = dict(zip(list(range(graph.num_vertices())), list(graph.vertex_properties['id'])))
     for g in labels.keys():
         ngroup[g] = node_group.loc[node_group.node == labels[g], 'group']
@@ -138,11 +140,11 @@ def net_matrix_plot(gnetdata, filename=None, highlight_path=None, **kwarg):
         position[graph.vertex(node_pos[i])] = (int(i / dim), i % dim)
 
     for e in graph.edges():
-        if highlight_path is not None:
-            if (labels[list(e)[0]] in highlight_path) and (labels[list(e)[1]] in highlight_path) and abs(
-                    highlight_path.index(labels[list(e)[0]]) - highlight_path.index(labels[list(e)[1]])) == 1:
-                #         print((labels[list(e)[0]], labels[list(e)[1]]))
-                edge_color[e] = 'darkorange'
+        if (highlight_path is not None) and (labels[list(e)[0]] in highlight_path) and (
+                labels[list(e)[1]] in highlight_path) and abs(
+                highlight_path.index(labels[list(e)[0]]) - highlight_path.index(labels[list(e)[1]])) == 1:
+            #         print((labels[list(e)[0]], labels[list(e)[1]]))
+            edge_color[e] = 'darkorange'
         else:
             edge_color[e] = 'lightgrey'
 
