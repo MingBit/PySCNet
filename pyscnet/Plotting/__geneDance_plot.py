@@ -73,16 +73,6 @@ def geneDynamic(gnetdata, gene, cell_clusterid, select_by, rolling=10, order_by=
     colors = list(mcolors._colors_full_map.values()) if colors is None else colors
     fig, ax = plt.subplots()
     num = 0
-    for gene in sub_Expr.columns:
-        num = num + 1
-        #         ax.plot(sub_Expr[gene], marker='o', color='0.6', linestyle=None)
-        ax.plot(sub_Expr[gene].rolling(rolling, center=True).mean(), linewidth=10, color=colors[num],
-                label=gene + '_' + str(rolling) + '-rolling mean', **kwargs)
-
-        #         ax.set_xlabel('Pseudotime', fontsize=20)
-        #         ax.set_ylabel('Scaled Expression', fontsize=20)
-        ax.axis('off')
-        ax.legend(prop={"size": 10 if legend_size is None else legend_size})
 
     if save_as is not None:
         plt.savefig(save_as)

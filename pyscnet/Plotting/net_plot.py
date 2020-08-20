@@ -86,7 +86,7 @@ def net_hierarchy_plot(gnetdata, filename=None, **kwarg):
     graph = nx2gt(gnetdata.NetAttrs['graph'])
     node_group = gnetdata.NetAttrs['communities']
 
-    # deg = graph.degree_property_map('total') if vertex_size is None else vertex_size
+    deg = graph.degree_property_map('total')
     ngroup = graph.new_vertex_property('int')
 
     labels = dict(zip(list(range(graph.num_vertices())), list(graph.vertex_properties['id'])))
@@ -96,7 +96,7 @@ def net_hierarchy_plot(gnetdata, filename=None, **kwarg):
     state = gt.minimize_nested_blockmodel_dl(graph, deg_corr=True)
     gt.draw_hierarchy(state, vertex_fill_color=ngroup, vertex_anchor=0,
                       vertex_text=graph.vertex_properties['id'],
-                      output=filename, **kwarg)
+                      output=filename, vertex_size=deg, **kwarg)
     return None
 
 
@@ -119,6 +119,7 @@ def net_matrix_plot(gnetdata, filename=None, highlight_path=None, **kwarg):
 
     ngroup = graph.new_vertex_property('int')
 
+    deg = graph.degree_property_map('total')
     labels = dict(zip(list(range(graph.num_vertices())), list(graph.vertex_properties['id'])))
     for g in labels.keys():
         ngroup[g] = node_group.loc[node_group.node == labels[g], 'group']
@@ -141,14 +142,12 @@ def net_matrix_plot(gnetdata, filename=None, highlight_path=None, **kwarg):
 
     for e in graph.edges():
         if (highlight_path is not None) and (labels[list(e)[0]] in highlight_path) and (
-                labels[list(e)[1]] in highlight_path) and abs(
-                highlight_path.index(labels[list(e)[0]]) - highlight_path.index(labels[list(e)[1]])) == 1:
-            #         print((labels[list(e)[0]], labels[list(e)[1]]))
+                labels[list(e)[1]] in highlight_path) and abs(highlight_path.index(labels[list(e)[0]]) - highlight_path.index(labels[list(e)[1]])) == 1:
             edge_color[e] = 'darkorange'
         else:
             edge_color[e] = 'lightgrey'
 
-    gt.graph_draw(graph, pos=position, vertex_fill_color=ngroup, edge_color=edge_color,
+    gt.graph_draw(graph, pos=position, vertex_fill_color=ngroup, edge_color=edge_color, vertex_size=deg,
                   vertex_text=graph.vertex_properties['id'], output=filename, **kwarg)
 
     return None
