@@ -1,1 +1,1 @@
-from pyscnet.BuildNet import gne_dockercaller
+from .graph_toolkit import *

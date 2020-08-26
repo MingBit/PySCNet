@@ -87,3 +87,4 @@ def build_curves(ax, dict_of_algs, curve, filename, colors=None, **kwarg):
     ax.set_xlabel('False Positive Rate' if curve == 'ROC' else 'Recall', fontsize=20)
     ax.set_ylabel('True Positive Rate' if curve == 'ROC' else 'Precision', fontsize=20)
     ax.legend(loc="lower right")
+

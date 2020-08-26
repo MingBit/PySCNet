@@ -86,7 +86,7 @@ def net_hierarchy_plot(gnetdata, filename=None, **kwarg):
     graph = nx2gt(gnetdata.NetAttrs['graph'])
     node_group = gnetdata.NetAttrs['communities']
 
-    deg = graph.degree_property_map('total')
+    # deg = graph.degree_property_map('total')
     ngroup = graph.new_vertex_property('int')
 
     labels = dict(zip(list(range(graph.num_vertices())), list(graph.vertex_properties['id'])))
@@ -96,7 +96,7 @@ def net_hierarchy_plot(gnetdata, filename=None, **kwarg):
     state = gt.minimize_nested_blockmodel_dl(graph, deg_corr=True)
     gt.draw_hierarchy(state, vertex_fill_color=ngroup, vertex_anchor=0,
                       vertex_text=graph.vertex_properties['id'],
-                      output=filename, vertex_size=deg, **kwarg)
+                      output=filename, **kwarg)
     return None
 
 
@@ -119,7 +119,7 @@ def net_matrix_plot(gnetdata, filename=None, highlight_path=None, **kwarg):
 
     ngroup = graph.new_vertex_property('int')
 
-    deg = graph.degree_property_map('total')
+    # deg = graph.degree_property_map('total')
     labels = dict(zip(list(range(graph.num_vertices())), list(graph.vertex_properties['id'])))
     for g in labels.keys():
         ngroup[g] = node_group.loc[node_group.node == labels[g], 'group']
@@ -147,7 +147,7 @@ def net_matrix_plot(gnetdata, filename=None, highlight_path=None, **kwarg):
         else:
             edge_color[e] = 'lightgrey'
 
-    gt.graph_draw(graph, pos=position, vertex_fill_color=ngroup, edge_color=edge_color, vertex_size=deg,
+    gt.graph_draw(graph, pos=position, vertex_fill_color=ngroup, edge_color=edge_color,
                   vertex_text=graph.vertex_properties['id'], output=filename, **kwarg)
 
     return None
