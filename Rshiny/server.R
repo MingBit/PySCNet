@@ -9,7 +9,7 @@ library(tibble)
 server = function(input, output) {
   use_python('/home/mwu/miniconda3/bin/python')
   import_from_path('PySCNet', '/home/mwu/MING_V9T/PhD_Pro/PySCNet/')
-  source_python('/home/mwu/MING_V9T/PhD_Pro/PySCNet/PySCNet/Preprocessing/gnetdata.py')
+  source_python('/home/mwu/MING_V9T/PhD_Pro/PySCNet/pySCNet/Preprocessing/gnetdata.py')
   
   pk_upload <- reactive({
     inFile <- input$file1
