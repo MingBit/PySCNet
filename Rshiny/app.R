@@ -101,18 +101,19 @@ app <- shinyApp(
   server = function(input, output) {
     #autoInvalidate <- reactiveTimer(2000)
     
-    use_python('/home/mwu/miniconda3/envs/stream/bin/python3.6', required = T)
     
-    import_from_path('pyscnet', '/home/mwu/MING_V9T/PhD_Pro/PySCNet/')
-    source_python('/home/mwu/MING_V9T/PhD_Pro/PySCNet/pyscnet/Preprocessing/gnetdata.py')
+    virtualenv_create('pyDev',python = 'python3.5')
+    virtualenv_install("pyDev", packages = c('pandas'))
+    reticulate::use_virtualenv("pyDev", required = TRUE)
     pd = import('pandas')
+    pyscnet = import('pyscnet')
     
     pk_upload <- reactive({
       req(input$file1)
       #inFile <- input$file1
       if (is.null(input$file1))
         return(NULL)
-      pickle_data = load_Gnetdata_object(input$file1$datapath)
+      pickle_data = pyscnet$load_Gnetdata_object(input$file1$datapath)
       return(pickle_data)
     })
   

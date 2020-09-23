@@ -33,12 +33,10 @@ This :tutorial: `pyscnet_stream`_ guides how to integrate STREAM with pyscnet fo
 .. figure:: ../../images/stream_2.png
     :scale: 48%
     :figclass: align-right
-.. figure:: ../../images/stream_3.png
-    :scale: 20%
+.. figure:: ../../images/stream_3.pdf
+    :scale: 80%
     :figclass: align-left
-.. figure:: ../../images/stream_4.png
-    :scale: 15%
-    :figclass: align-right
+
 
 
 .. _scanpy: https://scanpy.readthedocs.io/en/stable/index.html

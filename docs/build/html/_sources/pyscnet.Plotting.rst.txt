@@ -1,20 +1,13 @@
 pyscnet.Plotting
 ========================
 
-pyscnet.Plotting.geneHeatmap
+pyscnet.Plotting.net_plot
 -----------------------------------
 
-.. automodule:: pyscnet.Plotting.geneHeatmap
+.. automodule:: pyscnet.Plotting.net_plot
    :members:
    :undoc-members:
    :show-inheritance:
 
-pyscnet.Plotting.show\_net
----------------------------------
-
-.. automodule:: pyscnet.Plotting.show_net
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 

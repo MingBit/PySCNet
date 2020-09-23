@@ -1,15 +1,18 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pyscnet.BuildNet.gne_dockercaller &mdash; pyscnet 0.0.2 documentation</title>
+  <title>pyscnet.BuildNet.gne_dockercaller &mdash; pyscnet 0.0.3 documentation</title>
   
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
 
   
   
@@ -17,7 +20,9 @@
   
 
   
-  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -30,10 +35,6 @@
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
 </head>
@@ -49,7 +50,7 @@
           
 
           
-            <a href="../../../index.html" class="icon icon-home"> pyscnet
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> pyscnet
           
 
           
@@ -72,6 +73,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -90,6 +92,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -128,7 +131,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
@@ -183,6 +186,7 @@
 
 
 <span class="k">def</span> <span class="nf">__remove_duplicate</span><span class="p">(</span><span class="n">links</span><span class="p">):</span>
+
     <span class="n">links_list</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">links</span><span class="p">[[</span><span class="s1">&#39;source&#39;</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">links_list</span><span class="p">)):</span>
         <span class="n">links_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">links_list</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
@@ -192,7 +196,8 @@
     <span class="k">return</span> <span class="n">links</span>
 
 
-<span class="k">def</span> <span class="nf">__rundocker</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">feature</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cell_clusterid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">select_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Mms_TF</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">__rundocker</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">feature</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cell_clusterid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">select_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">Mms_TF</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">client</span> <span class="o">=</span> <span class="n">docker</span><span class="o">.</span><span class="n">from_env</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">feature</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -224,12 +229,14 @@
     <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;rm &#39;</span> <span class="o">+</span> <span class="n">path</span> <span class="o">+</span> <span class="n">method</span> <span class="o">+</span> <span class="s1">&#39;/Expr.txt | rm &#39;</span> <span class="o">+</span> <span class="n">path</span> <span class="o">+</span> <span class="n">method</span> <span class="o">+</span> <span class="s1">&#39;/paras.pk&#39;</span><span class="p">)</span>
     <span class="n">raw_links</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;HOME&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;/links.txt&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="n">raw_links</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">,</span> <span class="s1">&#39;weight&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">directed</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span> <span class="n">raw_links</span> <span class="o">=</span> <span class="n">__remove_duplicate</span><span class="p">(</span><span class="n">raw_links</span><span class="p">)</span>
     <span class="n">gnetdata</span><span class="o">.</span><span class="n">_add_netattr</span><span class="p">(</span><span class="n">method</span> <span class="o">+</span> <span class="s1">&#39;_links&#39;</span><span class="p">,</span> <span class="n">raw_links</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">method</span> <span class="o">+</span> <span class="s1">&#39;_links added into NetAttrs&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">gnetdata</span>
 
 
-<div class="viewcode-block" id="rundocker"><a class="viewcode-back" href="../../../pyscnet.BuildNet.html#pyscnet.BuildNet.gne_dockercaller.rundocker">[docs]</a><span class="k">def</span> <span class="nf">rundocker</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">feature</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cell_clusterid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">select_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Mms_TF</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="rundocker"><a class="viewcode-back" href="../../../pyscnet.BuildNet.html#pyscnet.BuildNet.gne_dockercaller.rundocker">[docs]</a><span class="k">def</span> <span class="nf">rundocker</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">feature</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cell_clusterid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">select_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+              <span class="n">Mms_TF</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Call GRN methods via docker.</span>
 <span class="sd">    -------------------------------------</span>
@@ -240,32 +247,33 @@
 <span class="sd">    :param cell_clusterid: str, default None. cell with cell_clusterid will be selected</span>
 <span class="sd">    :param select_by: str, default None. key of filtering cells</span>
 <span class="sd">    :param Mms_TF: list, default None. a list of transcription factor names</span>
+<span class="sd">    :param directed: bool, default True.</span>
 <span class="sd">    :param kwargs: additional parameters passed to scnode2vec()</span>
 <span class="sd">    :return: Gnetdata object with links saved in NetAttrs</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;GENIE3&#39;</span><span class="p">,</span> <span class="s1">&#39;CORR&#39;</span><span class="p">,</span> <span class="s1">&#39;PIDC&#39;</span><span class="p">,</span> <span class="s1">&#39;GRNBOOST2&#39;</span><span class="p">,</span> <span class="s1">&#39;SCNODE2VEC&#39;</span><span class="p">],</span> <span class="s2">&quot;valid method: GENIE3, CORR, PIDC, GRNBOOST2, SCNODE2VEC&quot;</span>
+
     <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;GENIE3&#39;</span><span class="p">:</span>
         <span class="n">gnetdata</span> <span class="o">=</span> <span class="n">__rundocker</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;GENIE3&#39;</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">cell</span><span class="p">,</span> <span class="n">feature</span><span class="o">=</span><span class="n">feature</span><span class="p">,</span>
-                               <span class="n">cell_clusterid</span><span class="o">=</span><span class="n">cell_clusterid</span><span class="p">,</span> <span class="n">select_by</span><span class="o">=</span><span class="n">select_by</span><span class="p">,</span> <span class="n">Mms_TF</span><span class="o">=</span><span class="n">Mms_TF</span><span class="p">)</span>
+                               <span class="n">cell_clusterid</span><span class="o">=</span><span class="n">cell_clusterid</span><span class="p">,</span> <span class="n">select_by</span><span class="o">=</span><span class="n">select_by</span><span class="p">,</span> <span class="n">Mms_TF</span><span class="o">=</span><span class="n">Mms_TF</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="n">directed</span><span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;GRNBOOST2&#39;</span><span class="p">:</span>
         <span class="n">gnetdata</span> <span class="o">=</span> <span class="n">__rundocker</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;GRNBOOST2&#39;</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">cell</span><span class="p">,</span> <span class="n">feature</span><span class="o">=</span><span class="n">feature</span><span class="p">,</span>
-                               <span class="n">cell_clusterid</span><span class="o">=</span><span class="n">cell_clusterid</span><span class="p">,</span> <span class="n">select_by</span><span class="o">=</span><span class="n">select_by</span><span class="p">,</span> <span class="n">Mms_TF</span><span class="o">=</span><span class="n">Mms_TF</span><span class="p">)</span>
+                               <span class="n">cell_clusterid</span><span class="o">=</span><span class="n">cell_clusterid</span><span class="p">,</span> <span class="n">select_by</span><span class="o">=</span><span class="n">select_by</span><span class="p">,</span> <span class="n">Mms_TF</span><span class="o">=</span><span class="n">Mms_TF</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="n">directed</span><span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;PIDC&#39;</span><span class="p">:</span>
         <span class="c1"># remove genes with 0 counts</span>
         <span class="n">gnetdata</span> <span class="o">=</span> <span class="n">__rundocker</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;PIDC&#39;</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">cell</span><span class="p">,</span> <span class="n">feature</span><span class="o">=</span><span class="n">feature</span><span class="p">,</span>
-                               <span class="n">cell_clusterid</span><span class="o">=</span><span class="n">cell_clusterid</span><span class="p">,</span> <span class="n">select_by</span><span class="o">=</span><span class="n">select_by</span><span class="p">,</span> <span class="n">Mms_TF</span><span class="o">=</span><span class="n">Mms_TF</span><span class="p">)</span>
+                               <span class="n">cell_clusterid</span><span class="o">=</span><span class="n">cell_clusterid</span><span class="p">,</span> <span class="n">select_by</span><span class="o">=</span><span class="n">select_by</span><span class="p">,</span> <span class="n">Mms_TF</span><span class="o">=</span><span class="n">Mms_TF</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="n">directed</span><span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SCNODE2VEC&#39;</span><span class="p">:</span>
         <span class="n">gnetdata</span> <span class="o">=</span> <span class="n">__rundocker</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;SCNODE2VEC&#39;</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">cell</span><span class="p">,</span> <span class="n">feature</span><span class="o">=</span><span class="n">feature</span><span class="p">,</span>
-                               <span class="n">cell_clusterid</span><span class="o">=</span><span class="n">cell_clusterid</span><span class="p">,</span> <span class="n">select_by</span><span class="o">=</span><span class="n">select_by</span><span class="p">,</span> <span class="n">Mms_TF</span><span class="o">=</span><span class="n">Mms_TF</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;CORR&quot;</span><span class="p">:</span>
-        <span class="n">gnetdata</span> <span class="o">=</span> <span class="n">__rundocker</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;CORR&#39;</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">cell</span><span class="p">,</span> <span class="n">feature</span><span class="o">=</span><span class="n">feature</span><span class="p">,</span>
-                               <span class="n">cell_clusterid</span><span class="o">=</span><span class="n">cell_clusterid</span><span class="p">,</span> <span class="n">select_by</span><span class="o">=</span><span class="n">select_by</span><span class="p">,</span> <span class="n">Mms_TF</span><span class="o">=</span><span class="n">Mms_TF</span><span class="p">)</span>
+                               <span class="n">cell_clusterid</span><span class="o">=</span><span class="n">cell_clusterid</span><span class="p">,</span> <span class="n">select_by</span><span class="o">=</span><span class="n">select_by</span><span class="p">,</span> <span class="n">Mms_TF</span><span class="o">=</span><span class="n">Mms_TF</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="n">directed</span><span class="p">,</span>
+                               <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;valid method: GENIE3, CORR, PIDC, GRNBOOST2, SCNODE2VEC&quot;</span><span class="p">)</span>
+        <span class="n">gnetdata</span> <span class="o">=</span> <span class="n">__rundocker</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;CORR&#39;</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">cell</span><span class="p">,</span> <span class="n">feature</span><span class="o">=</span><span class="n">feature</span><span class="p">,</span>
+                               <span class="n">cell_clusterid</span><span class="o">=</span><span class="n">cell_clusterid</span><span class="p">,</span> <span class="n">select_by</span><span class="o">=</span><span class="n">select_by</span><span class="p">,</span> <span class="n">Mms_TF</span><span class="o">=</span><span class="n">Mms_TF</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="n">directed</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">gnetdata</span></div>
 
@@ -284,11 +292,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Ming Wu
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -299,7 +315,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

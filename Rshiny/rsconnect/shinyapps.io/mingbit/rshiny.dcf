@@ -1,0 +1,10 @@
+name: rshiny
+title:
+username:
+account: mingbit
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2744208
+bundleId: 3585767
+url: https://mingbit.shinyapps.io/rshiny/
+when: 1599081406.00938

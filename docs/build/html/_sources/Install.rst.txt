@@ -15,8 +15,8 @@ install pyscnet via PyPI
 
     pip install pyscnet
 
-
 .. warning::
+
     It might occurs package version conflicts.
 
 To address this issue, you can create a new/clean conda environment
