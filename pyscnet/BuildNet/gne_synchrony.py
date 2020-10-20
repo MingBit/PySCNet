@@ -46,8 +46,8 @@ def __window_rolling(df, window_size):
             df['target'].rolling(window=window, center=True)).fillna(0)
         single_rank.append(rolling_r)
     single_rank = sum(single_rank)/len(single_rank)
-    rank = abs(len(single_rank[single_rank > 0]) - len(single_rank[single_rank < 0]))
-
+    # rank = abs(len(single_rank[single_rank > 0]) - len(single_rank[single_rank < 0]))
+    rank = (len(single_rank[single_rank > 0]) - len(single_rank[single_rank < 0]))
     return rank
 
 

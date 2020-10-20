@@ -7,7 +7,6 @@
 from __future__ import absolute_import
 from ._nx2gt import nx2gt
 import graph_tool.all as gt
-
 import seaborn as sns
 import numpy as np
 from pyvis.network import Network
