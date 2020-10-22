@@ -128,6 +128,21 @@ def update_sub_network(click_node=None):
     return [[click_node] + neighbours, sub_element, sub_element_module]
 
 
+def update_sub_page(sub_page):
+    if 'object' in globals():
+        if sub_page == 'page_1':
+            new_sub_page = create_page_1()
+        elif sub_page == 'page_2':
+            new_sub_page = create_page_2()
+        else:
+            new_sub_page = create_page_3()
+
+    else:
+        new_sub_page = html.Div(id='page_1-1', children=html.H4('please upload object!', style={'color': 'white'}))
+
+    return new_sub_page
+
+
 def create_page_1():
     page_1 = html.Div([
         dbc.Row([
@@ -364,6 +379,7 @@ sidebar = html.Div(
                 html.Div(
                     [
                         get_upload_component(id='dash-uploader'),
+                        html.H5(id='callback-output', style={'color': 'white'}),
                     ],
                     style={  # wrapper div style
                         'textAlign': 'center',
@@ -382,15 +398,9 @@ sidebar = html.Div(
     style=SIDEBAR_STYLE,
 )
 
-page_1 = html.Div(id='page_1-1', children=html.H4('please upload object!', style={'color': 'white'}))
-page_2 = html.Div(id='page_2-2', children=html.H4('please upload object!', style={'color': 'white'}))
-page_3 = html.Div(id='page_3-3', children=html.H4('please upload object!', style={'color': 'white'}))
-
 content = html.Div(id="page-content", style=CONTENT_STYLE)
 app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
 
-
-# /Users/angelawu/Desktop/dash-pyscnet/data/pyscnet_tox_WT.pk
 
 @app.callback(
     [Output(f"page-{i}-link", "active") for i in range(0, 5)],
@@ -406,11 +416,11 @@ def render_page_content(pathname):
     if pathname in ["/", "/page-0"]:
         return dcc.Markdown(dedent(open('assets/Introduction.md', 'r').read()))
     elif pathname == "/page-1":
-        return page_1
+        return update_sub_page('page_1')
     elif pathname == "/page-2":
-        return page_2
+        return update_sub_page('page_2')
     elif pathname == "/page-3":
-        return page_3
+        return update_sub_page('page_3')
     elif pathname == "/page-4":
         return dcc.Markdown(dedent(open('assets/Contact.md', 'r').read()))
     return dbc.Jumbotron(
@@ -422,9 +432,7 @@ def render_page_content(pathname):
     )
 
 
-@app.callback([Output('page_1-1', 'children'),
-               Output('page_2-2', 'children'),
-               Output('page_3-3', 'children')],
+@app.callback(Output('callback-output', 'children'),
               [Input('dash-uploader', 'isCompleted'),
                Input('dash-uploader', 'fileNames'),
                Input('dash-uploader', 'upload_id')])
@@ -432,12 +440,7 @@ def get_a_list(is_completed, filenames, upload_id):
     if is_completed and filenames is not None:
         global object
         object = pp.load_Gnetdata_object(UPLOAD_FOLDER_ROOT + '/' + str(upload_id) + '/' + filenames[0])
-
-        new_page_1 = create_page_1()
-        new_page_2 = create_page_2()
-        new_page_3 = create_page_3()
-
-        return [new_page_1, new_page_2, new_page_3]
+        return [filenames]
 
 
 @app.callback([Output('gene_correlation_1', 'figure'),
@@ -516,5 +519,5 @@ def update_sub_net(data):
 
 
 if __name__ == '__main__':
-    app.run_server(host='127.0.0.1', port='8080', debug=True,
+    app.run_server(host='127.0.0.1', port='8000', debug=True,
                    dev_tools_ui=False, dev_tools_props_check=False)
