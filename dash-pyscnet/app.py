@@ -18,10 +18,41 @@ import pyscnet.NetEnrich as ne
 import pyscnet.Preprocessing as pp
 from dash.dependencies import Input, Output, State
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUMEN])
 app.title = 'PySCNet Dashboard'
 UPLOAD_FOLDER_ROOT = r"/home/mwu/dash-sample-apps/apps/dash-pyscnet/data/"
 du.configure_upload(app, UPLOAD_FOLDER_ROOT)
+
+FONT_STYLE = {
+    "color": '#343a40',
+    'font-size': '30'
+}
+
+SIDEBAR_STYLE = {
+    "height": "100%",
+    "font-size": "45px",
+    "position": "fixed",
+    "top": 0,
+    "left": 0,
+    "bottom": 0,
+    "width": "20%",
+    "padding": "2rem 1rem",
+    "background-color": "#1d3557",
+}
+
+# the styles for the main content position it to the right of the sidebar and
+# add some padding.
+CONTENT_STYLE = {
+    "top": 0,
+    "bottom": 0,
+    "margin-left": "20%",
+    "padding": "2rem 1rem",
+    # "background-color": "#457b9d",
+    "height": "100%",
+    "width": "70%",
+    "font-size": '30px'
+
+}
 
 
 def get_upload_component(id):
@@ -132,13 +163,14 @@ def update_sub_page(sub_page):
     if 'object' in globals():
         if sub_page == 'page_1':
             new_sub_page = create_page_1()
-        elif sub_page == 'page_2':
-            new_sub_page = create_page_2()
-        else:
+        elif sub_page == 'page_3':
             new_sub_page = create_page_3()
+        else:
+            new_sub_page = create_page_2()
 
     else:
-        new_sub_page = html.Div(id='page_1-1', children=html.H4('please upload object!', style={'color': 'white'}))
+        new_sub_page = html.Div(id='page_1-1', children=html.H1('please upload object!',
+                                                                style=FONT_STYLE))
 
     return new_sub_page
 
@@ -152,11 +184,11 @@ def create_page_1():
                 dcc.Graph(id='cell_distribution'),
                 dbc.Row([
                     dbc.Col([
-                        html.P('color encoded by:', style={'color': 'white'}),
+                        html.P('color encoded by:'),
                         dcc.Dropdown(options=get_cellinfo_column(), id='color_code', value='Condition')
                     ]),
                     dbc.Col([
-                        html.P('shape encoded by:', style={'color': 'white'}),
+                        html.P('shape encoded by:', style=FONT_STYLE),
                         dcc.Dropdown(options=get_cellinfo_column(), id='shape_code')
                     ])
                 ])
@@ -183,20 +215,44 @@ def create_page_1():
                              style_cell={'overflow': 'hidden',
                                          'maxWidth': 2,
                                          'textOverflow': 'ellipsis',
-                                         'backgroundColor': '#457b9d',
-                                         'color': 'white',
+                                         # 'backgroundColor': '#457b9d',
+                                         # 'color': 'white',
                                          'textAlign': 'center'},
                              style_header={'fontWeight': 'bold',
-                                           'color': 'black',
+                                           # 'color': 'black',
                                            'backgroundColor': 'rgb(230,230,230)'},
                              sort_action='native', sort_mode='multi', filter_action='native')
-    ])
+    ], style={'position': 'fixed'})
     return page_1
 
 
 def create_page_2():
     page_2 = html.Div([
-        html.H4("Gene annotation table"),
+        html.H2('Choose two genes:'),
+        dbc.Row([
+            dbc.Col([
+                html.P('Gene A', style=FONT_STYLE),
+                dcc.Dropdown(options=list({'label': i, 'value': i} for i in list(object.GeneAttrs['GeneInfo'].index)),
+                             id='gene_a', value=list(object.GeneAttrs['GeneInfo'].index)[0])
+            ]),
+
+            dbc.Col([
+                html.P('Gene B', style=FONT_STYLE),
+                dcc.Dropdown(options=list({'label': i, 'value': i} for i in list(object.GeneAttrs['GeneInfo'].index)),
+                             id='gene_b', value=list(object.GeneAttrs['GeneInfo'].index)[1])
+            ]),
+
+            dbc.Col([
+                html.P('Cells ordered by ', style=FONT_STYLE),
+                dcc.Dropdown(options=get_cellinfo_column(), id='cell_order')
+            ])
+        ]),
+        html.Br(),
+
+        dcc.Graph(id='gene_correlation_2', style={'height': '1000px'}),
+        dcc.Graph(id='gene_correlation_1', style={'height': '1000px'}),
+
+        html.H2("Gene annotation table"),
         html.Br(),
         dash_table.DataTable(id='table',
                              columns=[{'name': i, 'id': i} for i in object.GeneAttrs['GeneInfo'].columns],
@@ -208,40 +264,16 @@ def create_page_2():
                                           'maxHeight': '80ex'},
                              style_cell={'overflow': 'hidden',
                                          'height': 'auto',
-                                         'lineHeight': '15px',
-                                         'backgroundColor': '#457b9d',
-                                         'color': 'white',
+                                         'lineHeight': '30px',
+                                         # 'backgroundColor': '#457b9d',
+                                         # 'color': 'white',
                                          'textAlign': 'center'},
                              style_header={'fontWeight': 'bold',
-                                           'color': 'black',
+                                           # 'color': 'black',
                                            # 'font-size': '14px',
                                            'backgroundColor': 'rgb(230,230,230)'},
-                             sort_action='native', sort_mode='multi', filter_action='native'),
+                             sort_action='native', sort_mode='multi', filter_action='native')
 
-        html.Br(),
-        html.H4('Choose two genes:'),
-        dbc.Row([
-
-            dbc.Col([
-                html.P('Gene A', style={'color': 'white'}),
-                dcc.Dropdown(options=list({'label': i, 'value': i} for i in list(object.GeneAttrs['GeneInfo'].index)),
-                             id='gene_a', value=list(object.GeneAttrs['GeneInfo'].index)[0])
-            ]),
-
-            dbc.Col([
-                html.P('Gene B', style={'color': 'white'}),
-                dcc.Dropdown(options=list({'label': i, 'value': i} for i in list(object.GeneAttrs['GeneInfo'].index)),
-                             id='gene_b', value=list(object.GeneAttrs['GeneInfo'].index)[1])
-            ]),
-
-            dbc.Col([
-                html.P('Cells ordered by ', style={'color': 'white'}),
-                dcc.Dropdown(options=get_cellinfo_column(), id='cell_order')
-            ])
-        ]),
-        html.Br(),
-        dcc.Graph(id='gene_correlation_1'),
-        dcc.Graph(id='gene_correlation_2')
     ])
 
     return page_2
@@ -252,83 +284,88 @@ def create_page_3():
     neighbours, sub_element_1, sub_element_2 = update_sub_network(click_node=None)
     rolling_neighbour = windown_sliding_corr(neighbours, pairwise=False)
     gene_dynamics = px.scatter(rolling_neighbour, title='Gene expression level')
-    gene_dynamics.update_layout(xaxis_title="Cell name", yaxis_title="Expression level")
+    gene_dynamics.update_layout(xaxis_title="Cell name", yaxis_title="Expression level",
+                                plot_bgcolor='white')
+    gene_dynamics.update_layout(legend=dict(font=dict(family="Courier", size=50),
+                                            itemsizing='constant'), legend_title_text='')
     def_text = 'please click on the gene node!'
 
     def_stylesheet = [{
         'selector': 'node',
         'style': {'label': 'data(id)',
-                  'color': 'white',
-                  'background-color': '#D8B75B'}
+                  'color': '#343a40',
+                  'background-color': '#D8B75B',
+                  'size': '30'
+                  }
     }]
     page_3 = html.Div([
         html.H1("Create you own gene network"),
         html.Br(),
         dbc.Row([
             dbc.Col([
-                html.P('Choose GRN method', style={'color': 'white'}),
-                dcc.Dropdown(id='grn_method', options=get_GRN_method(), value=get_GRN_method()[0]['value']),
+                cyto.Cytoscape(
+                    id='gene_network',
+                    layout={'name': 'grid'},
+                    style={'width': '95%', 'height': '1000px', 'background-color': '#eddcd2'},
+                    stylesheet=def_stylesheet,
+                    elements=elements
+                )]),
+
+            dbc.Col([
+                html.P('Choose GRN method', style=FONT_STYLE),
+                dcc.Dropdown(id='grn_method', options=get_GRN_method(), value=get_GRN_method()[0]['value'],
+                             style={'background-color': 'white', 'color': '#343a40'}),
 
                 html.Br(),
-                html.P('Choose top links', style={'color': 'white'}),
+                html.P('Choose top links', style=FONT_STYLE),
                 dcc.RadioItems(id='top_links',
                                options=list({'label': str(i), 'value': str(i)} for i in [50, 100, 200, 500, 1000]),
                                value="50", labelStyle={'display': 'inline-block', 'margin-right': '1rem'},
-                               style={'color': 'white'}),
+                               style=FONT_STYLE),
 
                 html.Br(),
-                html.P('Choose resolution for module detection', style={'color': 'white'}),
+                html.P('Choose resolution for module detection', style=FONT_STYLE),
                 dcc.Slider(id='resolution', min=0, max=1, step=0.1, value=0.5,
                            marks={0: {'label': '0'},
                                   0.5: {'label': '0.5'},
                                   1: {'label': 1}}),
 
                 html.Br(),
-                html.P('Choose network layout', style={'color': 'white'}),
+                html.P('Choose network layout', style=FONT_STYLE),
                 dcc.Dropdown(
                     id='net_layout',
-                    value='grid',
+                    value='cose',
                     clearable=False,
                     options=[
                         {'label': name.capitalize(), 'value': name}
-                        for name in ['grid', 'random', 'circle', 'cose', 'concentric']
+                        for name in ['cose', 'random', 'circle', 'grid', 'concentric']
                     ]
                 ),
 
                 html.Br(),
-                html.P('Node size encoded by', style={'color': 'white'}),
+                html.P('Node size encoded by', style=FONT_STYLE),
                 dcc.Dropdown(id='node_size_encode', options=get_gene_rank(), value=get_gene_rank()[0]['value'])
-            ], width=3.5, style={"margin-left": "1rem"}),
-
-            dbc.Col([
-                cyto.Cytoscape(
-                    id='gene_network',
-                    layout={'name': 'grid'},
-                    style={'width': '100%', 'height': '450px', 'background-color': 'black'},
-                    stylesheet=def_stylesheet,
-                    elements=elements
-                )
-            ])
+            ], width=3.5)
 
         ]),
         html.Br(),
         html.Hr(),
         dbc.Row([
             dbc.Col([
-                html.H5(id='node_neighbors', children=def_text, style={'color': 'white'}),
+                html.H3(id='node_neighbors', children=def_text, style=FONT_STYLE),
                 cyto.Cytoscape(
                     id='selected_node_neighbors',
                     layout={'name': 'cose'},
-                    style={'width': '90%', 'height': '350px', 'background-color': 'black'},
+                    style={'width': '90%', 'height': '500px', 'background-color': '#eddcd2'},
                     stylesheet=def_stylesheet,
                     elements=sub_element_1
                 )]),
             dbc.Col([
-                html.H5(id='node_module', children=def_text, style={'color': 'white'}),
+                html.H3(id='node_module', children=def_text, style=FONT_STYLE),
                 cyto.Cytoscape(
                     id='selected_node_module',
                     layout={'name': 'grid'},
-                    style={'width': '90%', 'height': '350px', 'background-color': 'black'},
+                    style={'width': '90%', 'height': '500px', 'background-color': '#eddcd2'},
                     stylesheet=def_stylesheet,
                     elements=sub_element_2
                 )
@@ -336,45 +373,34 @@ def create_page_3():
         ]),
         html.Br(),
         html.H5('Gene dynamics'),
-        dcc.Graph(id='gene_dynamics_plot', figure=gene_dynamics, style={'height': '600px'})
+        dcc.Graph(id='gene_dynamics_plot', figure=gene_dynamics,
+                  style={'height': '1000px'})
 
     ], style={"margin-left": "1rem"})
 
     return page_3
 
 
-SIDEBAR_STYLE = {
-    "height": "100%",
-    "font-size": "20px",
-    "position": "fixed",
-    "top": 0,
-    "left": 0,
-    "bottom": 0,
-    "width": "28rem",
-    "padding": "2rem 1rem",
-    "background-color": "#1d3557",
-}
-
-# the styles for the main content position it to the right of the sidebar and
-# add some padding.
-CONTENT_STYLE = {
-    "margin-left": "28rem",
-    "margin-right": "0rem",
-    "padding": "2rem 1rem",
-    "background-color": "#457b9d"
-}
 sidebar = html.Div(
     [
-        html.H3("PySCNet Dashboard", className="display-4"),
-        html.P("A python dashboard for pyscnet visualization.", style={'color': 'white', "font-size": "15px"}),
+        html.H3("PySCNet Dashboard", className="display-4",
+                style={'color': 'white', "font-size": "80px", 'font-weight': 'bold'}),
+        html.Br(),
+        html.P("A python dashboard for pyscnet visualization.",
+               style={'color': 'white', "font-size": "30px", 'font-style': 'italic'}),
         html.Hr(),
         dbc.Nav(
             [
-                dbc.NavLink("Introduction", href="/page-0", id="page-0-link", style={"margin-bottom": "1rem"}),
-                dbc.NavLink("Cell Attributes", href="/page-1", id="page-1-link", style={"margin-bottom": "1rem"}),
-                dbc.NavLink("Gene Attributes", href="/page-2", id="page-2-link", style={"margin-bottom": "1rem"}),
-                dbc.NavLink("Network Attributes", href="/page-3", id="page-3-link", style={"margin-bottom": "1rem"}),
-                dbc.NavLink("Contact", href="/page-4", id="page-4-link"),
+                dbc.NavLink("Introduction", href="/page-0", id="page-0-link",
+                            style={"margin-bottom": "5rem"}),
+                dbc.NavLink("Cell Attributes", href="/page-1", id="page-1-link",
+                            style={"margin-bottom": "5rem"}),
+                dbc.NavLink("Gene Attributes", href="/page-2", id="page-2-link",
+                            style={"margin-bottom": "5rem"}),
+                dbc.NavLink("Network Attributes", href="/page-3", id="page-3-link",
+                            style={"margin-bottom": "5rem"}),
+                dbc.NavLink("Contact", href="/page-4", id="page-4-link",
+                            style={"margin-bottom": "5rem"}),
                 html.Hr(),
                 html.Div(
                     [
@@ -383,8 +409,8 @@ sidebar = html.Div(
                     ],
                     style={  # wrapper div style
                         'textAlign': 'center',
-                        'width': '200px',
-                        'padding': '10px',
+                        'width': '550px',
+                        'padding': '5px',
                         'margin-left': '1rem',
                         'display': 'inline-block',
                         'color': 'white'
@@ -414,7 +440,7 @@ def toggle_active_links(pathname):
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def render_page_content(pathname):
     if pathname in ["/", "/page-0"]:
-        return dcc.Markdown(dedent(open('assets/Introduction.md', 'r').read()))
+        return dcc.Markdown(dedent(open('assets/Introduction.md', 'r').read()), style={'font-size': '35px'})
     elif pathname == "/page-1":
         return update_sub_page('page_1')
     elif pathname == "/page-2":
@@ -453,10 +479,16 @@ def gene_cor_curve(gene_a, gene_b):
     f2 = px.scatter(rolling_2, title='Gene expression level')
 
     f1.update_layout(xaxis_title="Cell name",
-                     yaxis_title="Pearson correlation")
+                     yaxis_title="Pearson correlation",
+                     plot_bgcolor='white')
+    f1.update_layout(legend=dict(font=dict(family="Courier", size=50),
+                                 itemsizing='constant'), legend_title_text='')
 
     f2.update_layout(xaxis_title="Cell name",
-                     yaxis_title="Expression level")
+                     yaxis_title="Expression level",
+                     plot_bgcolor='white')
+    f2.update_layout(legend=dict(font=dict(family="Courier", size=50),
+                                 itemsizing='constant'), legend_title_text='')
 
     return f1, f2
 
@@ -481,7 +513,7 @@ def update_gene_network(grn_method, top_links, net_layout, resolution, node_size
                 'label': 'data(id)',
                 'background-color': 'data(color)',
                 'size': 'data(' + node_size_encode + ')',
-                'color': 'white'}
+                'color': '#343a40'}
         }]
     return [new_elements, new_layout, new_stylesheet]
 
@@ -501,7 +533,7 @@ def update_sub_net(data):
             'selector': 'node',
             'style': {
                 'label': 'data(id)',
-                'color': 'white',
+                'color': '#343a40',
                 'background-color': 'data(color)'
             }
         }]
@@ -512,12 +544,15 @@ def update_sub_net(data):
         rolling_neighbour = windown_sliding_corr(neighbours, pairwise=False)
         gene_dynamics = px.scatter(rolling_neighbour, title='Gene expression level')
         gene_dynamics.update_layout(xaxis_title="Cell name",
-                                    yaxis_title="Expression level")
+                                    yaxis_title="Expression level",
+                                    plot_bgcolor='white')
+        gene_dynamics.update_layout(legend=dict(font=dict(family="Courier", size=50), itemsizing='constant'),
+                                    legend_title_text='')
 
     return [new_sub_elements_1, new_sub_elements_2, new_stylesheet_1,
             new_stylesheet_1, neighbour_text, module_text, gene_dynamics]
 
 
 if __name__ == '__main__':
-    app.run_server(host='127.0.0.1', port='8000', debug=True,
+    app.run_server(host='127.0.0.1', port='8080', debug=True,
                    dev_tools_ui=False, dev_tools_props_check=False)
