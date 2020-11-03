@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 from pathlib import Path
 import uuid
-
+import os
 import dash_uploader as du
 import dash
 import dash_table
@@ -20,8 +20,7 @@ from dash.dependencies import Input, Output, State
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUMEN])
 app.title = 'PySCNet Dashboard'
-server = app.server
-UPLOAD_FOLDER_ROOT = r"/home/mwu/dash-sample-apps/apps/dash-pyscnet/data/"
+UPLOAD_FOLDER_ROOT = os.getenv('HOME') + "/"
 du.configure_upload(app, UPLOAD_FOLDER_ROOT)
 
 FONT_STYLE = {
