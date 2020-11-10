@@ -44,41 +44,41 @@ def geneHeatmap(gnetdata, gene, cell_clusterid, select_by, order_by=None, scale=
     return sns_plot
 
 
-def geneDynamic(gnetdata, gene, cell_clusterid, select_by, rolling=10, order_by=None, scale_data=True, save_as=None,
-                colors=None, legend_size=None, **kwargs):
-    """
-    Create line plot showing gene dynamics
-    ----------------------------------------------------------
-    :param gnetdata: Gnetdata object
-    :param gene: list, default None.
-    :param cell_clusterid: str, default None. cell with cell_clusterid will be selected
-    :param select_by: str, default None. key of filtering cells
-    :param order_by: str, default None. key of ordering cells
-    :param rolling: int, default 10. rolling window calculation
-    :param scale_data: bool, default True. whether or not scale the data
-    :param save_as: str, default None. filepath+filename
-    :param colors: list, default None. list of string denoting color map
-    :param legend_size: list, default None. specify legend size
-    :param kwargs: additional parameters passed to matplotlib.pyplot.plot()
-    :return: none
-
-    """
-    cell_info = gnetdata.CellAttrs['CellInfo'] if order_by is None else gnetdata.CellAttrs['CellInfo'].sort_values(
-        order_by, ascending=True)
-    cell = list(cell_info.loc[cell_info[select_by].isin([cell_clusterid])].index)
-    sub_Expr = pd.DataFrame(preprocessing.scale(gnetdata.ExpMatrix),
-                            index=gnetdata.ExpMatrix.index, columns=gnetdata.ExpMatrix.columns).loc[gene, cell].T \
-        if scale_data else gnetdata.ExpMatrix.loc[gene, cell].T
-
-    colors = list(mcolors._colors_full_map.values()) if colors is None else colors
-    fig, ax = plt.subplots()
-    num = 0
-
-    if save_as is not None:
-        plt.savefig(save_as)
-
-    # plt.show()
-    return ax
+# def geneDynamic(gnetdata, gene, cell_clusterid, select_by, rolling=10, order_by=None, scale_data=True, save_as=None,
+#                 colors=None, legend_size=None, **kwargs):
+#     """
+#     Create line plot showing gene dynamics
+#     ----------------------------------------------------------
+#     :param gnetdata: Gnetdata object
+#     :param gene: list, default None.
+#     :param cell_clusterid: str, default None. cell with cell_clusterid will be selected
+#     :param select_by: str, default None. key of filtering cells
+#     :param order_by: str, default None. key of ordering cells
+#     :param rolling: int, default 10. rolling window calculation
+#     :param scale_data: bool, default True. whether or not scale the data
+#     :param save_as: str, default None. filepath+filename
+#     :param colors: list, default None. list of string denoting color map
+#     :param legend_size: list, default None. specify legend size
+#     :param kwargs: additional parameters passed to matplotlib.pyplot.plot()
+#     :return: none
+#
+#     """
+#     cell_info = gnetdata.CellAttrs['CellInfo'] if order_by is None else gnetdata.CellAttrs['CellInfo'].sort_values(
+#         order_by, ascending=True)
+#     cell = list(cell_info.loc[cell_info[select_by].isin([cell_clusterid])].index)
+#     sub_Expr = pd.DataFrame(preprocessing.scale(gnetdata.ExpMatrix),
+#                             index=gnetdata.ExpMatrix.index, columns=gnetdata.ExpMatrix.columns).loc[gene, cell].T \
+#         if scale_data else gnetdata.ExpMatrix.loc[gene, cell].T
+#
+#     colors = list(mcolors._colors_full_map.values()) if colors is None else colors
+#     fig, ax = plt.subplots()
+#     num = 0
+#
+#     if save_as is not None:
+#         plt.savefig(save_as)
+#
+#     # plt.show()
+#     return ax
 
 
 def geneCorrelation(gnetdata, gene, cell_clusterid, select_by, order_by=None, scale_data=True,
@@ -106,10 +106,10 @@ def geneCorrelation(gnetdata, gene, cell_clusterid, select_by, order_by=None, sc
         if scale_data else gnetdata.ExpMatrix.loc[gene, cell].T
 
     corr = sub_Expr.corr()
-    mask = np.triu(np.ones_like(corr, dtype=np.bool))
+    #     mask = np.triu(np.ones_like(corr, dtype=np.bool))
     cmap = sns.diverging_palette(220, 10, as_cmap=True)
     fig, ax = plt.subplots(figsize=[10, 10] if figsize is None else figsize)
-    sns_heatmap = sns.heatmap(corr, mask=mask, cmap=cmap, vmax=.3, center=0, **kwargs)
+    sns_heatmap = sns.heatmap(corr, cmap=cmap, center=0, **kwargs)
 
     if save_as is not None:
         plt.savefig(save_as)

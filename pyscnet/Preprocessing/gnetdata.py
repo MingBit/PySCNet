@@ -61,7 +61,7 @@ class Gnetdata:
         text = 'Gnetdata object with \nExpMatrix: {} x {}'.format(self.shape[0], self.shape[1])
         attr = ['CellAttrs', 'GeneAttrs', 'NetAttrs']
         for at in attr:
-            keys = getattr(self, at).keys()
+            keys = getattr(self, at).keys() if getattr(self, at) is not None else None
             text += '\n' + at + ':' + str(keys)
 
         print(text)
