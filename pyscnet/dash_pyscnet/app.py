@@ -1,11 +1,13 @@
 from __future__ import absolute_import
 from pathlib import Path
 import uuid
-import os
+
 import dash_uploader as du
 import dash
 import dash_table
 import random
+from umap import UMAP
+from sklearn.decomposition import PCA
 import pandas as pd
 from textwrap import dedent
 import dash_core_components as dcc
@@ -20,7 +22,8 @@ from dash.dependencies import Input, Output, State
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUMEN])
 app.title = 'PySCNet Dashboard'
-UPLOAD_FOLDER_ROOT = os.getenv('HOME') + "/"
+# server = app.server
+UPLOAD_FOLDER_ROOT = r"/home/mwu/dash-sample-apps/apps/dash-pyscnet/data/"
 du.configure_upload(app, UPLOAD_FOLDER_ROOT)
 
 FONT_STYLE = {
@@ -80,16 +83,27 @@ def get_cellinfo_column():
     return list({'label': i, 'value': i} for i in list(object.CellAttrs['CellInfo'].columns))
 
 
-def windown_sliding_corr(genes, pairwise=True):
+def windown_sliding_corr(genes, cell_order=None, cell_filter=None, pairwise=True):
     r_window_size = 100
     df = object.ExpMatrix.T
+
+    if cell_order is not None:
+        if cell_filter is not None:
+            cells = object.CellAttrs['CellInfo'].sort_values(cell_order, ascending=False)
+            df = df.loc[cells[cells[cell_order] == cell_filter].index]
+        else:
+            df = df.reindex(object.CellAttrs['CellInfo'].sort_values(cell_order, ascending=False).index)
+
     # Interpolate missing data.
     df_interpolated = df.interpolate()
     # Compute rolling window synchrony
-    tmp = df[genes].rolling(window=r_window_size, center=True).mean()
+    tmp = pd.DataFrame(df[genes].rolling(window=r_window_size, center=True).mean())
+
     if pairwise:
 
-        rolling_r = df_interpolated[genes[0]].rolling(window=r_window_size, center=True).corr(df_interpolated[genes[1]])
+        rolling_r = pd.DataFrame(
+            df_interpolated[genes[0]].rolling(window=r_window_size, center=True).corr(df_interpolated[genes[1]]))
+        rolling_r.columns = ['Correlation']
         return rolling_r, tmp
     else:
 
@@ -179,25 +193,37 @@ def create_page_1():
     page_1 = html.Div([
         dbc.Row([
             dbc.Col([
-                html.H4('Cell distribution'),
+                html.H4('Cell distribution 1'),
                 html.Br(),
-                dcc.Graph(id='cell_distribution'),
-                dbc.Row([
-                    dbc.Col([
-                        html.P('color encoded by:'),
-                        dcc.Dropdown(options=get_cellinfo_column(), id='color_code', value='Condition')
-                    ]),
-                    dbc.Col([
-                        html.P('shape encoded by:', style=FONT_STYLE),
-                        dcc.Dropdown(options=get_cellinfo_column(), id='shape_code')
-                    ])
-                ])
+                dcc.Graph(id='cell_distribution_1', style={'height': '800px'})
             ]),
+            dbc.Col([html.H4('Cell distribution 2'),
+                     html.Br(),
+                     dcc.Graph(id='cell_distribution_2', style={'height': '800px'})
+                     ]),
             dbc.Col([
-                html.H4('Cell percentage'),
                 html.Br(),
-                dcc.Graph(id='cell_percentage')
-            ])
+                html.P('set PCA components:', style=FONT_STYLE),
+                dcc.Input(id='components', value=10),
+                html.Br(),
+                html.P('set K neighbors:', style=FONT_STYLE),
+                dcc.Input(id='neighbors', value=300),
+                html.Br(),
+                html.P('Choose 2D or 3D:', style=FONT_STYLE),
+                dcc.RadioItems(id='xD',
+                               options=list({'label': i, 'value': i} for i in ['2D', '3D']),
+                               value='3D', labelStyle={'display': 'inline-block', 'margin-right': '1rem'},
+                               style=FONT_STYLE),
+                html.Br(),
+                html.P('choose color 1'),
+                dcc.Dropdown(options=get_cellinfo_column(), id='color_code_1',
+                             value=object.CellAttrs['CellInfo'].columns[0]),
+                html.Br(),
+                html.P('choose color 2'),
+                dcc.Dropdown(options=get_cellinfo_column(), id='color_code_2',
+                             value=object.CellAttrs['CellInfo'].columns[1]),
+                # dbc.Button("submit", id='submit', color='dark', n_clicks=0, className="mr-2")
+            ], width=3.5, style={"margin-left": "1rem"})
         ]),
         html.Br(),
         html.H4("Cell annotation table"),
@@ -222,7 +248,7 @@ def create_page_1():
                                            # 'color': 'black',
                                            'backgroundColor': 'rgb(230,230,230)'},
                              sort_action='native', sort_mode='multi', filter_action='native')
-    ], style={'position': 'fixed'})
+    ])
     return page_1
 
 
@@ -245,6 +271,11 @@ def create_page_2():
             dbc.Col([
                 html.P('Cells ordered by ', style=FONT_STYLE),
                 dcc.Dropdown(options=get_cellinfo_column(), id='cell_order')
+            ]),
+
+            dbc.Col([
+                html.P('Cells selected by', style=FONT_STYLE),
+                dcc.Dropdown(id='cell_filter')
             ])
         ]),
         html.Br(),
@@ -469,12 +500,77 @@ def get_a_list(is_completed, filenames, upload_id):
         return [filenames]
 
 
+@app.callback(Output('cell_filter', 'options'),
+              Input('cell_order', 'value'))
+def update_cell_filter(cell_order):
+    return list({'label': i, 'value': i} for i in list(np.unique(object.CellAttrs['CellInfo'][cell_order])))
+
+
+@app.callback(Output('cell_filter', 'value'),
+              Input('cell_filter', 'options'))
+def initialize_cell_filter(cell_filter_options):
+    # return cell_filter_options[0]['value']
+    return None
+
+
+@app.callback([Output('cell_distribution_1', 'figure'),
+               Output('cell_distribution_2', 'figure')],
+              [
+                  # Input('submit', 'n_clicks'),
+                  Input('xD', 'value'),
+                  Input('color_code_1', 'value'),
+                  Input('color_code_2', 'value'),
+                  Input('components', 'value'),
+                  Input('neighbors', 'value')])
+def update_cell_distribution(xD, color_1, color_2, components, neighbours):
+    pca = PCA(n_components=components).fit_transform(object.ExpMatrix.T)
+    if xD == '2D':
+        proj_2d = UMAP(n_neighbors=neighbours,
+                       n_components=2,
+                       min_dist=0.8,
+                       metric='correlation').fit_transform(pca)
+        fig_2d_1 = px.scatter(
+            proj_2d, x=0, y=1,
+            color=object.CellAttrs['CellInfo'][color_1], labels={'color': color_1})
+
+        fig_2d_1.update_layout(legend=dict(font=dict(family="Courier", size=50), itemsizing='constant'),
+                               legend_title_text='')
+        fig_2d_2 = px.scatter(
+            proj_2d, x=0, y=1,
+            color=object.CellAttrs['CellInfo'][color_2], labels={'color': color_2})
+
+        fig_2d_2.update_layout(legend=dict(font=dict(family="Courier", size=50), itemsizing='constant'),
+                               legend_title_text='')
+        return fig_2d_1, fig_2d_2
+    else:
+        proj_3d = UMAP(n_neighbors=neighbours,
+                       n_components=3,
+                       min_dist=0.5,
+                       metric='correlation').fit_transform(pca)
+
+        fig_3d_1 = px.scatter_3d(
+            proj_3d, x=0, y=1, z=2,
+            color=object.CellAttrs['CellInfo'][color_1], labels={'color': color_1})
+
+        fig_3d_1.update_layout(legend=dict(font=dict(family="Courier", size=50), itemsizing='constant'),
+                               legend_title_text='')
+
+        fig_3d_2 = px.scatter_3d(
+            proj_3d, x=0, y=1, z=2,
+            color=object.CellAttrs['CellInfo'][color_2], labels={'color': color_2})
+        fig_3d_2.update_layout(legend=dict(font=dict(family="Courier", size=50), itemsizing='constant'),
+                               legend_title_text='')
+        return fig_3d_1, fig_3d_2
+
+
 @app.callback([Output('gene_correlation_1', 'figure'),
                Output('gene_correlation_2', 'figure')],
               [Input('gene_a', 'value'),
-               Input('gene_b', 'value')])
-def gene_cor_curve(gene_a, gene_b):
-    rolling_1, rolling_2 = windown_sliding_corr([gene_a, gene_b], pairwise=True)
+               Input('gene_b', 'value'),
+               Input('cell_order', 'value'),
+               Input('cell_filter', 'value')])
+def gene_cor_curve(gene_a, gene_b, cell_order, cell_filter):
+    rolling_1, rolling_2 = windown_sliding_corr([gene_a, gene_b], cell_order, cell_filter, pairwise=True)
     f1 = px.scatter(rolling_1, title='Window rolling pearson correlation')
     f2 = px.scatter(rolling_2, title='Gene expression level')
 
