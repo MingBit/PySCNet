@@ -50,11 +50,15 @@ CONTENT_STYLE = {
     "bottom": 0,
     "margin-left": "20%",
     "padding": "2rem 1rem",
-    # "background-color": "#457b9d",
+    # "background-color": "",
     "height": "100%",
     "width": "70%",
     "font-size": '30px'
 
+}
+
+DROPDOWN_STYLE = {
+    'height': '30px'
 }
 
 
@@ -217,11 +221,13 @@ def create_page_1():
                 html.Br(),
                 html.P('choose color 1'),
                 dcc.Dropdown(options=get_cellinfo_column(), id='color_code_1',
-                             value=object.CellAttrs['CellInfo'].columns[0]),
+                             value=object.CellAttrs['CellInfo'].columns[0],
+                             style=DROPDOWN_STYLE),
                 html.Br(),
                 html.P('choose color 2'),
                 dcc.Dropdown(options=get_cellinfo_column(), id='color_code_2',
-                             value=object.CellAttrs['CellInfo'].columns[1]),
+                             value=object.CellAttrs['CellInfo'].columns[1],
+                             style=DROPDOWN_STYLE),
                 # dbc.Button("submit", id='submit', color='dark', n_clicks=0, className="mr-2")
             ], width=3.5, style={"margin-left": "1rem"})
         ]),
@@ -248,7 +254,7 @@ def create_page_1():
                                            # 'color': 'black',
                                            'backgroundColor': 'rgb(230,230,230)'},
                              sort_action='native', sort_mode='multi', filter_action='native')
-    ])
+    ], id='wrapper')
     return page_1
 
 
@@ -259,13 +265,15 @@ def create_page_2():
             dbc.Col([
                 html.P('Gene A', style=FONT_STYLE),
                 dcc.Dropdown(options=list({'label': i, 'value': i} for i in list(object.GeneAttrs['GeneInfo'].index)),
-                             id='gene_a', value=list(object.GeneAttrs['GeneInfo'].index)[0])
+                             id='gene_a', value=list(object.GeneAttrs['GeneInfo'].index)[0],
+                             style=DROPDOWN_STYLE)
             ]),
 
             dbc.Col([
                 html.P('Gene B', style=FONT_STYLE),
                 dcc.Dropdown(options=list({'label': i, 'value': i} for i in list(object.GeneAttrs['GeneInfo'].index)),
-                             id='gene_b', value=list(object.GeneAttrs['GeneInfo'].index)[1])
+                             id='gene_b', value=list(object.GeneAttrs['GeneInfo'].index)[1],
+                             style=DROPDOWN_STYLE)
             ]),
 
             dbc.Col([
@@ -277,7 +285,7 @@ def create_page_2():
                 html.P('Cells selected by', style=FONT_STYLE),
                 dcc.Dropdown(id='cell_filter')
             ])
-        ]),
+        ], style={'height': '200px'}),
         html.Br(),
 
         dcc.Graph(id='gene_correlation_2', style={'height': '1000px'}),
@@ -305,7 +313,7 @@ def create_page_2():
                                            'backgroundColor': 'rgb(230,230,230)'},
                              sort_action='native', sort_mode='multi', filter_action='native')
 
-    ])
+    ], id='wrapper')
 
     return page_2
 
@@ -337,15 +345,15 @@ def create_page_3():
                 cyto.Cytoscape(
                     id='gene_network',
                     layout={'name': 'grid'},
-                    style={'width': '95%', 'height': '1000px', 'background-color': '#eddcd2'},
+                    style={'width': '95%', 'height': '1000px',
+                           'background-color': '#eddcd2'},
                     stylesheet=def_stylesheet,
                     elements=elements
-                )]),
+                )], style={'padding': '10px'}),
 
             dbc.Col([
                 html.P('Choose GRN method', style=FONT_STYLE),
-                dcc.Dropdown(id='grn_method', options=get_GRN_method(), value=get_GRN_method()[0]['value'],
-                             style={'background-color': 'white', 'color': '#343a40'}),
+                dcc.Dropdown(id='grn_method', options=get_GRN_method(), value=get_GRN_method()[0]['value']),
 
                 html.Br(),
                 html.P('Choose top links', style=FONT_STYLE),
@@ -376,7 +384,7 @@ def create_page_3():
                 html.Br(),
                 html.P('Node size encoded by', style=FONT_STYLE),
                 dcc.Dropdown(id='node_size_encode', options=get_gene_rank(), value=get_gene_rank()[0]['value'])
-            ], width=3.5)
+            ], width=3.5, style={'background-color': '#adb5bd', 'padding': '10px'})
 
         ]),
         html.Br(),
@@ -407,7 +415,7 @@ def create_page_3():
         dcc.Graph(id='gene_dynamics_plot', figure=gene_dynamics,
                   style={'height': '1000px'})
 
-    ], style={"margin-left": "1rem"})
+    ], style={"margin-left": "1rem"}, id='wrapper')
 
     return page_3
 
@@ -456,7 +464,7 @@ sidebar = html.Div(
 )
 
 content = html.Div(id="page-content", style=CONTENT_STYLE)
-app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
+app.layout = html.Div([dcc.Location(id="url"), sidebar, content], style={"display": "flex"})
 
 
 @app.callback(

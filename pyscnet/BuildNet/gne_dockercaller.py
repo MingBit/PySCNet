@@ -59,7 +59,7 @@ def __rundocker(gnetdata, method, cell=None, feature=None, cell_clusterid=None, 
     tmp_expr = gnetdata.ExpMatrix.loc[feature, cell]
 
     if Mms_TF is not None:
-        pd.DataFrame.to_csv(Mms_TF, path + method + '/TF_Names.txt', sep='\t', header=False, index=False)
+        pd.DataFrame.to_csv(pd.DataFrame(Mms_TF), path + method + '/TF_Names.txt', sep='\t', header=False, index=False)
 
     with open(path + method + '/paras.pk', 'wb') as outfile:
         pk.dump(kwargs, outfile)

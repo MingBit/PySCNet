@@ -447,3 +447,15 @@ font-weight: 500;
 font-size: 14px;
 color: white;
 }
+
+#wrapper .Select--single .Select-value {
+  background-color: #e76f51;
+  color: #eddcd2;
+  font-size: 30px;
+}
+
+#wrapper .VirtualizedSelectFocusedOption {
+  background-color: #e63946;
+  color:#f1faee;
+  font-size: 25px
+}
