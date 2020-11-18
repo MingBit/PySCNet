@@ -16,12 +16,11 @@ WORKDIR /GRNBOOST2
 
 COPY . /GRNBOOST2
 
-RUN pip install --trusted-host pypi.python.org -r requirements.txt
+RUN pip install --trusted-host pypi.python.org -r requirements
 
 RUN ls ./
 
 RUN ["python", "run_grnboost2.py"]
-
 
 
 

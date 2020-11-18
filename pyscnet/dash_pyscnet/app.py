@@ -379,6 +379,7 @@ def create_page_3():
                         {'label': name.capitalize(), 'value': name}
                         for name in ['cose', 'random', 'circle', 'grid', 'concentric']
                     ]
+
                 ),
 
                 html.Br(),

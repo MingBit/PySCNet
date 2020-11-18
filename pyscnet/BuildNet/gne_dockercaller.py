@@ -73,9 +73,9 @@ def __rundocker(gnetdata, method, cell=None, feature=None, cell_clusterid=None, 
     container.stop()
     client.containers.prune()
     client.images.prune()
-    os.system('rm ' + path + method + '/Expr.txt | rm ' + path + method + '/paras.pk')
     raw_links = pd.read_csv(os.getenv('HOME') + '/links.txt', sep='\t', header=None)
     raw_links.columns = ['source', 'target', 'weight']
+    os.system('rm ' + path + method + '/*.txt | rm ' + path + method + '/paras.pk')
     if directed is False: raw_links = __remove_duplicate(raw_links)
     gnetdata._add_netattr(method + '_links', raw_links)
     print(method + '_links added into NetAttrs')

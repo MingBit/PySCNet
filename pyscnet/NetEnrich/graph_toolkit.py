@@ -140,7 +140,7 @@ def find_consensus_graph(gnetdata, link_key='all', method='intersection', topran
         merged_links = ensemble_classifier(X, Y, toprank=toprank, **kwargs)
 
     print('there are {} consensus edges found!'.format(merged_links.shape[0]))
-    gnetdata._add_netattr('consensus', merged_links)
+    gnetdata._add_netattr('consensus_links', merged_links)
 
     return gnetdata
 
