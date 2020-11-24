@@ -9,7 +9,7 @@ RUN apt-get update \
         curl \
         unzip \
         vim \
-&& rm -rf /var/lib/apt/lists/*
+	&& rm -rf /var/lib/apt/lists/*
 
 
 WORKDIR /CORR

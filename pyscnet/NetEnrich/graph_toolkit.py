@@ -14,7 +14,7 @@ import numpy as np
 import warnings
 import networkx.algorithms.traversal as nextra
 from ._de_bruijn import construct_graph, output_contigs
-from ._random_walk import supervised_random_walk
+from ._random_walk import greedy_walk, supervised_random_walk
 from ._ensemble_classifier import _generate_x_y, ensemble_classifier
 
 
@@ -191,17 +191,23 @@ def graph_traveral(graph, start, threshold, method='bfs'):
     return res_path
 
 
-def random_walk(gnetdata, start, supervisedby, steps):
+def random_walk(gnetdata, start, method='greedy_walk', supervisedby='pageRank', steps=10, repeat=100):
     """
     Supervised random walk guided by node centrality attribute.
     ------------------------------------------------------------
     :param gnetdata: Gnetdata object
     :param start: str, starting point of graph.
-    :param supervisedby: str, 'betweenness', 'closeness', 'degree' or 'pageRank'
-    :param steps: int, number of steps.
+    :param method: str, 'greedy_walk' or 'supervised_random_walk'. default: greedy walk
+    :param supervisedby: str, 'betweenness', 'closeness', 'degree' or 'pageRank'. default: pageRank
+    :param steps: int, number of steps. default: 10
+    :param repeat: int, repeat time for supervised random walk. default: 100
     :return: a list of travelled nodes.
     """
-    path = supervised_random_walk(gnetdata=gnetdata, start=start, supervisedby=supervisedby, steps=steps)
+    assert method in ['greedy_walk', 'supervised_random_walk'], 'method must be either greedy_walk or supervised_random_walk'
+    if method == 'greedy_walk':
+        path = greedy_walk(gnetdata=gnetdata, start=start, supervisedby=supervisedby, steps=steps)
+    else:
+        path = supervised_random_walk(gnetdata=gnetdata, start=start, supervisedby=supervisedby, steps=steps, repeat=repeat)
     return path
 
 
