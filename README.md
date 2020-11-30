@@ -2,6 +2,7 @@
 [![License](https://img.shields.io/github/license/MingBit/PySCNet)](https://github.com/MingBit/PySCNet/blob/master/LICENSE)
 [![Build Status](https://travis-ci.org/MingBit/PySCNet.svg?branch=master)](https://travis-ci.org/MingBit/PySCNet)
 [![Documentation Status](https://readthedocs.org/projects/pyscnet/badge/?version=latest)](https://pyscnet.readthedocs.io/en/latest/?badge=latest)
+
 # PySCNet: A tool for reconstructing and analyzing gene regulatory network from single-cell RNA-Seq data
 There are four modules:
 1) **Pro-precessing**: initialize a gnetData object consisting of Expression Matrix, Cell Attributes, Gene Attributes and Network Attributes;
@@ -9,13 +10,12 @@ There are four modules:
 3) **NetEnrich**: network analysis including consensus network detection, gene module identification and trigger path prediction as well as network fusion;
 4) **Visulization**: network illustration.
 
-![Overview](https://github.com/MingBit/PySCNet/blob/master/images/Overview.png)
+![Overview](https://github.com/MingBit/PySCNet/blob/master/images/workflow_update.eps)
 
 # :tada: :confetti_ball: Create your own GRNs
-[Shinyapp](https://github.com/MingBit/PySCNet/blob/master/images/ShinyApp.gif) is available now for creating your own GRNs.
-Once the cells are grouped into several clusters and linkage tables are generated for each/all clusters, you can export the results
-as pickle object and uplaod onto Shinyapp. Cell attributes, Gene attributes and Network attributes are illustrated here.
-As shown belows, you can set your own thresholds to build each/all cluster-specific GRNs.
+[Dashboard](https://github.com/MingBit/PySCNet/blob/master/images/pyscnet_dashboard.gif) is available now for creating your own GRNs.
+Cell specific GRNs and network analysis results can be saved as a pickle object and upload onto PySCNet-Dashboard.
+It provides parameter settings and allows for parameter adjustment and GRNs customization. 
 
 # Installation
 1) clone from github:
@@ -23,10 +23,11 @@ As shown belows, you can set your own thresholds to build each/all cluster-speci
 2) create a new folder and set up:
 `mkdir dist | python setup.py sdist`
 3) install pyscnet:
-`pip install dist/pyscnet-0.0.2.tar.gz`
+`pip install dist/pyscnet-0.0.3.tar.gz`
 
 # Tutorial
-PBMC data preprocessed and analyzed by scanpy as explained in this [tutorial](https://github.com/MingBit/PySCNet/blob/master/tutorial/pyscnet_pbmc.ipynb). 
+Mouse HSC data preprocessed and analyzed by stream as explained in this 
+[tutorial](https://github.com/MingBit/PySCNet/blob/master/tutorial/pyscnet_stream.ipynb). 
 
 # TO-DO
 1) Add an Auto-ML based pipeline to Pre-Processing module;
