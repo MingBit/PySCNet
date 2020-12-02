@@ -1,7 +1,6 @@
 from __future__ import absolute_import
 from pathlib import Path
 import uuid
-
 import dash_uploader as du
 import dash
 import dash_table
@@ -14,7 +13,9 @@ import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
 import numpy as np
+import plotly.graph_objects as go
 import plotly.express as px
+from plotly.subplots import make_subplots
 import dash_cytoscape as cyto
 import pyscnet.NetEnrich as ne
 import pyscnet.Preprocessing as pp
@@ -27,7 +28,7 @@ UPLOAD_FOLDER_ROOT = r"/home/mwu/dash-sample-apps/apps/dash-pyscnet/data/"
 du.configure_upload(app, UPLOAD_FOLDER_ROOT)
 
 FONT_STYLE = {
-    "color": '#343a40',
+    "color": '#fff1e6',
     'font-size': '30'
 }
 
@@ -50,9 +51,9 @@ CONTENT_STYLE = {
     "bottom": 0,
     "margin-left": "20%",
     "padding": "2rem 1rem",
-    # "background-color": "",
+    # "background-color": "#264653",
     "height": "100%",
-    "width": "70%",
+    "width": "100%",
     "font-size": '30px'
 
 }
@@ -122,7 +123,7 @@ def update_object(grn_method, top_links, resolution=0.5):
     return new_object
 
 
-def update_filter_link(grn_method, top_links, resolution=0.5):
+def update_filter_link(grn_method, top_links, node_size, resolution=0.5):
     object = update_object(grn_method, top_links, resolution)
     filtered_link = object.NetAttrs[grn_method].sort_values('weight', ascending=False).head(top_links)
     gene_module = object.NetAttrs['communities']
@@ -134,9 +135,11 @@ def update_filter_link(grn_method, top_links, resolution=0.5):
     gene_module = pd.concat([object.NetAttrs['centralities'], gene_module[['color']].reset_index(drop=True)],
                             axis=1)
     object.NetAttrs['communities'] = gene_module
+    gene_module['size'] = gene_module[node_size] * 100 + 1
+
     nodes = [{'data': {'id': name, 'label': name, 'betweenness': betweenness, 'closeness': closeness,
-                       'degree': degree, 'pageRank': pageRank, 'color': color}} for
-             name, betweenness, closeness, degree, pageRank, color in
+                       'degree': degree, 'pageRank': pageRank, 'color': color, 'size': size}} for
+             name, betweenness, closeness, degree, pageRank, color, size in
              list(gene_module.itertuples(index=False, name=None))]
     edges = [{'data': {'source': source, 'target': target, 'weight': weight}} for source, target, weight in
              list(filtered_link.itertuples(index=False, name=None))]
@@ -187,10 +190,35 @@ def update_sub_page(sub_page):
             new_sub_page = create_page_2()
 
     else:
-        new_sub_page = html.Div(id='page_1-1', children=html.H1('please upload object!',
-                                                                style=FONT_STYLE))
+        new_sub_page = html.Div(id='page_1-1',
+                                children=html.H1('please upload object! :-)',
+                                                 style={'font-size': '100px', 'font-weight': 'bold'}))
 
     return new_sub_page
+
+
+def get_gene_curve(df, title, yaxis_title):
+    f = px.scatter(df, title=title)
+
+    f.update_layout(xaxis_title="Cell name",
+                    yaxis_title=yaxis_title,
+                    plot_bgcolor='#264653',
+                    font=dict(family="Courier New, monospace",
+                              size=50,
+                              color="RebeccaPurple"),
+                    legend=dict(font=dict(family="Courier", size=50),
+                                itemsizing='constant'), legend_title_text='')
+
+    f.update_layout(legend=dict(
+        yanchor="top",
+        y=0.99,
+        xanchor="left",
+        x=0.01
+    ))
+    f.update_xaxes(showgrid=False, showticklabels=False)
+    f.update_yaxes(showgrid=False, tickfont=dict(family='Arial', color='black', size=28))
+
+    return f
 
 
 def create_page_1():
@@ -230,37 +258,13 @@ def create_page_1():
                              style=DROPDOWN_STYLE),
                 # dbc.Button("submit", id='submit', color='dark', n_clicks=0, className="mr-2")
             ], width=3.5, style={"margin-left": "1rem"})
-        ]),
-        html.Br(),
-        html.H4("Cell annotation table"),
-        html.Hr(),
-        dash_table.DataTable(id='table',
-                             columns=[{'name': i, 'id': i} for i in object.CellAttrs['CellInfo'].columns],
-                             data=object.CellAttrs['CellInfo'].to_dict('records'),
-                             fixed_rows={'headers': True},
-                             style_table={'overflowX': 'scroll',
-                                          'overflowY': 'scroll',
-                                          'width': '100%',
-                                          'height': '50%',
-                                          'minWidth': '100%',
-                                          'maxHeight': '50ex'},
-                             style_cell={'overflow': 'hidden',
-                                         'maxWidth': 2,
-                                         'textOverflow': 'ellipsis',
-                                         # 'backgroundColor': '#457b9d',
-                                         # 'color': 'white',
-                                         'textAlign': 'center'},
-                             style_header={'fontWeight': 'bold',
-                                           # 'color': 'black',
-                                           'backgroundColor': 'rgb(230,230,230)'},
-                             sort_action='native', sort_mode='multi', filter_action='native')
-    ], id='wrapper')
+        ])], id='wrapper')
     return page_1
 
 
 def create_page_2():
     page_2 = html.Div([
-        html.H2('Choose two genes:'),
+        html.H2('Choose two genes:', style={'font-size': '50px', 'font-weight': 'bold', 'color': '#fff1e6'}),
         dbc.Row([
             dbc.Col([
                 html.P('Gene A', style=FONT_STYLE),
@@ -287,66 +291,44 @@ def create_page_2():
             ])
         ], style={'height': '200px'}),
         html.Br(),
-
-        dcc.Graph(id='gene_correlation_2', style={'height': '1000px'}),
-        dcc.Graph(id='gene_correlation_1', style={'height': '1000px'}),
-
-        html.H2("Gene annotation table"),
-        html.Br(),
-        dash_table.DataTable(id='table',
-                             columns=[{'name': i, 'id': i} for i in object.GeneAttrs['GeneInfo'].columns],
-                             data=object.GeneAttrs['GeneInfo'].to_dict('rows'),
-                             fixed_rows={'headers': True},
-                             style_table={'overflow': 'scroll',
-                                          'width': '100%',
-                                          'height': '100%',
-                                          'maxHeight': '80ex'},
-                             style_cell={'overflow': 'hidden',
-                                         'height': 'auto',
-                                         'lineHeight': '30px',
-                                         # 'backgroundColor': '#457b9d',
-                                         # 'color': 'white',
-                                         'textAlign': 'center'},
-                             style_header={'fontWeight': 'bold',
-                                           # 'color': 'black',
-                                           # 'font-size': '14px',
-                                           'backgroundColor': 'rgb(230,230,230)'},
-                             sort_action='native', sort_mode='multi', filter_action='native')
-
-    ], id='wrapper')
+        dbc.Row([
+            dbc.Col([dcc.Graph(id='gene_correlation_1', style={'height': '1500px'})]),
+            dbc.Col([dcc.Graph(id='gene_correlation_2', style={'height': '1500px'})]),
+        ], style={'margin-left': '1rem', 'margin-right': '1rem'})
+    ], id='wrapper', style={"background-color": "#264653"})
 
     return page_2
 
 
 def create_page_3():
-    elements = update_filter_link(grn_method=get_GRN_method()[0]['value'], top_links=50)
+    elements = update_filter_link(grn_method=get_GRN_method()[0]['value'], top_links=50,
+                                  node_size=get_gene_rank()[0]['value'])
     neighbours, sub_element_1, sub_element_2 = update_sub_network(click_node=None)
     rolling_neighbour = windown_sliding_corr(neighbours, pairwise=False)
-    gene_dynamics = px.scatter(rolling_neighbour, title='Gene expression level')
-    gene_dynamics.update_layout(xaxis_title="Cell name", yaxis_title="Expression level",
-                                plot_bgcolor='white')
-    gene_dynamics.update_layout(legend=dict(font=dict(family="Courier", size=50),
-                                            itemsizing='constant'), legend_title_text='')
+    gene_dynamics = get_gene_curve(rolling_neighbour, title='Gene expression level', yaxis_title='Expression level')
+
     def_text = 'please click on the gene node!'
 
     def_stylesheet = [{
         'selector': 'node',
         'style': {'label': 'data(id)',
-                  'color': '#343a40',
-                  'background-color': '#D8B75B',
-                  'size': '30'
+                  'color': '#fff1e6',
+                  'background-color': 'data(color)',
+                  'width': 'data(size)',
+                  'height': 'data(size)'
                   }
     }]
     page_3 = html.Div([
-        html.H1("Create you own gene network"),
+        html.H1("Create you own gene network",
+                style={'font-size': '100px', 'font-weight': 'bold'}),
         html.Br(),
         dbc.Row([
             dbc.Col([
                 cyto.Cytoscape(
                     id='gene_network',
-                    layout={'name': 'grid'},
-                    style={'width': '95%', 'height': '1000px',
-                           'background-color': '#eddcd2'},
+                    layout={'name': 'cose'},
+                    style={'width': '95%', 'height': '1500px',
+                           'background-color': '#264653'},
                     stylesheet=def_stylesheet,
                     elements=elements
                 )], style={'padding': '10px'}),
@@ -385,36 +367,41 @@ def create_page_3():
                 html.Br(),
                 html.P('Node size encoded by', style=FONT_STYLE),
                 dcc.Dropdown(id='node_size_encode', options=get_gene_rank(), value=get_gene_rank()[0]['value'])
-            ], width=3.5, style={'background-color': '#adb5bd', 'padding': '10px'})
 
-        ]),
+            ], width=3.8, style={'background-color': '#264653', 'margin-right': '1rem'})
+
+        ], style={"margin-left": "1rem"}),
         html.Br(),
         html.Hr(),
         dbc.Row([
             dbc.Col([
-                html.H3(id='node_neighbors', children=def_text, style=FONT_STYLE),
+                html.H2(id='node_neighbors', children=def_text,
+                        style={'font-size': '50px', 'font-weight': 'bold'}),
                 cyto.Cytoscape(
                     id='selected_node_neighbors',
                     layout={'name': 'cose'},
-                    style={'width': '90%', 'height': '500px', 'background-color': '#eddcd2'},
+                    style={'width': '92%', 'height': '1000px', 'background-color': '#264653'},
                     stylesheet=def_stylesheet,
                     elements=sub_element_1
                 )]),
             dbc.Col([
-                html.H3(id='node_module', children=def_text, style=FONT_STYLE),
+                html.H2(id='node_module', children=def_text,
+                        style={'font-size': '50px', 'font-weight': 'bold'}),
                 cyto.Cytoscape(
                     id='selected_node_module',
                     layout={'name': 'grid'},
-                    style={'width': '90%', 'height': '500px', 'background-color': '#eddcd2'},
+                    style={'width': '92%', 'height': '1000px', 'background-color': '#264653'},
                     stylesheet=def_stylesheet,
                     elements=sub_element_2
                 )
             ])
-        ]),
+        ], style={"margin-left": "1rem"}),
         html.Br(),
-        html.H5('Gene dynamics'),
+        html.Hr(),
+        html.H2('Gene kinetics',
+                style={'font-size': '50px', 'font-weight': 'bold'}),
         dcc.Graph(id='gene_dynamics_plot', figure=gene_dynamics,
-                  style={'height': '1000px'})
+                  style={'height': '1500px', 'margin-left': '3rem'})
 
     ], style={"margin-left": "1rem"}, id='wrapper')
 
@@ -580,22 +567,9 @@ def update_cell_distribution(xD, color_1, color_2, components, neighbours):
                Input('cell_filter', 'value')])
 def gene_cor_curve(gene_a, gene_b, cell_order, cell_filter):
     rolling_1, rolling_2 = windown_sliding_corr([gene_a, gene_b], cell_order, cell_filter, pairwise=True)
-    f1 = px.scatter(rolling_1, title='Window rolling pearson correlation')
-    f2 = px.scatter(rolling_2, title='Gene expression level')
-
-    f1.update_layout(xaxis_title="Cell name",
-                     yaxis_title="Pearson correlation",
-                     plot_bgcolor='white')
-    f1.update_layout(legend=dict(font=dict(family="Courier", size=50),
-                                 itemsizing='constant'), legend_title_text='')
-
-    f2.update_layout(xaxis_title="Cell name",
-                     yaxis_title="Expression level",
-                     plot_bgcolor='white')
-    f2.update_layout(legend=dict(font=dict(family="Courier", size=50),
-                                 itemsizing='constant'), legend_title_text='')
-
-    return f1, f2
+    f1 = get_gene_curve(rolling_1, title='window_sliding correlation', yaxis_title='Correlation')
+    f2 = get_gene_curve(rolling_2, title='Gene expression level', yaxis_title='Expression level')
+    return f2, f1
 
 
 @app.callback([Output('gene_network', 'elements'),
@@ -608,7 +582,10 @@ def gene_cor_curve(gene_a, gene_b, cell_order, cell_filter):
                Input('node_size_encode', 'value')])
 def update_gene_network(grn_method, top_links, net_layout, resolution, node_size_encode):
     new_elements = update_filter_link(grn_method=grn_method,
-                                      top_links=int(top_links), resolution=resolution)
+                                      top_links=int(top_links),
+                                      node_size=node_size_encode,
+                                      resolution=resolution)
+
     new_layout = {'name': net_layout, 'animate': True}
 
     new_stylesheet = [
@@ -617,8 +594,9 @@ def update_gene_network(grn_method, top_links, net_layout, resolution, node_size
             'style': {
                 'label': 'data(id)',
                 'background-color': 'data(color)',
-                'size': 'data(' + node_size_encode + ')',
-                'color': '#343a40'}
+                'width': 'data(size)',
+                'height': 'data(size)',
+                'color': '#fff1e6'}
         }]
     return [new_elements, new_layout, new_stylesheet]
 
@@ -638,7 +616,7 @@ def update_sub_net(data):
             'selector': 'node',
             'style': {
                 'label': 'data(id)',
-                'color': '#343a40',
+                'color': '#fff1e6',
                 'background-color': 'data(color)'
             }
         }]
@@ -647,13 +625,7 @@ def update_sub_net(data):
         module_text = 'Genes assigned to the same module as ' + data['id']
 
         rolling_neighbour = windown_sliding_corr(neighbours, pairwise=False)
-        gene_dynamics = px.scatter(rolling_neighbour, title='Gene expression level')
-        gene_dynamics.update_layout(xaxis_title="Cell name",
-                                    yaxis_title="Expression level",
-                                    plot_bgcolor='white')
-        gene_dynamics.update_layout(legend=dict(font=dict(family="Courier", size=50), itemsizing='constant'),
-                                    legend_title_text='')
-
+        gene_dynamics = get_gene_curve(rolling_neighbour, title='Gene expression level', yaxis_title='Expression level')
     return [new_sub_elements_1, new_sub_elements_2, new_stylesheet_1,
             new_stylesheet_1, neighbour_text, module_text, gene_dynamics]
 
