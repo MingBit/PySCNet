@@ -1,11 +1,14 @@
 from __future__ import absolute_import
 from pathlib import Path
+import io
+import os
 import uuid
 import dash_uploader as du
 import dash
-import dash_table
+import flask
 import random
 from umap import UMAP
+from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
 import pandas as pd
 from textwrap import dedent
@@ -13,23 +16,22 @@ import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
 import numpy as np
-import plotly.graph_objects as go
 import plotly.express as px
-from plotly.subplots import make_subplots
 import dash_cytoscape as cyto
 import pyscnet.NetEnrich as ne
 import pyscnet.Preprocessing as pp
-from dash.dependencies import Input, Output, State
+from dash.dependencies import Input, Output
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUMEN])
 app.title = 'PySCNet Dashboard'
-# server = app.server
 UPLOAD_FOLDER_ROOT = r"/home/mwu/dash-sample-apps/apps/dash-pyscnet/data/"
 du.configure_upload(app, UPLOAD_FOLDER_ROOT)
 
 FONT_STYLE = {
     "color": '#fff1e6',
-    'font-size': '30'
+    'font-size': '50',
+    'margin-left': '1rem',
+    'margin-right': '1rem'
 }
 
 SIDEBAR_STYLE = {
@@ -80,7 +82,7 @@ def get_GRN_method():
 
 def get_gene_rank():
     assert 'centralities' in object.NetAttrs.keys(), "No node centralities available!"
-    return list({'label': i, 'value': i} for i in list(object.NetAttrs['centralities'].columns[1:]))
+    return list({'label': i, 'value': i} for i in list(object.NetAttrs['centralities'].columns[1:]) + ['None'])
 
 
 def get_cellinfo_column():
@@ -135,7 +137,8 @@ def update_filter_link(grn_method, top_links, node_size, resolution=0.5):
     gene_module = pd.concat([object.NetAttrs['centralities'], gene_module[['color']].reset_index(drop=True)],
                             axis=1)
     object.NetAttrs['communities'] = gene_module
-    gene_module['size'] = gene_module[node_size] * 100 + 1
+    gene_module['size'] = np.repeat(30, gene_module.shape[0]) if node_size == 'None' else gene_module[
+                                                                                              node_size] * 100 + 1
 
     nodes = [{'data': {'id': name, 'label': name, 'betweenness': betweenness, 'closeness': closeness,
                        'degree': degree, 'pageRank': pageRank, 'color': color, 'size': size}} for
@@ -191,8 +194,9 @@ def update_sub_page(sub_page):
 
     else:
         new_sub_page = html.Div(id='page_1-1',
-                                children=html.H1('please upload object! :-)',
-                                                 style={'font-size': '100px', 'font-weight': 'bold'}))
+                                children=html.H1('please upload object!',
+                                                 style={'font-size': '80px', 'font-weight': 'bold',
+                                                        'color': '#457b9d'}))
 
     return new_sub_page
 
@@ -223,42 +227,65 @@ def get_gene_curve(df, title, yaxis_title):
 
 def create_page_1():
     page_1 = html.Div([
+        html.H2('Cell distributed by UMAP:', style={'font-size': '50px', 'font-weight': 'bold', 'color': '#fff1e6'}),
         dbc.Row([
             dbc.Col([
-                html.H4('Cell distribution 1'),
-                html.Br(),
-                dcc.Graph(id='cell_distribution_1', style={'height': '800px'})
-            ]),
-            dbc.Col([html.H4('Cell distribution 2'),
-                     html.Br(),
-                     dcc.Graph(id='cell_distribution_2', style={'height': '800px'})
-                     ]),
-            dbc.Col([
-                html.Br(),
+
                 html.P('set PCA components:', style=FONT_STYLE),
-                dcc.Input(id='components', value=10),
-                html.Br(),
+                dcc.Input(id='components', type='number', value=10),
+            ]),
+
+            dbc.Col([
                 html.P('set K neighbors:', style=FONT_STYLE),
-                dcc.Input(id='neighbors', value=300),
-                html.Br(),
+                dcc.Input(id='neighbors', type='number', value=300),
+            ]),
+
+            dbc.Col([
+
+                html.P('choose color 1', style=FONT_STYLE),
+                dcc.Dropdown(options=get_cellinfo_column(), id='color_code_1',
+                             value=object.CellAttrs['CellInfo'].columns[0],
+                             style=DROPDOWN_STYLE)
+            ]),
+
+            dbc.Col([
+                html.P('choose color 2', style=FONT_STYLE),
+                dcc.Dropdown(options=get_cellinfo_column(), id='color_code_2',
+                             value=object.CellAttrs['CellInfo'].columns[1],
+                             style=DROPDOWN_STYLE)
+            ]),
+
+            dbc.Col([
                 html.P('Choose 2D or 3D:', style=FONT_STYLE),
                 dcc.RadioItems(id='xD',
                                options=list({'label': i, 'value': i} for i in ['2D', '3D']),
                                value='3D', labelStyle={'display': 'inline-block', 'margin-right': '1rem'},
-                               style=FONT_STYLE),
+                               style=FONT_STYLE)
+            ])
+        ], style={'height': '200px', 'margin-left': '1rem', 'margin-right': '1rem'}),
+
+        dbc.Row([
+            dbc.Col([
+                html.H2('Cell distribution encoded by color 1',
+                        style={'font-size': '50px', 'font-weight': 'bold', 'color': '#fff1e6'}),
                 html.Br(),
-                html.P('choose color 1'),
-                dcc.Dropdown(options=get_cellinfo_column(), id='color_code_1',
-                             value=object.CellAttrs['CellInfo'].columns[0],
-                             style=DROPDOWN_STYLE),
-                html.Br(),
-                html.P('choose color 2'),
-                dcc.Dropdown(options=get_cellinfo_column(), id='color_code_2',
-                             value=object.CellAttrs['CellInfo'].columns[1],
-                             style=DROPDOWN_STYLE),
-                # dbc.Button("submit", id='submit', color='dark', n_clicks=0, className="mr-2")
-            ], width=3.5, style={"margin-left": "1rem"})
-        ])], id='wrapper')
+                dcc.Graph(id='cell_distribution_1', style={'height': '1500px'})
+            ]),
+            dbc.Col([html.H2('Cell distribution encoded by color 2',
+                             style={'font-size': '50px', 'font-weight': 'bold', 'color': '#fff1e6'}),
+                     html.Br(),
+                     dcc.Graph(id='cell_distribution_2', style={'height': '1500px'})
+                     ])
+        ], style={'margin-left': '1rem', 'margin-right': '1rem'}),
+
+        dbc.Row([
+            html.A('download cell annotation table', style={'margin-left': '3rem', 'color': '#fff1e6',
+                                                            'font-size': '60'},
+                   id='cell_download', href='/home/CellInfo-download.xlsx')
+        ])
+
+    ],
+        id='wrapper', style={"background-color": "#264653"})
     return page_1
 
 
@@ -289,12 +316,18 @@ def create_page_2():
                 html.P('Cells selected by', style=FONT_STYLE),
                 dcc.Dropdown(id='cell_filter')
             ])
-        ], style={'height': '200px'}),
+        ], style={'height': '200px', 'margin-left': '1rem', 'margin-right': '1rem'}),
         html.Br(),
         dbc.Row([
             dbc.Col([dcc.Graph(id='gene_correlation_1', style={'height': '1500px'})]),
             dbc.Col([dcc.Graph(id='gene_correlation_2', style={'height': '1500px'})]),
-        ], style={'margin-left': '1rem', 'margin-right': '1rem'})
+        ], style={'margin-left': '1rem', 'margin-right': '1rem'}),
+        html.Br(),
+        dbc.Row([
+            html.A('download gene annotation table', href='/home/GeneInfo-download.xlsx',
+                   style={'margin-left': '3rem', 'color': '#fff1e6',
+                          'font-size': '60'}, id='gene_download')
+        ])
     ], id='wrapper', style={"background-color": "#264653"})
 
     return page_2
@@ -302,7 +335,7 @@ def create_page_2():
 
 def create_page_3():
     elements = update_filter_link(grn_method=get_GRN_method()[0]['value'], top_links=50,
-                                  node_size=get_gene_rank()[0]['value'])
+                                  node_size='None')
     neighbours, sub_element_1, sub_element_2 = update_sub_network(click_node=None)
     rolling_neighbour = windown_sliding_corr(neighbours, pairwise=False)
     gene_dynamics = get_gene_curve(rolling_neighbour, title='Gene expression level', yaxis_title='Expression level')
@@ -335,7 +368,8 @@ def create_page_3():
 
             dbc.Col([
                 html.P('Choose GRN method', style=FONT_STYLE),
-                dcc.Dropdown(id='grn_method', options=get_GRN_method(), value=get_GRN_method()[0]['value']),
+                dcc.Dropdown(id='grn_method', options=get_GRN_method(),
+                             value=get_GRN_method()[0]['value'], style=FONT_STYLE),
 
                 html.Br(),
                 html.P('Choose top links', style=FONT_STYLE),
@@ -360,13 +394,16 @@ def create_page_3():
                     options=[
                         {'label': name.capitalize(), 'value': name}
                         for name in ['cose', 'random', 'circle', 'grid', 'concentric']
-                    ]
-
-                ),
+                    ], style=FONT_STYLE),
 
                 html.Br(),
                 html.P('Node size encoded by', style=FONT_STYLE),
-                dcc.Dropdown(id='node_size_encode', options=get_gene_rank(), value=get_gene_rank()[0]['value'])
+                dcc.Dropdown(id='node_size_encode', options=get_gene_rank(),
+                             value='None', style=FONT_STYLE),
+                html.Br(),
+                html.A('download network table', href='/home/NetInfo-download.xlsx',
+                       style={'color': '#fff1e6', 'margin-left': '1rem',
+                              'font-size': '60'}, id='net_download')
 
             ], width=3.8, style={'background-color': '#264653', 'margin-right': '1rem'})
 
@@ -444,7 +481,7 @@ sidebar = html.Div(
                     })
             ],
             vertical=True,
-            pills=True,
+            pills=True
         ),
     ],
 
@@ -511,13 +548,11 @@ def initialize_cell_filter(cell_filter_options):
 
 @app.callback([Output('cell_distribution_1', 'figure'),
                Output('cell_distribution_2', 'figure')],
-              [
-                  # Input('submit', 'n_clicks'),
-                  Input('xD', 'value'),
-                  Input('color_code_1', 'value'),
-                  Input('color_code_2', 'value'),
-                  Input('components', 'value'),
-                  Input('neighbors', 'value')])
+              [Input('xD', 'value'),
+               Input('color_code_1', 'value'),
+               Input('color_code_2', 'value'),
+               Input('components', 'value'),
+               Input('neighbors', 'value')])
 def update_cell_distribution(xD, color_1, color_2, components, neighbours):
     pca = PCA(n_components=components).fit_transform(object.ExpMatrix.T)
     if xD == '2D':
@@ -525,6 +560,7 @@ def update_cell_distribution(xD, color_1, color_2, components, neighbours):
                        n_components=2,
                        min_dist=0.8,
                        metric='correlation').fit_transform(pca)
+        # proj_2d = TSNE(n_components=2).fit_transform(pca)
         fig_2d_1 = px.scatter(
             proj_2d, x=0, y=1,
             color=object.CellAttrs['CellInfo'][color_1], labels={'color': color_1})
@@ -628,6 +664,35 @@ def update_sub_net(data):
         gene_dynamics = get_gene_curve(rolling_neighbour, title='Gene expression level', yaxis_title='Expression level')
     return [new_sub_elements_1, new_sub_elements_2, new_stylesheet_1,
             new_stylesheet_1, neighbour_text, module_text, gene_dynamics]
+
+
+@app.server.route('/home/<path:path>')
+def download_excel(path):
+    download_path = os.getenv('HOME') + '/Desktop/'
+    if path in ['GeneInfo-download.xlsx', 'CellInfo-download.xlsx']:
+
+        if path == 'GeneInfo-download.xlsx':
+            df = object.GeneAttrs['GeneInfo']
+        else:
+            df = object.CellAttrs['CellInfo']
+
+        absolute_filename = os.path.join(download_path, path)
+        writer = pd.ExcelWriter(absolute_filename)
+        df.to_excel(writer, 'Sheet1')
+        writer.save()
+
+    elif path == 'NetInfo-download.xlsx':
+        absolute_filename = os.path.join(download_path, path)
+        writer = pd.ExcelWriter(absolute_filename)
+        for name in list(filter(lambda x: 'links' in x, list(object.NetAttrs.keys()))):
+
+            df = object.NetAttrs[name]
+            df.to_excel(writer, name)
+            writer.save()
+    else:
+        print('404 error!')
+
+    return flask.send_from_directory(download_path, path)
 
 
 if __name__ == '__main__':
