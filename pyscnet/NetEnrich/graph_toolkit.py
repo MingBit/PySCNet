@@ -191,9 +191,12 @@ def graph_traveral(graph, start, threshold, method='bfs'):
     return res_path
 
 
-def random_walk(gnetdata, start, method='greedy_walk', supervisedby='pageRank', steps=10, repeat=100):
+def self_guide_walk(gnetdata, start, method='greedy_walk', supervisedby='pageRank', steps=10, repeat=100):
     """
-    Supervised random walk guided by node centrality attribute.
+    For given a starting node, it provides greedy_walk and supervised random walk guided by node centrality
+    greedy_walk: it prefers neighbors with maximum product of node centrality and weight
+    supervided_random_walk: it prefers neighbors with randomized probability weighted by the
+    product of node centrality and weight.
     ------------------------------------------------------------
     :param gnetdata: Gnetdata object
     :param start: str, starting point of graph.
