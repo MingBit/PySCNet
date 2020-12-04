@@ -24,7 +24,7 @@ from dash.dependencies import Input, Output
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUMEN])
 app.title = 'PySCNet Dashboard'
-UPLOAD_FOLDER_ROOT = r"/home/"
+UPLOAD_FOLDER_ROOT = os.getenv('HOME') + '/Desktop/'
 du.configure_upload(app, UPLOAD_FOLDER_ROOT)
 
 FONT_STYLE = {
