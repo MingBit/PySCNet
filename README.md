@@ -32,6 +32,7 @@ Make sure you have [Docker](https://docs.docker.com/engine/install/ubuntu/) and 
 # Tutorial
 Make sure you have [scanpy](https://scanpy.readthedocs.io/en/stable/installation.html) and [stream](https://github.com/pinellolab/STREAM) manually installed. <br/>
 `conda activate gt` <br/>
+`pip install jupyterlab` <br/>
 `pip install scanpy==1.5.0` <br/> 
 `conda install -c bioconda stream` <br/>
 
@@ -39,6 +40,8 @@ You might need to re-install anndata: `pip install anndata==0.7.4`
 
 Mouse HSC data preprocessed and analyzed by stream as explained in this 
 [tutorial](https://github.com/MingBit/PySCNet/blob/master/tutorial/pyscnet_stream.ipynb). 
+
+open jupyter-notebook with `/miniconda3/envs/gt/bin/./jupyter-notebook ~/PySCNet/tutorial/pyscnet_stream.ipynb `
 
 # TO-DO
 1) Add an Auto-ML based pipeline to Pre-Processing module;
