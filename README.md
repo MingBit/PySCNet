@@ -18,6 +18,8 @@ Cell specific GRNs and network analysis results can be saved as a pickle object 
 It provides parameter settings and allows for parameter adjustment and GRNs customization. 
 
 # Installation
+Make sure you have [graph_tool](https://github.com/antmd/graph-tool) manually installed. 
+
 1) clone from github:
 `git clone https://github.com/MingBit/PySCNet`
 2) create a new folder and set up:
@@ -26,14 +28,15 @@ It provides parameter settings and allows for parameter adjustment and GRNs cust
 `pip install dist/pyscnet-0.0.3.tar.gz`
 
 # Tutorial
+Make sure you have [scanpy](https://scanpy.readthedocs.io/en/stable/installation.html) and [stream](https://github.com/pinellolab/STREAM) manually installed.
+
 Mouse HSC data preprocessed and analyzed by stream as explained in this 
 [tutorial](https://github.com/MingBit/PySCNet/blob/master/tutorial/pyscnet_stream.ipynb). 
 
 # TO-DO
 1) Add an Auto-ML based pipeline to Pre-Processing module;
 2) Collect more GRN methods to BuildNet module;
-3) Update other network-based algorithms to NetEnrich module;
-4) Build R-Shiny app for visualization
+3) Update network fusion algorithms to NetEnrich module;
 5) Test with integrated sc RNA-seq data.
 
 # Cite

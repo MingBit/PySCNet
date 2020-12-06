@@ -24,3 +24,8 @@ pyvis~=0.1.7.0
 python-louvain~=0.13
 setuptools~=46.4.0
 nbsphinx
+dash
+gunicorn>=19.9.0
+plotly
+dash_bootstrap_components
+dash_cytoscape

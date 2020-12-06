@@ -88,24 +88,24 @@ def load_Gnetdata_object(filepath):
     return gnetdata
 
 
-def load_from_scanpy(scanpy_obj=None, filepath=None):
+def load_from_anndata(anndata_obj=None, filepath=None):
     """
     load adata object
     --------------------------------------------
-    :param scanpy_obj: adata object, default None
+    :param anndata_obj: adata object, default None
     :param filepath: str, default None. filepath refers to adata object
     :return: Gnetdata
     """
-    if scanpy_obj is not None:
-        gnetdata = Gnetdata(pd.DataFrame(scanpy_obj.X.T, index=scanpy_obj.var_names, columns=scanpy_obj.obs_names),
-                            CellAttrs=dict({'CellInfo': scanpy_obj.obs}),
-                            GeneAttrs=dict({'GeneInfo': scanpy_obj.var}))
+    if anndata_obj is not None:
+        gnetdata = Gnetdata(pd.DataFrame(anndata_obj.X.T, index=anndata_obj.var_names, columns=anndata_obj.obs_names),
+                            CellAttrs=dict({'CellInfo': anndata_obj.obs}),
+                            GeneAttrs=dict({'GeneInfo': anndata_obj.var}))
 
     elif filepath is not None:
         with open(filepath, 'rb') as input:
-            scanpy_obj = pk.load(input)
-            gnetdata = Gnetdata(pd.DataFrame(scanpy_obj.X.T, index=scanpy_obj.var_names, columns=scanpy_obj.obs_names),
-                                CellAttrs=dict({'CellInfo': scanpy_obj.obs}),
-                                GeneAttrs=dict({'GeneInfo': scanpy_obj.var}))
+            anndata_obj = pk.load(input)
+            gnetdata = Gnetdata(pd.DataFrame(anndata_obj.X.T, index=anndata_obj.var_names, columns=anndata_obj.obs_names),
+                                CellAttrs=dict({'CellInfo': anndata_obj.obs}),
+                                GeneAttrs=dict({'GeneInfo': anndata_obj.var}))
 
     return gnetdata

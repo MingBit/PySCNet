@@ -10,7 +10,6 @@ import graph_tool.all as gt
 import seaborn as sns
 import numpy as np
 from pyvis.network import Network
-from ..dash_pyscnet import app
 
 
 def dynamic_netShow(gnetdata, filename, node_size=50, node_community='all', html_size=["500px", "1800px"],
@@ -143,7 +142,7 @@ def net_matrix_plot(gnetdata, filename=None, highlight_path=None, **kwarg):
     for e in graph.edges():
         if (highlight_path is not None) and (labels[list(e)[0]] in highlight_path) and (
                 labels[list(e)[1]] in highlight_path) and abs(
-            highlight_path.index(labels[list(e)[0]]) - highlight_path.index(labels[list(e)[1]])) == 1:
+                highlight_path.index(labels[list(e)[0]]) - highlight_path.index(labels[list(e)[1]])) == 1:
             edge_color[e] = 'darkorange'
         else:
             edge_color[e] = 'lightgrey'
