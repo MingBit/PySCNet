@@ -18,7 +18,8 @@ Cell specific GRNs and network analysis results can be saved as a pickle object 
 It provides parameter settings and allows for parameter adjustment and GRNs customization. 
 
 # Installation
-Make sure you have [graph_tool](https://github.com/antmd/graph-tool) manually installed. 
+Make sure you have [graph_tool](https://github.com/antmd/graph-tool) manually installed.
+`conda install -c conda-forge graph-tool` 
 
 1) clone from github:
 `git clone https://github.com/MingBit/PySCNet`

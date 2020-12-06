@@ -1,4 +1,4 @@
-numpy~=1.17.3
+numpy~=1.19.4
 pandas
 sklearn~=0.0
 scipy
@@ -29,3 +29,5 @@ gunicorn>=19.9.0
 plotly
 dash_bootstrap_components
 dash_cytoscape
+jupyter_plotly_dash
+dash_html_components
