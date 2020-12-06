@@ -2,7 +2,7 @@ numpy~=1.19.4
 pandas
 sklearn~=0.0
 scipy
-scikit-learn~=0.22.2.post1
+scikit-learn
 dask
 distributed
 xlrd

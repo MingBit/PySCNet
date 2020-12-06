@@ -42,7 +42,7 @@ def __update_filter_link(gnetdata, grn_method, top_links, resolution=0.5):
 
 
 def __update_sub_network(click_node=None):
-    click_node = list(new_object.NetAttrs['graph'].node)[0] if click_node is None else click_node
+    click_node = list(new_object.NetAttrs['graph'].nodes)[0] if click_node is None else click_node
     neighbours = list(new_object.NetAttrs['graph'].neighbors(click_node))
     gene_module = new_object.NetAttrs['communities']
 
