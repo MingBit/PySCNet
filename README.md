@@ -18,8 +18,9 @@ Cell specific GRNs and network analysis results can be saved as a pickle object 
 It provides parameter settings and allows for parameter adjustment and GRNs customization. 
 
 # Installation
-Make sure you have [Docker](https://docs.docker.com/engine/install/ubuntu/) and [graph_tool](https://github.com/antmd/graph-tool) manually installed. <br/>
-`conda install -c conda-forge graph-tool` 
+Make sure you have [Docker](https://docs.docker.com/engine/install/ubuntu/) and [graph_tool](https://git.skewed.de/count0/graph-tool/-/wikis/installation-instructions) manually installed. <br/>
+`conda create --name gt -c conda-forge graph-tool python=3.6` <br/>
+`conda activate gt`
 
 1) clone from github:
 `git clone https://github.com/MingBit/PySCNet`
@@ -29,7 +30,12 @@ Make sure you have [Docker](https://docs.docker.com/engine/install/ubuntu/) and 
 `pip install dist/pyscnet-0.0.3.tar.gz`
 
 # Tutorial
-Make sure you have [scanpy](https://scanpy.readthedocs.io/en/stable/installation.html) and [stream](https://github.com/pinellolab/STREAM) manually installed.
+Make sure you have [scanpy](https://scanpy.readthedocs.io/en/stable/installation.html) and [stream](https://github.com/pinellolab/STREAM) manually installed. <br/>
+`conda activate gt` <br/>
+`pip install scanpy==1.5.0` <br/> 
+`conda install -c bioconda stream` <br/>
+
+You might need to re-install anndata: `pip install anndata==0.7.4`
 
 Mouse HSC data preprocessed and analyzed by stream as explained in this 
 [tutorial](https://github.com/MingBit/PySCNet/blob/master/tutorial/pyscnet_stream.ipynb). 
