@@ -124,13 +124,16 @@ def find_consensus_graph(gnetdata, link_key='all', method='intersection', topran
     :param threshold: int, default None. set threshold for ensemble method.
     :return: Gnetdata object with consensus links added into NetAttrs.
     """
-    assert method in ['intersection', 'snf', 'ensemble'], 'only following methods acceptable : intersection, snf, ensemble'
+    assert method in ['intersection', 'snf',
+                      'ensemble'], 'only following methods acceptable : intersection, snf, ensemble'
     keys = list(filter(lambda x: 'links' in x, gnetdata.NetAttrs.keys())) if link_key == 'all' else link_key
 
     if method == 'intersection':
-        merged_links = gnetdata.NetAttrs[keys[0]]
+        merged_links = gnetdata.NetAttrs[keys[0]].sort_values('weight', ascending=False, ignore_index=True).head(toprank)
         for i in range(1, len(keys)):
-            merged_links = graph_merge(merged_links, gnetdata.NetAttrs[keys[i]], method=method, toprank=toprank)
+            sorted_links = gnetdata.NetAttrs[keys[i]].sort_values('weight',
+                                                                  ascending=False, ignore_index=True).head(toprank)
+            merged_links = graph_merge(merged_links, sorted_links, method=method)
 
     elif method == 'ensemble':
         if threshold is None:
@@ -145,24 +148,26 @@ def find_consensus_graph(gnetdata, link_key='all', method='intersection', topran
     return gnetdata
 
 
-def graph_merge(link_1, link_2, toprank=None, method='union'):
+def graph_merge(link_1, link_2, method='union'):
     """
     Given two graphs, it returns merged graph.
     ----------------------------------------------
     :param link_1: dataframe. linkage table of graph_1
     :param link_2: dataframe. linkage table of graph_2
-    :param toprank: int, default None. top edges from each methods for graph_merge
     :param method: str, default union. methods:[union, intersection, snf]. snf refers to similarity network fusion.
     :return: dataframe, merged linkage
     """
     assert method in ['union', 'intersection', 'snf'], 'valid method parameter: union, intersection, knn!'
 
     if method in ['union', 'intersection']:
-        toprank = min(link_1.shape[0], link_2.shape[0]) if toprank is None else toprank
-        link_1 = link_1.sort_values('weight', ascending=False).head(toprank)
-        link_2 = link_2.sort_values('weight', ascending=False).head(toprank)
-        mergedlinks = pd.merge(link_1, link_2,  on=['source', 'target'], how='outer' if method == 'union' else 'inner').fillna(0)
+        link_1['edge'] = ["_".join(sorted([link_1.source[i], link_1.target[i]])) for i in range(link_1.shape[0])]
+        link_2['edge'] = ["_".join(sorted([link_2.source[i], link_2.target[i]])) for i in range(link_2.shape[0])]
+
+        mergedlinks = pd.merge(link_1, link_2, on=['edge'], how='outer' if method == 'union' else 'inner').fillna(0)
         mergedlinks['weight'] = mergedlinks.mean(axis=1)
+
+        mergedlinks['source'] = [x.split('_')[0] for x in mergedlinks.edge]
+        mergedlinks['target'] = [x.split('_')[1] for x in mergedlinks.edge]
 
     elif method == 'snf':
         mergedlinks = __snf_based_merge(link_1, link_2)
@@ -206,11 +211,13 @@ def self_guide_walk(gnetdata, start, method='greedy_walk', supervisedby='pageRan
     :param repeat: int, repeat time for supervised random walk. default: 100
     :return: a list of travelled nodes.
     """
-    assert method in ['greedy_walk', 'supervised_random_walk'], 'method must be either greedy_walk or supervised_random_walk'
+    assert method in ['greedy_walk',
+                      'supervised_random_walk'], 'method must be either greedy_walk or supervised_random_walk'
     if method == 'greedy_walk':
         path = greedy_walk(gnetdata=gnetdata, start=start, supervisedby=supervisedby, steps=steps)
     else:
-        path = supervised_random_walk(gnetdata=gnetdata, start=start, supervisedby=supervisedby, steps=steps, repeat=repeat)
+        path = supervised_random_walk(gnetdata=gnetdata, start=start, supervisedby=supervisedby, steps=steps,
+                                      repeat=repeat)
     return path
 
 
