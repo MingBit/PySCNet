@@ -15,7 +15,11 @@ There are four modules:
 # :tada: :confetti_ball: Create your own GRNs
 [Dashboard](https://github.com/MingBit/PySCNet/blob/master/images/pyscnet_dashboard.gif) is available now for creating your own GRNs.
 Cell specific GRNs and network analysis results can be saved as a pickle object and upload onto PySCNet-Dashboard.
-It provides parameter settings and allows for parameter adjustment and GRNs customization. 
+It provides parameter settings and allows for parameter adjustment and GRNs customization. <br/>
+To run the python dashboard: <br/>
+`cd PySCNet/pyscnet/dash_pyscnet/` <br/>
+`python app.py` 
+
 
 # Installation
 Make sure you have [Docker](https://docs.docker.com/engine/install/ubuntu/) and [graph_tool](https://git.skewed.de/count0/graph-tool/-/wikis/installation-instructions) manually installed. <br/>
@@ -31,9 +35,7 @@ Make sure you have [Docker](https://docs.docker.com/engine/install/ubuntu/) and 
 
 # Tutorial
 Make sure you have [scanpy](https://scanpy.readthedocs.io/en/stable/installation.html) and [stream](https://github.com/pinellolab/STREAM) manually installed. <br/>
-`conda activate gt` <br/>
-`pip install jupyterlab` <br/>
-`pip install scanpy==1.5.0` <br/> 
+`pip install jupyterlab scanpy==1.5.0` <br/>
 `conda install -c bioconda stream` <br/>
 
 You might need to re-install anndata: `pip install anndata==0.7.4`
