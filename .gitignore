@@ -17,3 +17,4 @@ inhouse_tutorial/
 __pycache__/
 *_gne.pk
 figures/
+pbmc_raw*
