@@ -42,6 +42,7 @@ SIDEBAR_STYLE = {
     "left": 0,
     "bottom": 0,
     "width": "20%",
+    "margin-bottom": "10%",
     "padding": "2rem 1rem",
     "background-color": "#1d3557",
 }
@@ -269,12 +270,12 @@ def create_page_1():
                 html.H2('Cell distribution encoded by color 1',
                         style={'font-size': '50px', 'font-weight': 'bold', 'color': '#fff1e6'}),
                 html.Br(),
-                dcc.Graph(id='cell_distribution_1', style={'height': '1500px'})
+                dcc.Graph(id='cell_distribution_1', style={'height': '1200px'})
             ]),
             dbc.Col([html.H2('Cell distribution encoded by color 2',
                              style={'font-size': '50px', 'font-weight': 'bold', 'color': '#fff1e6'}),
                      html.Br(),
-                     dcc.Graph(id='cell_distribution_2', style={'height': '1500px'})
+                     dcc.Graph(id='cell_distribution_2', style={'height': '1200px'})
                      ])
         ], style={'margin-left': '1rem', 'margin-right': '1rem'}),
 
@@ -319,8 +320,8 @@ def create_page_2():
         ], style={'height': '200px', 'margin-left': '1rem', 'margin-right': '1rem'}),
         html.Br(),
         dbc.Row([
-            dbc.Col([dcc.Graph(id='gene_correlation_1', style={'height': '1500px'})]),
-            dbc.Col([dcc.Graph(id='gene_correlation_2', style={'height': '1500px'})]),
+            dbc.Col([dcc.Graph(id='gene_correlation_1', style={'height': '1200px'})]),
+            dbc.Col([dcc.Graph(id='gene_correlation_2', style={'height': '1200px'})]),
         ], style={'margin-left': '1rem', 'margin-right': '1rem'}),
         html.Br(),
         dbc.Row([
