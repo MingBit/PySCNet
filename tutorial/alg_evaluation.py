@@ -4,19 +4,16 @@ import seaborn as sns
 import numpy as np
 
 
-def mapping_edges(df_1, df_2, df_1_col_1, df_1_col_2, df_2_col_1, df_2_col_2):
-    df_1['tmp1'] = df_1[df_1_col_1] + '_' + df_1[df_1_col_2]
-    df_2['tmp1'] = df_2[df_2_col_1] + '_' + df_2[df_2_col_2]
-
-    df_2['tmp2'] = df_2[df_2_col_2] + '_' + df_2[df_2_col_1]
-
-    return len(set(df_1['tmp1']) & set(df_2['tmp1'])) + len(set(df_1['tmp1']) & set(df_2['tmp2']))
-
+def mapping_edges(df_1_link, df_2_link):
+    df_1_link['edge']= ["_".join(sorted([df_1_link.source[i], df_1_link.target[i]])) for i in range(df_1_link.shape[0])]
+    df_2_link['edge']= ["_".join(sorted([df_2_link.source[i], df_2_link.target[i]])) for i in range(df_2_link.shape[0])]
+    
+    return (len(set(df_1_link['edge']) & set(df_2_link['edge'])))
 
 def evaluation(links, Full_Ref):
     Detected = links.shape[0]
-    Ref_links = Full_Ref[Full_Ref.weight == 1]
-    TP = mapping_edges(links, Ref_links, 'source', 'target', 'source', 'target')
+    Ref_links = Full_Ref[Full_Ref.weight == 1].reset_index(drop=True)
+    TP = mapping_edges(links, Ref_links)
     FN = Ref_links.shape[0] - TP
     FP = Detected - TP
     TN = Full_Ref.shape[0] - Ref_links.shape[0] - Detected + TP
