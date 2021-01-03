@@ -78,17 +78,20 @@ def supervised_random_walk(gnetdata, start, supervisedby, steps, repeat=1000):
         path_list.append(path)
 
     path_list = pd.DataFrame.from_records(path_list)
-    final_path = []
+    final_path = [start]
 
-    for i in path_list.columns:
+    for i in path_list.columns[1:]:
         tmp = path_list[i].value_counts()
         j = 0
+        next_node = tmp.idxmax()
         while j < len(tmp):
             j += 1
-            if tmp.idxmax() in final_path:
-                tmp = tmp.iloc[j:]
+            if next_node in final_path or next_node not in list(gnetdata.NetAttrs['graph'][final_path[-1]]):
+                next_node = tmp.iloc[j:].idxmax()
+
             else:
-                final_path.append(tmp.idxmax())
+                final_path.append(next_node)
                 break
 
     return final_path
+
