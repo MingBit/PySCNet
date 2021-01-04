@@ -16,29 +16,53 @@ from functools import reduce
 from sklearn.ensemble import BaggingClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.metrics import brier_score_loss
+from sklearn import metrics
 
 
-def _generate_x_y(links_dict, threshold):
+def __order_source_target(df):
+    df_new = pd.DataFrame()
+    df_new['source'] = [sorted([df.source[i], df.target[i]])[0] for i in range(df.shape[0])]
+    df_new['target'] = [sorted([df.source[i], df.target[i]])[1] for i in range(df.shape[0])]
+    df_new['weight'] = df.weight
+
+    return df_new
+
+
+def _generate_x_y(links_dict, top_rank, set_train):
     for key in links_dict.keys():
         links_dict[key] = links_dict[key].fillna(0)
+        links_dict[key].weight = links_dict[key].weight.abs()
+        links_dict[key] = __order_source_target(links_dict[key])
 
     dfs = list(links_dict.values())
     df_final = reduce(lambda left, right: pd.merge(left, right, on=['source', 'target']), dfs)
     rep = (df_final.shape[1] - 2) / len(links_dict)
     df_final.columns = list(df_final.columns[:2]) + list(np.repeat(list(links_dict.keys()), rep))
-    avg = df_final.mean(axis=1)
-    df_final['Y'] = [(lambda x: 1 if x > threshold else 0)(x) for x in avg]
+    for col in df_final.columns[2:]:
+        df_final[col + '_rank'] = list(df_final[col].rank())
+        df_final = df_final.drop(col, axis=1)
 
-    X = df_final.iloc[:, :-1]
-    Y = df_final.Y
+    df_final['avg'] = df_final.mean(axis=1)
 
-    return X, Y
+    train_head = df_final.sort_values('avg', ascending=False, ignore_index=True).head(
+        int(df_final.shape[0] * set_train[0]))
+    train_bottom = df_final.sort_values('avg', ascending=False, ignore_index=True).tail(
+        int(df_final.shape[0] * set_train[1]))
+
+    train_df = train_head.append(train_bottom)
+    X = train_df.iloc[:, :-1]
+    Y = np.concatenate((np.repeat(1, train_head.shape[0]), np.repeat(0, train_bottom.shape[0])))
+
+    df_final_filter = df_final.sort_values('avg', ascending=False, ignore_index=True).head(top_rank)
+
+    return X, Y, df_final_filter.iloc[:, :-1]
 
 
-def ensemble_classifier(X, Y, toprank, test_size=0.4, seed=3, model='RF', max_features=5, num_trees=100, **kwarg):
+def ensemble_classifier(X, Y, df_final, test_size=0.4, seed=3,
+                        model='RF', max_features=5, num_trees=100, **kwarg):
 
     x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=test_size)
+
     if X.shape[1] - 2 < max_features: max_features = X.shape[1] - 2
 
     if model == 'RF':
@@ -60,15 +84,15 @@ def ensemble_classifier(X, Y, toprank, test_size=0.4, seed=3, model='RF', max_fe
     else:
         raise Exception('Valid model: RF, BDT, ET, AdaB, SGB')
 
-    model.fit(x_train.iloc[:, 2:], y_train)
-    pred_train_prob = model.predict_proba(x_train.iloc[:, 2:])[:, 0]
-    pred_test_prob = model.predict_proba(x_test.iloc[:, 2:])[:, 0]
-    losses_train = [brier_score_loss(y_train, [y for x in range(len(y_train))]) for y in pred_train_prob]
-    losses_test = [brier_score_loss(y_test, [y for x in range(len(y_test))]) for y in pred_test_prob]
+    model.fit(x_train.iloc[:, 2:].to_numpy(), y_train)
+    y_pred = model.predict(x_test.iloc[:, 2:].to_numpy())
+    print("Test Accuracy:", metrics.accuracy_score(y_test, y_pred))
+
+    df_final_pred = model.predict(df_final.iloc[:, 2:].to_numpy())
 
     res_df = pd.DataFrame(
-        {'source': x_train.source.append(x_test.source),
-         'target': x_train.target.append(x_test.target),
-         'weight': losses_train + losses_test})
+        {'source': df_final.source,
+         'target': df_final.target,
+         'weight': df_final_pred})
 
-    return res_df.sort_values('weight', ascending=False).head(toprank)
+    return res_df[res_df.weight == 1]
