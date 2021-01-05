@@ -118,12 +118,10 @@ def find_consensus_graph(gnetdata, link_key='all', method='intersection',
     Given multiple linkage tables, it predicts consensus links.
     ------------------------------------------------------------
     :param gnetdata: Gnetdata object.
-    :param link_key: str, default all. key referring to linkage table.
+    :param link_key: list, default all. key referring to linkage table.
     :param method: str, default intersection. methods for detecting consensus links. Note: intersection is recommended when there are less than 3 linkage tables.
     :param top_rank: int, default 100. top ranked edges for intersection method.
-    :param set_train: list, default [0.05, 0.5]. Edges are ranked by weight obtained from individual methods.
-    To train the classification model, we set top 5% edges as 'consensus edges (1)'  and bottom 50% edges as 'non-consensus edges (0)'
-    individual methods
+    :param set_train: list, default [0.05, 0.5]. Edges are ranked by weight obtained from individual methods. To train the classification model, we set top 5% edges as 'consensus edges (1)' and bottom 50% edges as 'non-consensus edges (0)' individual methods
     :return: Gnetdata object with consensus links added into NetAttrs.
     """
     assert method in ['intersection', 'snf',
@@ -198,14 +196,11 @@ def graph_traveral(graph, start, threshold, method='bfs'):
 
 def self_guide_walk(gnetdata, start, method='greedy_walk', supervisedby='pageRank', steps=10, repeat=100):
     """
-    For given a starting node, it provides greedy_walk and supervised random walk guided by node centrality
-    greedy_walk: it prefers neighbors with maximum product of node centrality and weight
-    supervided_random_walk: it prefers neighbors with randomized probability weighted by the
-    product of node centrality and weight.
+    For given a starting node, it provides greedy_walk and supervised random walk guided by node centrality.
     ------------------------------------------------------------
     :param gnetdata: Gnetdata object
     :param start: str, starting point of graph.
-    :param method: str, 'greedy_walk' or 'supervised_random_walk'. default: greedy walk
+    :param method: str, 'greedy_walk' or 'supervised_random_walk'. default: greedy walk -- it prefers neighbors with maximum product of node centrality and weight. supervided_random_walk -- it prefers neighbors with randomized probability weighted by the product of node centrality and weight.
     :param supervisedby: str, 'betweenness', 'closeness', 'degree' or 'pageRank'. default: pageRank
     :param steps: int, number of steps. default: 10
     :param repeat: int, repeat time for supervised random walk. default: 100

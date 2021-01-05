@@ -160,17 +160,93 @@
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
 <span class="kn">from</span> <span class="nn">._nx2gt</span> <span class="kn">import</span> <span class="n">nx2gt</span>
 <span class="kn">import</span> <span class="nn">graph_tool.all</span> <span class="k">as</span> <span class="nn">gt</span>
-
 <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">pyvis.network</span> <span class="kn">import</span> <span class="n">Network</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">preprocessing</span>
+<span class="kn">from</span> <span class="nn">.__dash_network</span> <span class="kn">import</span> <span class="n">__update_filter_link</span><span class="p">,</span> <span class="n">__update_sub_network</span><span class="p">,</span> <span class="n">__update_object</span>
+
+<span class="kn">from</span> <span class="nn">jupyter_plotly_dash</span> <span class="kn">import</span> <span class="n">JupyterDash</span>
+<span class="kn">import</span> <span class="nn">dash_cytoscape</span> <span class="k">as</span> <span class="nn">cyto</span>
+<span class="kn">import</span> <span class="nn">dash_html_components</span> <span class="k">as</span> <span class="nn">html</span>
+<span class="kn">from</span> <span class="nn">dash.dependencies</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Output</span>
+
+
+<div class="viewcode-block" id="geneHeatmap"><a class="viewcode-back" href="../../../pyscnet.Plotting.html#pyscnet.Plotting.net_plot.geneHeatmap">[docs]</a><span class="k">def</span> <span class="nf">geneHeatmap</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">gene</span><span class="p">,</span> <span class="n">cell_clusterid</span><span class="p">,</span> <span class="n">select_by</span><span class="p">,</span> <span class="n">order_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;RdBu&#39;</span><span class="p">,</span> <span class="n">save_as</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create Heatmap showing gene expression in individual cells along pseudotime</span>
+<span class="sd">    ----------------------------------------------------------------------------</span>
+<span class="sd">    :param gnetdata: Gnetdata object, default None</span>
+<span class="sd">    :param gene: list, default None.</span>
+<span class="sd">    :param cell_clusterid: str, default None. cell with cell_clusterid will be selected</span>
+<span class="sd">    :param select_by: str, default None. key of filtering cells</span>
+<span class="sd">    :param order_by: str, default None. key of ordering cells</span>
+<span class="sd">    :param scale: bool, default True. whether or not scale the data</span>
+<span class="sd">    :param cmap: str, default &#39;RdBu&#39;. string denoting colors in clustermap</span>
+<span class="sd">    :param save_as: str, default None. filepath+filename</span>
+<span class="sd">    :param kwargs: additional parameters passed to seaborn.clustermap()</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cell_info</span> <span class="o">=</span> <span class="n">gnetdata</span><span class="o">.</span><span class="n">CellAttrs</span><span class="p">[</span><span class="s1">&#39;CellInfo&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">order_by</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">gnetdata</span><span class="o">.</span><span class="n">CellAttrs</span><span class="p">[</span><span class="s1">&#39;CellInfo&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span>
+        <span class="n">order_by</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">cell</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cell_info</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cell_info</span><span class="p">[</span><span class="n">select_by</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="n">cell_clusterid</span><span class="p">])]</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="n">sub_Expr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">preprocessing</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">gnetdata</span><span class="o">.</span><span class="n">ExpMatrix</span><span class="p">),</span>
+                            <span class="n">index</span><span class="o">=</span><span class="n">gnetdata</span><span class="o">.</span><span class="n">ExpMatrix</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">gnetdata</span><span class="o">.</span><span class="n">ExpMatrix</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">gene</span><span class="p">,</span> <span class="n">cell</span><span class="p">]</span> \
+        <span class="k">if</span> <span class="n">scale</span> <span class="k">else</span> <span class="n">gnetdata</span><span class="o">.</span><span class="n">ExpMatrix</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">gene</span><span class="p">,</span> <span class="n">cell</span><span class="p">]</span>
+    <span class="n">sns_plot</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">clustermap</span><span class="p">(</span><span class="n">sub_Expr</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">xticklabels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">save_as</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sns_plot</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_as</span><span class="p">)</span>
+
+    <span class="c1"># plt.show()</span>
+    <span class="k">return</span> <span class="n">sns_plot</span></div>
+
+
+<div class="viewcode-block" id="geneCorrelation"><a class="viewcode-back" href="../../../pyscnet.Plotting.html#pyscnet.Plotting.net_plot.geneCorrelation">[docs]</a><span class="k">def</span> <span class="nf">geneCorrelation</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">gene</span><span class="p">,</span> <span class="n">cell_clusterid</span><span class="p">,</span> <span class="n">select_by</span><span class="p">,</span> <span class="n">order_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scale_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">save_as</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create gene correlation heatmap</span>
+<span class="sd">    --------------------------------------------------</span>
+<span class="sd">    :param gnetdata: Gnetdata object</span>
+<span class="sd">    :param gene: list, default None.</span>
+<span class="sd">    :param cell_clusterid: str, default None. cell with cell_clusterid will be selected</span>
+<span class="sd">    :param select_by: str, default None. key of filtering cells</span>
+<span class="sd">    :param order_by: str, default None. key of ordering cells</span>
+<span class="sd">    :param scale_data: bool, default True. whether or not scale the data</span>
+<span class="sd">    :param save_as: str, default None. filepath+filename</span>
+<span class="sd">    :param figsize: list, default None. a list of int defining figure size</span>
+<span class="sd">    :param kwargs: additional parameters passed to seaborn.clustermap()</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cell_info</span> <span class="o">=</span> <span class="n">gnetdata</span><span class="o">.</span><span class="n">CellAttrs</span><span class="p">[</span><span class="s1">&#39;CellInfo&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">order_by</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">gnetdata</span><span class="o">.</span><span class="n">CellAttrs</span><span class="p">[</span><span class="s1">&#39;CellInfo&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span>
+        <span class="n">order_by</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">cell</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cell_info</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cell_info</span><span class="p">[</span><span class="n">select_by</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="n">cell_clusterid</span><span class="p">])]</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="n">sub_Expr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">preprocessing</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">gnetdata</span><span class="o">.</span><span class="n">ExpMatrix</span><span class="p">),</span>
+                            <span class="n">index</span><span class="o">=</span><span class="n">gnetdata</span><span class="o">.</span><span class="n">ExpMatrix</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">gnetdata</span><span class="o">.</span><span class="n">ExpMatrix</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">gene</span><span class="p">,</span> <span class="n">cell</span><span class="p">]</span><span class="o">.</span><span class="n">T</span> \
+        <span class="k">if</span> <span class="n">scale_data</span> <span class="k">else</span> <span class="n">gnetdata</span><span class="o">.</span><span class="n">ExpMatrix</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">gene</span><span class="p">,</span> <span class="n">cell</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="n">corr</span> <span class="o">=</span> <span class="n">sub_Expr</span><span class="o">.</span><span class="n">corr</span><span class="p">()</span>
+    <span class="c1">#     mask = np.triu(np.ones_like(corr, dtype=np.bool))</span>
+    <span class="n">cmap</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">diverging_palette</span><span class="p">(</span><span class="mi">220</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">as_cmap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span> <span class="k">if</span> <span class="n">figsize</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">figsize</span><span class="p">)</span>
+    <span class="n">sns_heatmap</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">corr</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">save_as</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_as</span><span class="p">)</span>
+
+    <span class="c1"># plt.show()</span>
+    <span class="k">return</span> <span class="n">sns_heatmap</span></div>
 
 
 <div class="viewcode-block" id="dynamic_netShow"><a class="viewcode-back" href="../../../pyscnet.Plotting.html#pyscnet.Plotting.net_plot.dynamic_netShow">[docs]</a><span class="k">def</span> <span class="nf">dynamic_netShow</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">node_community</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">html_size</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;500px&quot;</span><span class="p">,</span> <span class="s2">&quot;1800px&quot;</span><span class="p">],</span>
                     <span class="n">bgcolor</span><span class="o">=</span><span class="s2">&quot;#222222&quot;</span><span class="p">,</span> <span class="n">font_color</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    create a GRN html</span>
-<span class="sd">    -------------------------</span>
+<span class="sd">    ------------------------------------------</span>
 <span class="sd">    :param gnetdata: Gnetdata object</span>
 <span class="sd">    :param filename: str, save as filename</span>
 <span class="sd">    :param node_size: int, default 50.</span>
@@ -226,11 +302,12 @@
 <div class="viewcode-block" id="net_hierarchy_plot"><a class="viewcode-back" href="../../../pyscnet.Plotting.html#pyscnet.Plotting.net_plot.net_hierarchy_plot">[docs]</a><span class="k">def</span> <span class="nf">net_hierarchy_plot</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">     create a hierarchy gene net plot</span>
-<span class="sd">    -------------------------</span>
+<span class="sd">    ---------------------------------------------</span>
 <span class="sd">    :param gnetdata: Gnetdata object</span>
 <span class="sd">    :param filename: str, default None.</span>
 <span class="sd">    :param kwarg: additional parameters passed to graph_tool.all.draw_hierarchy()</span>
 <span class="sd">    :return: None</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">assert</span> <span class="s1">&#39;graph&#39;</span> <span class="ow">in</span> <span class="n">gnetdata</span><span class="o">.</span><span class="n">NetAttrs</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="s1">&#39;graph is empty!&#39;</span>
@@ -256,12 +333,13 @@
 <div class="viewcode-block" id="net_matrix_plot"><a class="viewcode-back" href="../../../pyscnet.Plotting.html#pyscnet.Plotting.net_plot.net_matrix_plot">[docs]</a><span class="k">def</span> <span class="nf">net_matrix_plot</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">highlight_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    create a matrix gene net plot</span>
-<span class="sd">    --------------------------------</span>
-<span class="sd">    :param gnetdata: Gnetdata object</span>
+<span class="sd">    --------------------------------------</span>
+<span class="sd">    :param gnetdata: Gnetdata object.</span>
 <span class="sd">    :param filename: str, default None.</span>
-<span class="sd">    :param highlight_path: list, default None. a list of gene Nodes</span>
+<span class="sd">    :param highlight_path: list, default None. a list of gene Nodes.</span>
 <span class="sd">    :param kwarg: additional parameters passed to graph_tool.all.graph_draw()</span>
 <span class="sd">    :return: None</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">assert</span> <span class="s1">&#39;graph&#39;</span> <span class="ow">in</span> <span class="n">gnetdata</span><span class="o">.</span><span class="n">NetAttrs</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="s1">&#39;graph is empty!&#39;</span>
@@ -295,7 +373,8 @@
 
     <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">highlight_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">e</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span> <span class="ow">in</span> <span class="n">highlight_path</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
-                <span class="n">labels</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">e</span><span class="p">)[</span><span class="mi">1</span><span class="p">]]</span> <span class="ow">in</span> <span class="n">highlight_path</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">highlight_path</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">e</span><span class="p">)[</span><span class="mi">0</span><span class="p">]])</span> <span class="o">-</span> <span class="n">highlight_path</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">e</span><span class="p">)[</span><span class="mi">1</span><span class="p">]]))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">labels</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">e</span><span class="p">)[</span><span class="mi">1</span><span class="p">]]</span> <span class="ow">in</span> <span class="n">highlight_path</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span>
+            <span class="n">highlight_path</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">e</span><span class="p">)[</span><span class="mi">0</span><span class="p">]])</span> <span class="o">-</span> <span class="n">highlight_path</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">e</span><span class="p">)[</span><span class="mi">1</span><span class="p">]]))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">edge_color</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;darkorange&#39;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">edge_color</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;lightgrey&#39;</span>
@@ -304,6 +383,91 @@
                   <span class="n">vertex_text</span><span class="o">=</span><span class="n">graph</span><span class="o">.</span><span class="n">vertex_properties</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">output</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="create_app"><a class="viewcode-back" href="../../../pyscnet.Plotting.html#pyscnet.Plotting.net_plot.create_app">[docs]</a><span class="k">def</span> <span class="nf">create_app</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">grn_method</span><span class="p">,</span> <span class="n">top_links</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s1">&#39;cose&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create dash-plotly in Jupyter notebook</span>
+<span class="sd">    ------------------------------------------------------------</span>
+<span class="sd">    :param gnetdata: Gnetdata object.</span>
+<span class="sd">    :param grn_method: str, defualt None. It refers to the links table stored in NetAttrs.</span>
+<span class="sd">    :param top_links: int, default None.</span>
+<span class="sd">    :param resolution: float, default 0.5. resolution for gene module detection.</span>
+<span class="sd">    :param layout: str, default cose. Network layout.</span>
+<span class="sd">    :return: dashboard html</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">JupyterDash</span><span class="p">(</span><span class="s1">&#39;pyscnet-plotly-dash&#39;</span><span class="p">)</span>
+    <span class="n">elements</span> <span class="o">=</span> <span class="n">__update_filter_link</span><span class="p">(</span><span class="n">gnetdata</span><span class="p">,</span> <span class="n">grn_method</span><span class="p">,</span> <span class="n">top_links</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span>
+    <span class="n">neighbours</span><span class="p">,</span> <span class="n">sub_element_1</span><span class="p">,</span> <span class="n">sub_element_2</span> <span class="o">=</span> <span class="n">__update_sub_network</span><span class="p">(</span><span class="n">click_node</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">def_text</span> <span class="o">=</span> <span class="s1">&#39;please click on the gene node!&#39;</span>
+    <span class="n">FONT_STYLE</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s1">&#39;#343a40&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;font-size&#39;</span><span class="p">:</span> <span class="s1">&#39;30&#39;</span>
+    <span class="p">}</span>
+    <span class="n">new_stylesheet</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;selector&#39;</span><span class="p">:</span> <span class="s1">&#39;node&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;style&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;data(id)&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;background-color&#39;</span><span class="p">:</span> <span class="s1">&#39;data(color)&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#343a40&#39;</span><span class="p">}</span>
+        <span class="p">}]</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">([</span>
+        <span class="n">html</span><span class="o">.</span><span class="n">H3</span><span class="p">(</span><span class="s2">&quot;pyscnet-plotly-dash&quot;</span><span class="p">),</span>
+        <span class="n">cyto</span><span class="o">.</span><span class="n">Cytoscape</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="s1">&#39;gene_network&#39;</span><span class="p">,</span>
+            <span class="n">layout</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">layout</span><span class="p">},</span>
+            <span class="n">style</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="s1">&#39;100%&#39;</span><span class="p">,</span> <span class="s1">&#39;height&#39;</span><span class="p">:</span> <span class="s1">&#39;800px&#39;</span><span class="p">,</span> <span class="s1">&#39;background-color&#39;</span><span class="p">:</span> <span class="s1">&#39;#eddcd2&#39;</span><span class="p">},</span>
+            <span class="n">stylesheet</span><span class="o">=</span><span class="n">new_stylesheet</span><span class="p">,</span>
+            <span class="n">elements</span><span class="o">=</span><span class="n">elements</span>
+        <span class="p">),</span>
+
+        <span class="n">html</span><span class="o">.</span><span class="n">H3</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;node_neighbors&#39;</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="n">def_text</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="n">FONT_STYLE</span><span class="p">),</span>
+        <span class="n">cyto</span><span class="o">.</span><span class="n">Cytoscape</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="s1">&#39;selected_node_neighbors&#39;</span><span class="p">,</span>
+            <span class="n">layout</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">layout</span><span class="p">},</span>
+            <span class="n">style</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="s1">&#39;100%&#39;</span><span class="p">,</span> <span class="s1">&#39;height&#39;</span><span class="p">:</span> <span class="s1">&#39;800px&#39;</span><span class="p">,</span> <span class="s1">&#39;background-color&#39;</span><span class="p">:</span> <span class="s1">&#39;#eddcd2&#39;</span><span class="p">},</span>
+            <span class="n">stylesheet</span><span class="o">=</span><span class="n">new_stylesheet</span><span class="p">,</span>
+            <span class="n">elements</span><span class="o">=</span><span class="n">sub_element_1</span>
+        <span class="p">),</span>
+
+        <span class="n">html</span><span class="o">.</span><span class="n">H3</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;node_module&#39;</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="n">def_text</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="n">FONT_STYLE</span><span class="p">),</span>
+        <span class="n">cyto</span><span class="o">.</span><span class="n">Cytoscape</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="s1">&#39;selected_node_module&#39;</span><span class="p">,</span>
+            <span class="n">layout</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;grid&#39;</span><span class="p">},</span>
+            <span class="n">style</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="s1">&#39;100%&#39;</span><span class="p">,</span> <span class="s1">&#39;height&#39;</span><span class="p">:</span> <span class="s1">&#39;800px&#39;</span><span class="p">,</span> <span class="s1">&#39;background-color&#39;</span><span class="p">:</span> <span class="s1">&#39;#eddcd2&#39;</span><span class="p">},</span>
+            <span class="n">stylesheet</span><span class="o">=</span><span class="n">new_stylesheet</span><span class="p">,</span>
+            <span class="n">elements</span><span class="o">=</span><span class="n">sub_element_2</span><span class="p">)</span>
+
+    <span class="p">])</span>
+
+    <span class="nd">@app</span><span class="o">.</span><span class="n">callback</span><span class="p">([</span><span class="n">Output</span><span class="p">(</span><span class="s1">&#39;selected_node_neighbors&#39;</span><span class="p">,</span> <span class="s1">&#39;elements&#39;</span><span class="p">),</span>
+                   <span class="n">Output</span><span class="p">(</span><span class="s1">&#39;selected_node_module&#39;</span><span class="p">,</span> <span class="s1">&#39;elements&#39;</span><span class="p">),</span>
+                   <span class="n">Output</span><span class="p">(</span><span class="s1">&#39;selected_node_neighbors&#39;</span><span class="p">,</span> <span class="s1">&#39;stylesheet&#39;</span><span class="p">),</span>
+                   <span class="n">Output</span><span class="p">(</span><span class="s1">&#39;selected_node_module&#39;</span><span class="p">,</span> <span class="s1">&#39;stylesheet&#39;</span><span class="p">),</span>
+                   <span class="n">Output</span><span class="p">(</span><span class="s1">&#39;node_neighbors&#39;</span><span class="p">,</span> <span class="s1">&#39;children&#39;</span><span class="p">),</span>
+                   <span class="n">Output</span><span class="p">(</span><span class="s1">&#39;node_module&#39;</span><span class="p">,</span> <span class="s1">&#39;children&#39;</span><span class="p">)],</span>
+                  <span class="p">[</span><span class="n">Input</span><span class="p">(</span><span class="s1">&#39;gene_network&#39;</span><span class="p">,</span> <span class="s1">&#39;tapNodeData&#39;</span><span class="p">)])</span>
+    <span class="k">def</span> <span class="nf">update_sub_net</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">neighbours</span><span class="p">,</span> <span class="n">new_sub_elements_1</span><span class="p">,</span> <span class="n">new_sub_elements_2</span> <span class="o">=</span> <span class="n">__update_sub_network</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+            <span class="n">new_stylesheet_1</span> <span class="o">=</span> <span class="p">[{</span>
+                <span class="s1">&#39;selector&#39;</span><span class="p">:</span> <span class="s1">&#39;node&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;style&#39;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;data(id)&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#343a40&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;background-color&#39;</span><span class="p">:</span> <span class="s1">&#39;data(color)&#39;</span>
+                <span class="p">}</span>
+            <span class="p">}]</span>
+
+            <span class="n">neighbour_text</span> <span class="o">=</span> <span class="s1">&#39;Genes connected to &#39;</span> <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+            <span class="n">module_text</span> <span class="o">=</span> <span class="s1">&#39;Genes assigned to the same module as &#39;</span> <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">new_sub_elements_1</span><span class="p">,</span> <span class="n">new_sub_elements_2</span><span class="p">,</span> <span class="n">new_stylesheet_1</span><span class="p">,</span>
+                <span class="n">new_stylesheet_1</span><span class="p">,</span> <span class="n">neighbour_text</span><span class="p">,</span> <span class="n">module_text</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">app</span></div>
 </pre></div>
 
            </div>

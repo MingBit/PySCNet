@@ -201,6 +201,25 @@
 <span id="pyscnet-plotting-net-plot"></span><h2>pyscnet.Plotting.net_plot<a class="headerlink" href="#module-pyscnet.Plotting.net_plot" title="Permalink to this headline">¶</a></h2>
 <p>&#64;author: mwu</p>
 <dl class="py function">
+<dt id="pyscnet.Plotting.net_plot.create_app">
+<code class="sig-prename descclassname">pyscnet.Plotting.net_plot.</code><code class="sig-name descname">create_app</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gnetdata</span></em>, <em class="sig-param"><span class="n">grn_method</span></em>, <em class="sig-param"><span class="n">top_links</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">layout</span><span class="o">=</span><span class="default_value">'cose'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/Plotting/net_plot.html#create_app"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.Plotting.net_plot.create_app" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gnetdata</strong> – Gnetdata object.</p></li>
+<li><p><strong>grn_method</strong> – str, defualt None. It refers to the links table stored in NetAttrs.</p></li>
+<li><p><strong>top_links</strong> – int, default None.</p></li>
+<li><p><strong>resolution</strong> – float, default 0.5. resolution for gene module detection.</p></li>
+<li><p><strong>layout</strong> – str, default cose. Network layout.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dashboard html</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="pyscnet.Plotting.net_plot.dynamic_netShow">
 <code class="sig-prename descclassname">pyscnet.Plotting.net_plot.</code><code class="sig-name descname">dynamic_netShow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gnetdata</span></em>, <em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">node_size</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">node_community</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">html_size</span><span class="o">=</span><span class="default_value">['500px', '1800px']</span></em>, <em class="sig-param"><span class="n">bgcolor</span><span class="o">=</span><span class="default_value">'#222222'</span></em>, <em class="sig-param"><span class="n">font_color</span><span class="o">=</span><span class="default_value">'white'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwarg</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/Plotting/net_plot.html#dynamic_netShow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.Plotting.net_plot.dynamic_netShow" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -213,6 +232,52 @@
 <li><p><strong>html_size</strong> – list, default [“1200px”, “1600px”]</p></li>
 <li><p><strong>font_color</strong> – string, default white</p></li>
 <li><p><strong>bgcolor</strong> – string, default #222222</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyscnet.Plotting.net_plot.geneCorrelation">
+<code class="sig-prename descclassname">pyscnet.Plotting.net_plot.</code><code class="sig-name descname">geneCorrelation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gnetdata</span></em>, <em class="sig-param"><span class="n">gene</span></em>, <em class="sig-param"><span class="n">cell_clusterid</span></em>, <em class="sig-param"><span class="n">select_by</span></em>, <em class="sig-param"><span class="n">order_by</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scale_data</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_as</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">figsize</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/Plotting/net_plot.html#geneCorrelation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.Plotting.net_plot.geneCorrelation" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gnetdata</strong> – Gnetdata object</p></li>
+<li><p><strong>gene</strong> – list, default None.</p></li>
+<li><p><strong>cell_clusterid</strong> – str, default None. cell with cell_clusterid will be selected</p></li>
+<li><p><strong>select_by</strong> – str, default None. key of filtering cells</p></li>
+<li><p><strong>order_by</strong> – str, default None. key of ordering cells</p></li>
+<li><p><strong>scale_data</strong> – bool, default True. whether or not scale the data</p></li>
+<li><p><strong>save_as</strong> – str, default None. filepath+filename</p></li>
+<li><p><strong>figsize</strong> – list, default None. a list of int defining figure size</p></li>
+<li><p><strong>kwargs</strong> – additional parameters passed to seaborn.clustermap()</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyscnet.Plotting.net_plot.geneHeatmap">
+<code class="sig-prename descclassname">pyscnet.Plotting.net_plot.</code><code class="sig-name descname">geneHeatmap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gnetdata</span></em>, <em class="sig-param"><span class="n">gene</span></em>, <em class="sig-param"><span class="n">cell_clusterid</span></em>, <em class="sig-param"><span class="n">select_by</span></em>, <em class="sig-param"><span class="n">order_by</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scale</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">cmap</span><span class="o">=</span><span class="default_value">'RdBu'</span></em>, <em class="sig-param"><span class="n">save_as</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/Plotting/net_plot.html#geneHeatmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.Plotting.net_plot.geneHeatmap" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gnetdata</strong> – Gnetdata object, default None</p></li>
+<li><p><strong>gene</strong> – list, default None.</p></li>
+<li><p><strong>cell_clusterid</strong> – str, default None. cell with cell_clusterid will be selected</p></li>
+<li><p><strong>select_by</strong> – str, default None. key of filtering cells</p></li>
+<li><p><strong>order_by</strong> – str, default None. key of ordering cells</p></li>
+<li><p><strong>scale</strong> – bool, default True. whether or not scale the data</p></li>
+<li><p><strong>cmap</strong> – str, default ‘RdBu’. string denoting colors in clustermap</p></li>
+<li><p><strong>save_as</strong> – str, default None. filepath+filename</p></li>
+<li><p><strong>kwargs</strong> – additional parameters passed to seaborn.clustermap()</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -247,9 +312,9 @@
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>gnetdata</strong> – Gnetdata object</p></li>
+<li><p><strong>gnetdata</strong> – Gnetdata object.</p></li>
 <li><p><strong>filename</strong> – str, default None.</p></li>
-<li><p><strong>highlight_path</strong> – list, default None. a list of gene Nodes</p></li>
+<li><p><strong>highlight_path</strong> – list, default None. a list of gene Nodes.</p></li>
 <li><p><strong>kwarg</strong> – additional parameters passed to graph_tool.all.graph_draw()</p></li>
 </ul>
 </dd>

@@ -236,15 +236,15 @@
 
 <dl class="py function">
 <dt id="pyscnet.NetEnrich.graph_toolkit.find_consensus_graph">
-<code class="sig-prename descclassname">pyscnet.NetEnrich.graph_toolkit.</code><code class="sig-name descname">find_consensus_graph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gnetdata</span></em>, <em class="sig-param"><span class="n">link_key</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'intersection'</span></em>, <em class="sig-param"><span class="n">toprank</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/NetEnrich/graph_toolkit.html#find_consensus_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.NetEnrich.graph_toolkit.find_consensus_graph" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pyscnet.NetEnrich.graph_toolkit.</code><code class="sig-name descname">find_consensus_graph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gnetdata</span></em>, <em class="sig-param"><span class="n">link_key</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'intersection'</span></em>, <em class="sig-param"><span class="n">top_rank</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">set_train</span><span class="o">=</span><span class="default_value">[0.05, 0.5]</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/NetEnrich/graph_toolkit.html#find_consensus_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.NetEnrich.graph_toolkit.find_consensus_graph" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>gnetdata</strong> – Gnetdata object.</p></li>
-<li><p><strong>link_key</strong> – str, default all. key referring to linkage table.</p></li>
+<li><p><strong>link_key</strong> – list, default all. key referring to linkage table.</p></li>
 <li><p><strong>method</strong> – str, default intersection. methods for detecting consensus links. Note: intersection is recommended when there are less than 3 linkage tables.</p></li>
-<li><p><strong>toprank</strong> – int, default 100. top ranked edges for intersection method.</p></li>
-<li><p><strong>threshold</strong> – int, default None. set threshold for ensemble method.</p></li>
+<li><p><strong>top_rank</strong> – int, default 100. top ranked edges for intersection method.</p></li>
+<li><p><strong>set_train</strong> – list, default [0.05, 0.5]. Edges are ranked by weight obtained from individual methods. To train the classification model, we set top 5% edges as ‘consensus edges (1)’ and bottom 50% edges as ‘non-consensus edges (0)’ individual methods</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -268,13 +268,12 @@
 
 <dl class="py function">
 <dt id="pyscnet.NetEnrich.graph_toolkit.graph_merge">
-<code class="sig-prename descclassname">pyscnet.NetEnrich.graph_toolkit.</code><code class="sig-name descname">graph_merge</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">link_1</span></em>, <em class="sig-param"><span class="n">link_2</span></em>, <em class="sig-param"><span class="n">toprank</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'union'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/NetEnrich/graph_toolkit.html#graph_merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.NetEnrich.graph_toolkit.graph_merge" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pyscnet.NetEnrich.graph_toolkit.</code><code class="sig-name descname">graph_merge</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">link_1</span></em>, <em class="sig-param"><span class="n">link_2</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'union'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/NetEnrich/graph_toolkit.html#graph_merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.NetEnrich.graph_toolkit.graph_merge" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>link_1</strong> – dataframe. linkage table of graph_1</p></li>
 <li><p><strong>link_2</strong> – dataframe. linkage table of graph_2</p></li>
-<li><p><strong>toprank</strong> – int, default None. top edges from each methods for graph_merge</p></li>
 <li><p><strong>method</strong> – str, default union. methods:[union, intersection, snf]. snf refers to similarity network fusion.</p></li>
 </ul>
 </dd>
@@ -303,21 +302,17 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="pyscnet.NetEnrich.graph_toolkit.path_merge">
-<code class="sig-prename descclassname">pyscnet.NetEnrich.graph_toolkit.</code><code class="sig-name descname">path_merge</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path_1</span></em>, <em class="sig-param"><span class="n">path_2</span></em>, <em class="sig-param"><span class="n">k_mer</span><span class="o">=</span><span class="default_value">3</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">'Eulerian'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/NetEnrich/graph_toolkit.html#path_merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.NetEnrich.graph_toolkit.path_merge" title="Permalink to this definition">¶</a></dt>
-<dd><p>TODO: perform de bruijn graph mapping for ginve two path lists</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="pyscnet.NetEnrich.graph_toolkit.random_walk">
-<code class="sig-prename descclassname">pyscnet.NetEnrich.graph_toolkit.</code><code class="sig-name descname">random_walk</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gnetdata</span></em>, <em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">supervisedby</span></em>, <em class="sig-param"><span class="n">steps</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/NetEnrich/graph_toolkit.html#random_walk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.NetEnrich.graph_toolkit.random_walk" title="Permalink to this definition">¶</a></dt>
+<dt id="pyscnet.NetEnrich.graph_toolkit.self_guide_walk">
+<code class="sig-prename descclassname">pyscnet.NetEnrich.graph_toolkit.</code><code class="sig-name descname">self_guide_walk</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gnetdata</span></em>, <em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'greedy_walk'</span></em>, <em class="sig-param"><span class="n">supervisedby</span><span class="o">=</span><span class="default_value">'pageRank'</span></em>, <em class="sig-param"><span class="n">steps</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">repeat</span><span class="o">=</span><span class="default_value">100</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyscnet/NetEnrich/graph_toolkit.html#self_guide_walk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyscnet.NetEnrich.graph_toolkit.self_guide_walk" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>gnetdata</strong> – Gnetdata object</p></li>
 <li><p><strong>start</strong> – str, starting point of graph.</p></li>
-<li><p><strong>supervisedby</strong> – str, ‘betweenness’, ‘closeness’, ‘degree’ or ‘pageRank’</p></li>
-<li><p><strong>steps</strong> – int, number of steps.</p></li>
+<li><p><strong>method</strong> – str, ‘greedy_walk’ or ‘supervised_random_walk’. default: greedy walk – it prefers neighbors with maximum product of node centrality and weight. supervided_random_walk – it prefers neighbors with randomized probability weighted by the product of node centrality and weight.</p></li>
+<li><p><strong>supervisedby</strong> – str, ‘betweenness’, ‘closeness’, ‘degree’ or ‘pageRank’. default: pageRank</p></li>
+<li><p><strong>steps</strong> – int, number of steps. default: 10</p></li>
+<li><p><strong>repeat</strong> – int, repeat time for supervised random walk. default: 100</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

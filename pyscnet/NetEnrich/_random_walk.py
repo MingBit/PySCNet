@@ -87,7 +87,10 @@ def supervised_random_walk(gnetdata, start, supervisedby, steps, repeat=1000):
         while j < len(tmp):
             j += 1
             if next_node in final_path or next_node not in list(gnetdata.NetAttrs['graph'][final_path[-1]]):
-                next_node = tmp.iloc[j:].idxmax()
+                if j == len(tmp):
+                    break
+                else:
+                    next_node = tmp.iloc[j:].idxmax()
 
             else:
                 final_path.append(next_node)

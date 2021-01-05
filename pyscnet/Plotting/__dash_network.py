@@ -1,11 +1,7 @@
-from jupyter_plotly_dash import JupyterDash
 import random
 import numpy as np
 import pandas as pd
-import dash_cytoscape as cyto
 import pyscnet.NetEnrich as ne
-import dash_html_components as html
-from dash.dependencies import Input, Output, State
 
 
 def __update_object(gnetdata, grn_method, top_links, resolution=0.5):
@@ -71,76 +67,3 @@ def __update_sub_network(click_node=None):
 
     return [[click_node] + neighbours, sub_element, sub_element_module]
 
-
-def create_app(gnetdata, grn_method, top_links, resolution=0.5, layout='cose'):
-    app = JupyterDash('pyscnet-plotly-dash')
-    elements = __update_filter_link(gnetdata, grn_method, top_links, resolution)
-    neighbours, sub_element_1, sub_element_2 = __update_sub_network(click_node=None)
-    def_text = 'please click on the gene node!'
-    FONT_STYLE = {
-        "color": '#343a40',
-        'font-size': '30'
-    }
-    new_stylesheet = [
-        {
-            'selector': 'node',
-            'style': {
-                'label': 'data(id)',
-                'background-color': 'data(color)',
-                'color': '#343a40'}
-        }]
-    app.layout = html.Div([
-        html.H3("pyscnet-plotly-dash"),
-        cyto.Cytoscape(
-            id='gene_network',
-            layout={'name': layout},
-            style={'width': '100%', 'height': '800px', 'background-color': '#eddcd2'},
-            stylesheet=new_stylesheet,
-            elements=elements
-        ),
-
-        html.H3(id='node_neighbors', children=def_text, style=FONT_STYLE),
-        cyto.Cytoscape(
-            id='selected_node_neighbors',
-            layout={'name': layout},
-            style={'width': '100%', 'height': '800px', 'background-color': '#eddcd2'},
-            stylesheet=new_stylesheet,
-            elements=sub_element_1
-        ),
-
-        html.H3(id='node_module', children=def_text, style=FONT_STYLE),
-        cyto.Cytoscape(
-            id='selected_node_module',
-            layout={'name': 'grid'},
-            style={'width': '100%', 'height': '800px', 'background-color': '#eddcd2'},
-            stylesheet=new_stylesheet,
-            elements=sub_element_2)
-
-    ])
-
-    @app.callback([Output('selected_node_neighbors', 'elements'),
-                   Output('selected_node_module', 'elements'),
-                   Output('selected_node_neighbors', 'stylesheet'),
-                   Output('selected_node_module', 'stylesheet'),
-                   Output('node_neighbors', 'children'),
-                   Output('node_module', 'children')],
-                  [Input('gene_network', 'tapNodeData')])
-    def update_sub_net(data):
-        if data:
-            neighbours, new_sub_elements_1, new_sub_elements_2 = __update_sub_network(data['id'])
-            new_stylesheet_1 = [{
-                'selector': 'node',
-                'style': {
-                    'label': 'data(id)',
-                    'color': '#343a40',
-                    'background-color': 'data(color)'
-                }
-            }]
-
-            neighbour_text = 'Genes connected to ' + data['id']
-            module_text = 'Genes assigned to the same module as ' + data['id']
-
-        return [new_sub_elements_1, new_sub_elements_2, new_stylesheet_1,
-                new_stylesheet_1, neighbour_text, module_text]
-
-    return app
