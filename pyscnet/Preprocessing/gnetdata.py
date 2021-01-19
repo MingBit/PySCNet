@@ -9,7 +9,7 @@ Created on Wed May 22 13:53:34 2019
 import _pickle as pk
 import copy
 import pandas as pd
-
+import scipy
 
 class Gnetdata:
     """
@@ -88,22 +88,19 @@ def load_Gnetdata_object(filepath):
     return gnetdata
 
 
-def load_from_anndata(anndata_obj=None, filepath=None):
+def load_from_anndata(anndata_obj=None):
     """
     load adata object
     --------------------------------------------
     :param anndata_obj: adata object, default None
-    :param filepath: str, default None. filepath refers to adata object
     :return: Gnetdata
     """
     if anndata_obj is not None:
-        gnetdata = Gnetdata(pd.DataFrame(anndata_obj.X.T, index=anndata_obj.var_names, columns=anndata_obj.obs_names),
-                            CellAttrs=dict({'CellInfo': anndata_obj.obs}),
-                            GeneAttrs=dict({'GeneInfo': anndata_obj.var}))
-
-    elif filepath is not None:
-        with open(filepath, 'rb') as input:
-            anndata_obj = pk.load(input)
+        if scipy.sparse.issparse(anndata_obj.X):
+            gnetdata = Gnetdata(pd.DataFrame(anndata_obj.X.T.toarray(), index=anndata_obj.var_names, columns=anndata_obj.obs_names),
+                                CellAttrs=dict({'CellInfo': anndata_obj.obs}),
+                                GeneAttrs=dict({'GeneInfo': anndata_obj.var}))
+        else:
             gnetdata = Gnetdata(pd.DataFrame(anndata_obj.X.T, index=anndata_obj.var_names, columns=anndata_obj.obs_names),
                                 CellAttrs=dict({'CellInfo': anndata_obj.obs}),
                                 GeneAttrs=dict({'GeneInfo': anndata_obj.var}))
