@@ -10,7 +10,7 @@ There are four modules:
 3) **NetEnrich**: network analysis including consensus network detection, gene module identification and trigger path prediction as well as network fusion;
 4) **Visulization**: network illustration.
 
-![Overview](https://github.com/MingBit/PySCNet/blob/master/images/Overview.png)
+![Overview](https://github.com/MingBit/PySCNet/blob/master/images/workflow_update.png)
 
 # :tada: :confetti_ball: Create your own GRNs
 [Dashboard](https://github.com/MingBit/PySCNet/blob/master/images/pyscnet_dashboard.gif) is available now for creating your own GRNs.
