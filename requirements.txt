@@ -1,6 +1,6 @@
-numpy~=1.19.4
+numpy
 pandas
-sklearn~=0.0
+sklearn
 scipy
 scikit-learn
 dask
@@ -16,13 +16,13 @@ multiprocess
 pickle-mixin
 community
 snfpy
-scanpy==1.5.0
+scanpy
 docker~=4.0.2
 seaborn
 matplotlib
-pyvis~=0.1.7.0
-python-louvain~=0.13
-setuptools~=46.4.0
+pyvis
+python-louvain
+setuptools
 nbsphinx
 dash
 gunicorn>=19.9.0
