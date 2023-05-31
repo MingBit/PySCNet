@@ -98,7 +98,9 @@ def load_from_anndata(anndata_obj=None):
     """
     if anndata_obj is not None:
         if scipy.sparse.issparse(anndata_obj.X):
-            gnetdata = Gnetdata(Exp=dict({'matrix': anndata_obj.X, 'feature': anndata_obj.var_names, 'cell': anndata_obj.obs_names}),
+            gnetdata = Gnetdata(Exp=dict({'matrix': anndata_obj.X, 
+                                          'feature': anndata_obj.var_names, 
+                                          'cell': anndata_obj.obs_names}),
                                 CellAttrs=dict({'CellInfo': anndata_obj.obs}),
                                 GeneAttrs=dict({'GeneInfo': anndata_obj.var}))
         else:
