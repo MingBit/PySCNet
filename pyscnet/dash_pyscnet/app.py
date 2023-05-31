@@ -12,9 +12,11 @@ from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
 import pandas as pd
 from textwrap import dedent
-import dash_core_components as dcc
+# import dash_core_components as dcc
+from dash import dcc
 import dash_bootstrap_components as dbc
-import dash_html_components as html
+# import dash_html_components as html
+from dash import html
 import numpy as np
 import plotly.express as px
 import dash_cytoscape as cyto
@@ -93,7 +95,9 @@ def get_cellinfo_column():
 
 def windown_sliding_corr(genes, cell_order=None, cell_filter=None, pairwise=True):
     r_window_size = 100
-    df = object.ExpMatrix.T
+    df = pd.DataFrame.sparse.from_spmatrix(object.Exp['matrix'],
+                                            index = object.Exp['cell'],
+                                            columns = object.Exp['feature'])
 
     if cell_order is not None:
         if cell_filter is not None:
@@ -103,14 +107,15 @@ def windown_sliding_corr(genes, cell_order=None, cell_filter=None, pairwise=True
             df = df.reindex(object.CellAttrs['CellInfo'].sort_values(cell_order, ascending=False).index)
 
     # Interpolate missing data.
-    df_interpolated = df.interpolate()
+    #df_interpolated = df.interpolate()
     # Compute rolling window synchrony
     tmp = pd.DataFrame(df[genes].rolling(window=r_window_size, center=True).mean())
 
     if pairwise:
 
         rolling_r = pd.DataFrame(
-            df_interpolated[genes[0]].rolling(window=r_window_size, center=True).corr(df_interpolated[genes[1]]))
+            #df_interpolated[genes[0]].rolling(window=r_window_size, center=True).corr(df_interpolated[genes[1]]))
+            df[genes[0]].rolling(window=r_window_size, center=True).corr(df[genes[1]]))
         rolling_r.columns = ['Correlation']
         return rolling_r, tmp
     else:
@@ -555,7 +560,12 @@ def initialize_cell_filter(cell_filter_options):
                Input('components', 'value'),
                Input('neighbors', 'value')])
 def update_cell_distribution(xD, color_1, color_2, components, neighbours):
-    pca = PCA(n_components=components).fit_transform(object.ExpMatrix.T)
+    #pca = PCA(n_components=components).fit_transform(object.ExpMatrix.T)
+    ExpMatrix = pd.DataFrame.sparse.from_spmatrix(object.Exp['matrix'],
+                                              index = object.Exp['cell'],
+                                              columns = object.Exp['feature'])
+
+    pca = PCA(n_components=components).fit_transform(ExpMatrix)
     if xD == '2D':
         proj_2d = UMAP(n_neighbors=neighbours,
                        n_components=2,

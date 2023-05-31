@@ -70,15 +70,18 @@ def get_synchrony(gnetdata, method, cell=None, feature=None, cell_clusterid=None
 
     assert method in ['window_rolling', 'phase_synchrony'], 'only window_rolling and phase_synchrony are valid!'
 
-    feature = gnetdata.ExpMatrix.index if feature is None else feature
+    feature = gnetdata.Exp['feature'] if feature is None else feature
 
     if cell_clusterid is None:
-        cell = gnetdata.ExpMatrix.columns if cell is None else cell
+        cell = gnetdata.Exp['cell'] if cell is None else cell
     else:
         cell_info = gnetdata.CellAttrs['CellInfo']
         cell = list(cell_info.loc[cell_info[select_by].isin([cell_clusterid])].index)
 
-    subExpr = gnetdata.ExpMatrix.loc[feature, cell]
+    subExpr = pd.DataFrame.sparse.from_spmatrix(gnetdata.Exp['matrix'],
+                                                index = gnetData.Exp['cell'],
+                                                columns = gnetData.Exp['feature']).loc[cell, feature]
+
     link = pd.DataFrame(combinations(set(feature), 2), columns=['source', 'target'])
     phase_synchrony = list()
 

@@ -33,6 +33,10 @@ def __copy_to(container_id, src, dst):
 
 
 def __remove_duplicate(links):
+    
+    """
+    This method only save one-direction weight
+    """
 
     links_list = sorted(links[['source', 'target']].values.tolist())
     for i in range(len(links_list)):
@@ -47,16 +51,17 @@ def __rundocker(gnetdata, method, cell=None, feature=None, cell_clusterid=None, 
                 Mms_TF=None, directed=True, **kwargs):
     client = docker.from_env()
 
-    if feature is None:
-        feature = gnetdata.ExpMatrix.index
+    feature = gnetdata.Exp['feature'] if feature is None else feature
 
     if cell_clusterid is None:
-        cell = gnetdata.ExpMatrix.columns if cell is None else cell
+        cell = gnetdata.Exp['cell'] if cell is None else cell
     else:
         cell_info = gnetdata.CellAttrs['CellInfo']
         cell = list(cell_info.loc[cell_info[select_by].isin([cell_clusterid])].index)
 
-    tmp_expr = gnetdata.ExpMatrix.loc[feature, cell]
+    tmp_expr = pd.DataFrame.sparse.from_spmatrix(gnetdata.Exp['matrix'],
+                                                index = gnetdata.Exp['cell'],
+                                                columns = gnetdata.Exp['feature']).loc[cell, feature].T
 
     if Mms_TF is not None:
         pd.DataFrame.to_csv(pd.DataFrame(Mms_TF), path + method + '/TF_Names.txt', sep='\t', header=False, index=False)

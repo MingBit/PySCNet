@@ -18,7 +18,7 @@ from .__dash_network import __update_filter_link, __update_sub_network, __update
 
 from jupyter_plotly_dash import JupyterDash
 import dash_cytoscape as cyto
-import dash_html_components as html
+from dash import html
 from dash.dependencies import Input, Output
 
 
@@ -38,12 +38,19 @@ def geneHeatmap(gnetdata, gene, cell_clusterid, select_by, order_by=None, scale=
     :param kwargs: additional parameters passed to seaborn.clustermap()
     :return: None
     """
-    cell_info = gnetdata.CellAttrs['CellInfo'] if order_by is None else gnetdata.CellAttrs['CellInfo'].sort_values(
-        order_by, ascending=True)
+    cell_info = gnetdata.CellAttrs['CellInfo'] if order_by is None else gnetdata.CellAttrs['CellInfo'].sort_values(order_by, ascending=True)
     cell = list(cell_info.loc[cell_info[select_by].isin([cell_clusterid])].index)
-    sub_Expr = pd.DataFrame(preprocessing.scale(gnetdata.ExpMatrix),
-                            index=gnetdata.ExpMatrix.index, columns=gnetdata.ExpMatrix.columns).loc[gene, cell] \
-        if scale else gnetdata.ExpMatrix.loc[gene, cell]
+    
+    sub_Expr = pd.DataFrame.sparse.from_spmatrix(gnetdata.Exp['matrix'],
+                                                index = gnetdata.Exp['cell'],
+                                                columns = gnetdata.Exp['feature']).loc[cell, gene].T
+    
+    if scale:
+        sub_Expr = preprocessing.scale(sub_Expr)
+
+    # sub_Expr = pd.DataFrame(preprocessing.scale(gnetdata.ExpMatrix),
+    #                         index=gnetdata.ExpMatrix.index, columns=gnetdata.ExpMatrix.columns).loc[gene, cell] if scale else gnetdata.ExpMatrix.loc[gene, cell]
+
     sns_plot = sns.clustermap(sub_Expr, cmap=cmap, xticklabels=False, **kwargs)
 
     if save_as is not None:
@@ -69,14 +76,21 @@ def geneCorrelation(gnetdata, gene, cell_clusterid, select_by, order_by=None, sc
     :param kwargs: additional parameters passed to seaborn.clustermap()
     :return: None
     """
-    cell_info = gnetdata.CellAttrs['CellInfo'] if order_by is None else gnetdata.CellAttrs['CellInfo'].sort_values(
-        order_by, ascending=True)
+    cell_info = gnetdata.CellAttrs['CellInfo'] if order_by is None else gnetdata.CellAttrs['CellInfo'].sort_values(order_by, ascending=True)
     cell = list(cell_info.loc[cell_info[select_by].isin([cell_clusterid])].index)
-    sub_Expr = pd.DataFrame(preprocessing.scale(gnetdata.ExpMatrix),
-                            index=gnetdata.ExpMatrix.index, columns=gnetdata.ExpMatrix.columns).loc[gene, cell].T \
-        if scale_data else gnetdata.ExpMatrix.loc[gene, cell].T
+    
+    sub_Expr = pd.DataFrame.sparse.from_spmatrix(gnetdata.Exp['matrix'],
+                                            index = gnetdata.Exp['cell'],
+                                            columns = gnetdata.Exp['feature']).loc[cell, gene].T
+
+    if scale:
+        sub_Expr = preprocessing.scale(sub_Expr)
+
+    # sub_Expr = pd.DataFrame(preprocessing.scale(gnetdata.ExpMatrix),
+    #                         index=gnetdata.ExpMatrix.index, columns=gnetdata.ExpMatrix.columns).loc[gene, cell].T if scale_data else gnetdata.ExpMatrix.loc[gene, cell].T
 
     corr = sub_Expr.corr()
+    
     #     mask = np.triu(np.ones_like(corr, dtype=np.bool))
     cmap = sns.diverging_palette(220, 10, as_cmap=True)
     fig, ax = plt.subplots(figsize=[10, 10] if figsize is None else figsize)
@@ -170,7 +184,7 @@ def net_hierarchy_plot(gnetdata, filename=None, **kwarg):
     for g in labels.keys():
         ngroup[g] = node_group.loc[node_group.node == labels[g], 'group']
 
-    state = gt.minimize_nested_blockmodel_dl(graph, deg_corr=True)
+    state = gt.minimize_nested_blockmodel_dl(graph)
     gt.draw_hierarchy(state, vertex_fill_color=ngroup, vertex_anchor=0,
                       vertex_text=graph.vertex_properties['id'],
                       output=filename, **kwarg)

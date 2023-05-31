@@ -19,6 +19,8 @@ COPY . /GENIE3
 
 #RUN curl https://raw.githubusercontent.com/vahuynh/GENIE3/master/GENIE3_python/GENIE3.py > genie3_raw.py
 
+RUN pip install --upgrade pip
+
 RUN pip install --trusted-host pypi.python.org -r requirements
 
 RUN ls ./

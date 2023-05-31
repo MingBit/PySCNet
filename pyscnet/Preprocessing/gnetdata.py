@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 """
 Created on Wed May 22 13:53:34 2019
 
@@ -16,14 +17,14 @@ class Gnetdata:
     Gnetdata class includes dataset specifically
     ------------------------------------------------
     for building GRNs. It consists four sub-classes:
-    1) ExpMatrix: A gene count matrix
+    1) Exp: A dict of sparse matrix, var_names and obj_names
     2) CellAttrs: A dict gives information about cells. eg. cluster_nr, annotation
     3) GeneAttrs: A dict gives information about genes. eg. module_nr, marker_annotation
     4) NetAttrs: A dict includes Networks attributes. eg. node centralities.
     """
 
-    def __init__(self, ExpMatrix, CellAttrs=None, GeneAttrs=None):
-        self.ExpMatrix = ExpMatrix
+    def __init__(self, Exp, CellAttrs=None, GeneAttrs=None):
+        self.Exp = Exp
         self.CellAttrs = CellAttrs
         self.GeneAttrs = GeneAttrs
         self.NetAttrs = dict()
@@ -47,8 +48,8 @@ class Gnetdata:
 
     @property
     def shape(self):
-        """return the shape of ExpMatrix"""
-        return self.ExpMatrix.shape
+        """return the shape of Exp"""
+        return self.Exp['matrix'].shape
 
     @property
     def deepcopy(self):
@@ -57,8 +58,8 @@ class Gnetdata:
 
     @property
     def info(self):
-        """ return the shape of ExpMatrix and the keys of CellAttrs, GeneAttrs, NetAttrs"""
-        text = 'Gnetdata object with \nExpMatrix: {} x {}'.format(self.shape[0], self.shape[1])
+        """ return the shape of Exp and the keys of CellAttrs, GeneAttrs, NetAttrs"""
+        text = 'Gnetdata object with \nExp: {} x {}'.format(self.shape[0], self.shape[1])
         attr = ['CellAttrs', 'GeneAttrs', 'NetAttrs']
         for at in attr:
             keys = getattr(self, at).keys() if getattr(self, at) is not None else None
@@ -97,11 +98,11 @@ def load_from_anndata(anndata_obj=None):
     """
     if anndata_obj is not None:
         if scipy.sparse.issparse(anndata_obj.X):
-            gnetdata = Gnetdata(pd.DataFrame(anndata_obj.X.T.toarray(), index=anndata_obj.var_names, columns=anndata_obj.obs_names),
+            gnetdata = Gnetdata(Exp=dict({'matrix': anndata_obj.X, 'feature': anndata_obj.var_names, 'cell': anndata_obj.obs_names}),
                                 CellAttrs=dict({'CellInfo': anndata_obj.obs}),
                                 GeneAttrs=dict({'GeneInfo': anndata_obj.var}))
         else:
-            gnetdata = Gnetdata(pd.DataFrame(anndata_obj.X.T, index=anndata_obj.var_names, columns=anndata_obj.obs_names),
+            gnetdata = Gnetdata(Exp=dict({'matrix': scipy.sparse.csr_array(anndata_obj.X), 'feature': anndata_obj.var_names, 'cell': anndata_obj.obs_names}),
                                 CellAttrs=dict({'CellInfo': anndata_obj.obs}),
                                 GeneAttrs=dict({'GeneInfo': anndata_obj.var}))
 

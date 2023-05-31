@@ -214,5 +214,3 @@ def self_guide_walk(gnetdata, start, method='greedy_walk', supervisedby='pageRan
         path = supervised_random_walk(gnetdata=gnetdata, start=start, supervisedby=supervisedby, steps=steps,
                                       repeat=repeat)
     return path
-
-
