@@ -19,6 +19,8 @@ COPY . /SCNODE2VEC
 
 RUN curl https://raw.githubusercontent.com/MingBit/SCNode2Vec/master/src/model_node2vec.py > scnode2vec_raw.py
 
+RUN pip install --upgrade pip
+
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
 RUN ls ./

@@ -1,6 +1,5 @@
 numpy
 pandas
-sklearn
 scipy
 scikit-learn
 gensim

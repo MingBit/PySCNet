@@ -16,6 +16,8 @@ WORKDIR /GRNBOOST2
 
 COPY . /GRNBOOST2
 
+RUN pip install --upgrade pip
+
 RUN pip install --trusted-host pypi.python.org -r requirements
 
 RUN ls ./
