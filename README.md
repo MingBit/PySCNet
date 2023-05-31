@@ -22,7 +22,7 @@ To run the python dashboard: <br/>
 
 # Installation
 Make sure you have [Docker](https://docs.docker.com/engine/install/ubuntu/) and [graph_tool](https://git.skewed.de/count0/graph-tool/-/wikis/installation-instructions) manually installed. <br/>
-`conda create --name gt -c conda-forge graph-tool python=3.6` <br/>
+`conda create --name gt -c conda-forge graph-tool python=3.9.7` <br/>
 `conda activate gt`
 
 1) clone from github:
