@@ -5,7 +5,7 @@
 """
 
 from __future__ import absolute_import
-from ._nx2gt import nx2gt
+# from ._nx2gt import nx2gt
 from ..utils import *
 import graph_tool.all as gt
 import seaborn as sns
@@ -23,7 +23,7 @@ from dash import html
 from dash.dependencies import Input, Output
 
 
-def geneHeatmap(gnetdata, cell, feature, scale=True, cmap='RdBu', save_as=None, **kwargs):
+def geneHeatmap(gnetdata, cell, feature, scale=True, **kwargs):
     """
     Create Heatmap showing gene expression in individual cells along pseudotime
     ----------------------------------------------------------------------------
@@ -38,13 +38,14 @@ def geneHeatmap(gnetdata, cell, feature, scale=True, cmap='RdBu', save_as=None, 
     :param kwargs: additional parameters passed to seaborn.clustermap()
     :return: None
     """
+    save_as = kwargs.get('save_as', None)
     
     sub_Expr = gnetdata_subset(gnetdata, cell, feature, **kwargs)
 
     if scale:
         sub_Expr = preprocessing.scale(sub_Expr)
 
-    sns_plot = sns.clustermap(sub_Expr, cmap=cmap, xticklabels=False, **kwargs)
+    sns_plot = sns.clustermap(sub_Expr, xticklabels=False)
 
     if save_as is not None:
         sns_plot.savefig(save_as)
@@ -53,7 +54,7 @@ def geneHeatmap(gnetdata, cell, feature, scale=True, cmap='RdBu', save_as=None, 
     return sns_plot
 
 
-def geneCorrelation(gnetdata, cell, feature, scale_data=True, save_as=None, **kwargs):
+def geneCorrelation(gnetdata, cell, feature, **kwargs):
     """
     Create gene correlation heatmap
     --------------------------------------------------
@@ -68,8 +69,11 @@ def geneCorrelation(gnetdata, cell, feature, scale_data=True, save_as=None, **kw
     :param kwargs: additional parameters passed to seaborn.clustermap()
     :return: None
     """
+    scale = kwargs.get('scale', True)
+    save_as = kwargs.get('save_as', None)
+
     sub_Expr = gnetdata_subset(gnetdata, cell, feature, **kwargs)
-    
+        
     if scale:
         sub_Expr = preprocessing.scale(sub_Expr)
 
@@ -87,9 +91,7 @@ def geneCorrelation(gnetdata, cell, feature, scale_data=True, save_as=None, **kw
     return sns_heatmap
 
 
-def dynamic_netShow(gnetdata, filename, node_size=50, node_community='all', 
-                    html_size=["500px", "1800px"],
-                    bgcolor="#222222", font_color="white", **kwarg):
+def dynamic_netShow(gnetdata, filename, node_community='all', **kwargs):
     """
     create a GRN html
     ------------------------------------------
@@ -102,6 +104,13 @@ def dynamic_netShow(gnetdata, filename, node_size=50, node_community='all',
     :param bgcolor: string, default #222222
     :return: None
     """
+    
+    node_size = kwargs.get('node_size', 50)
+    bgcolor = kwargs.get('bgcolor', "#222222")
+    font_color = kwargs.get('font_color', 'white')
+    html_size = kwargs.get('html_size', ["500px", "1800px"])
+    
+    
     assert 'graph' in gnetdata.NetAttrs.keys(), 'graph is empty!'
     assert 'communities' in gnetdata.NetAttrs.keys(), 'node communities is empty!'
 
@@ -145,91 +154,91 @@ def dynamic_netShow(gnetdata, filename, node_size=50, node_community='all',
     return None
 
 
-def net_hierarchy_plot(gnetdata, filename=None, **kwarg):
-    """
-     create a hierarchy gene net plot
-    ---------------------------------------------
-    :param gnetdata: Gnetdata object
-    :param filename: str, default None.
-    :param kwarg: additional parameters passed to graph_tool.all.draw_hierarchy()
-    :return: None
+# def net_hierarchy_plot(gnetdata, filename=None, **kwarg):
+#     """
+#      create a hierarchy gene net plot
+#     ---------------------------------------------
+#     :param gnetdata: Gnetdata object
+#     :param filename: str, default None.
+#     :param kwarg: additional parameters passed to graph_tool.all.draw_hierarchy()
+#     :return: None
 
-    """
+#     """
 
-    assert 'graph' in gnetdata.NetAttrs.keys(), 'graph is empty!'
-    assert 'communities' in gnetdata.NetAttrs.keys(), 'node communities is empty!'
+#     assert 'graph' in gnetdata.NetAttrs.keys(), 'graph is empty!'
+#     assert 'communities' in gnetdata.NetAttrs.keys(), 'node communities is empty!'
 
-    graph = nx2gt(gnetdata.NetAttrs['graph'])
-    node_group = gnetdata.NetAttrs['communities']
+#     graph = nx2gt(gnetdata.NetAttrs['graph'])
+#     node_group = gnetdata.NetAttrs['communities']
 
-    # deg = graph.degree_property_map('total')
-    ngroup = graph.new_vertex_property('int')
+#     # deg = graph.degree_property_map('total')
+#     ngroup = graph.new_vertex_property('int')
 
-    labels = dict(zip(list(range(graph.num_vertices())), list(graph.vertex_properties['id'])))
+#     labels = dict(zip(list(range(graph.num_vertices())), list(graph.vertex_properties['id'])))
     
-    for g in labels.keys():
-        ngroup[g] = node_group.loc[node_group.node == labels[g], 'group']
+#     for g in labels.keys():
+#         ngroup[g] = node_group.loc[node_group.node == labels[g], 'group']
 
-    state = gt.minimize_nested_blockmodel_dl(graph)
-    gt.draw_hierarchy(state, vertex_fill_color=ngroup, vertex_anchor=0,
-                      vertex_text=graph.vertex_properties['id'],
-                      output=filename, **kwarg)
-    return None
+#     state = gt.minimize_nested_blockmodel_dl(graph)
+#     gt.draw_hierarchy(state, vertex_fill_color=ngroup, vertex_anchor=0,
+#                       vertex_text=graph.vertex_properties['id'],
+#                       output=filename, **kwarg)
+#     return None
 
 
-def net_matrix_plot(gnetdata, filename=None, highlight_path=None, **kwarg):
-    """
-    create a matrix gene net plot
-    --------------------------------------
-    :param gnetdata: Gnetdata object.
-    :param filename: str, default None.
-    :param highlight_path: list, default None. a list of gene Nodes.
-    :param kwarg: additional parameters passed to graph_tool.all.graph_draw()
-    :return: None
+# def net_matrix_plot(gnetdata, filename=None, highlight_path=None, **kwarg):
+#     """
+#     create a matrix gene net plot
+#     --------------------------------------
+#     :param gnetdata: Gnetdata object.
+#     :param filename: str, default None.
+#     :param highlight_path: list, default None. a list of gene Nodes.
+#     :param kwarg: additional parameters passed to graph_tool.all.graph_draw()
+#     :return: None
 
-    """
+#     """
 
-    assert 'graph' in gnetdata.NetAttrs.keys(), 'graph is empty!'
-    assert 'communities' in gnetdata.NetAttrs.keys(), 'node communities is empty!'
+#     assert 'graph' in gnetdata.NetAttrs.keys(), 'graph is empty!'
+#     assert 'communities' in gnetdata.NetAttrs.keys(), 'node communities is empty!'
 
-    graph = nx2gt(gnetdata.NetAttrs['graph'])
-    node_group = gnetdata.NetAttrs['communities']
+#     graph = nx2gt(gnetdata.NetAttrs['graph'])
+#     node_group = gnetdata.NetAttrs['communities']
 
-    ngroup = graph.new_vertex_property('int')
+#     ngroup = graph.new_vertex_property('int')
 
-    # deg = graph.degree_property_map('total')
-    labels = dict(zip(list(range(graph.num_vertices())), list(graph.vertex_properties['id'])))
-    for g in labels.keys():
-        ngroup[g] = node_group.loc[node_group.node == labels[g], 'group']
+#     # deg = graph.degree_property_map('total')
+#     labels = dict(zip(list(range(graph.num_vertices())), list(graph.vertex_properties['id'])))
+#     for g in labels.keys():
+#         ngroup[g] = node_group.loc[node_group.node == labels[g], 'group']
 
-    position = graph.new_vertex_property("vector<double>")
-    edge_color = graph.new_edge_property("string")
+#     position = graph.new_vertex_property("vector<double>")
+#     edge_color = graph.new_edge_property("string")
 
-    dim = int(np.sqrt(len(labels))) + 1
-    node_pos = list()
+#     dim = int(np.sqrt(len(labels))) + 1
+#     node_pos = list()
 
-    node_group_dict = dict(zip(list(range(graph.num_vertices())), list(node_group.group)))
+#     node_group_dict = dict(zip(list(range(graph.num_vertices())), list(node_group.group)))
 
-    for i in range(len(set(node_group.group))):
-        for key, item in node_group_dict.items():
-            if item == i:
-                node_pos.append(key)
+#     for i in range(len(set(node_group.group))):
+#         for key, item in node_group_dict.items():
+#             if item == i:
+#                 node_pos.append(key)
 
-    for i in range(len(node_pos)):
-        position[graph.vertex(node_pos[i])] = (int(i / dim), i % dim)
+#     for i in range(len(node_pos)):
+#         position[graph.vertex(node_pos[i])] = (int(i / dim), i % dim)
 
-    for e in graph.edges():
-        if (highlight_path is not None) and (labels[list(e)[0]] in highlight_path) and (
-                labels[list(e)[1]] in highlight_path) and abs(
-            highlight_path.index(labels[list(e)[0]]) - highlight_path.index(labels[list(e)[1]])) == 1:
-            edge_color[e] = 'darkorange'
-        else:
-            edge_color[e] = 'lightgrey'
+#     for e in graph.edges():
+#         if (highlight_path is not None) and (labels[list(e)[0]] in highlight_path) and (
+#                 labels[list(e)[1]] in highlight_path) and abs(
+#             highlight_path.index(labels[list(e)[0]]) - highlight_path.index(labels[list(e)[1]])) == 1:
+#             edge_color[e] = 'darkorange'
+#         else:
+#             edge_color[e] = 'lightgrey'
 
-    gt.graph_draw(graph, pos=position, vertex_fill_color=ngroup, edge_color=edge_color,
-                  vertex_text=graph.vertex_properties['id'], output=filename, **kwarg)
+#     gt.graph_draw(graph, pos=position, vertex_fill_color=ngroup, edge_color=edge_color,
+#                   vertex_text=graph.vertex_properties['id'], output=filename, **kwarg)
 
-    return None
+#     return None
 
 
 # def create_app(gnetdata, grn_method, top_links, resolution=0.5, layout='cose'):
