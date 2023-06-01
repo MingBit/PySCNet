@@ -21,35 +21,17 @@ def __init__():
     warnings.simplefilter("ignore")
 
 
-def __linkage_to_adjlink(linkage_table, node_list):
-    """
-    convert linkage table to weighted adjacency matrix
-    """
-    adjlink_matrix = pd.DataFrame(0, columns=node_list, index=node_list, dtype=np.float)
-    #        source, target, score = list(linkage_table.columns)
-    for i in range(0, len(linkage_table)):
-        if (linkage_table['source'][i] in node_list) & (linkage_table['target'][i] in node_list):
-            adjlink_matrix.loc[linkage_table['source'][i]][linkage_table['target'][i]] = linkage_table['weight'][i]
-            adjlink_matrix.loc[linkage_table['target'][i]][linkage_table['source'][i]] = linkage_table['weight'][i]
-        else:
-            break
-    return np.array(adjlink_matrix)
-
-
-def __snf_based_merge(link_1, link_2):
+def snf_based_merge(links_list, node_list):
     """
     snf network merge based on Wang, Bo, et al. Nature methods 11.3 (2014): 333.
     """
     warnings.simplefilter("ignore")
-    node_list = list(set(link_1['source']) & set(link_1['target']) & set(link_2['source']) & set(link_2['target']))
-
-    adjlinks = list()
-    adjlinks.append(__linkage_to_adjlink(link_1, node_list))
-    adjlinks.append(__linkage_to_adjlink(link_2, node_list))
-    affinity_matrix = snf.make_affinity(adjlinks)
+    affinity_matrix = snf.make_affinity(links_list)
     fused_network = snf.snf(affinity_matrix)
-    Graph = nx.from_pandas_adjacency(pd.DataFrame(fused_network, index=node_list, columns=node_list))
-    return pd.DataFrame(Graph.edges, columns=['source', 'target'])
+    np.fill_diagonal(fused_network, 0)
+    
+    graph = nx.from_pandas_adjacency(pd.DataFrame(fused_network, index=node_list, columns=node_list))
+    return graph
 
 
 def buildnet(gnetdata, key_links, top=None):
@@ -82,12 +64,16 @@ def get_centrality(gnetdata):
     :param gnetdata: Gnetdata object.
     :return: gnetData object with 'centralities' added into NetAttrs
     """
+    
     G = gnetdata.NetAttrs['graph']
-    centralities = pd.DataFrame(list(G.nodes), columns=['node'])
-    centralities['betweenness'] = pd.DataFrame.from_dict(list(nx.betweenness_centrality(G).items()))[1]
-    centralities['closeness'] = pd.DataFrame.from_dict(list(nx.closeness_centrality(G).items()))[1]
-    centralities['degree'] = pd.DataFrame.from_dict(list(nx.degree_centrality(G).items()))[1]
-    centralities['pageRank'] = pd.DataFrame.from_dict(list(nx.pagerank(G).items()))[1]
+    
+    centralities = pd.DataFrame.from_dict({
+        'node': list(G.nodes),
+        'betweenness': list(nx.betweenness_centrality(G).values()),
+        'closeness': list(nx.closeness_centrality(G).values()),
+        'degree': list(nx.degree_centrality(G).values()),
+        'pageRank': list(nx.pagerank(G).values())
+    })
 
     gnetdata.NetAttrs['centralities'] = centralities
     print('node centralities added into NetAttrs.')
@@ -155,20 +141,15 @@ def graph_merge(link_1, link_2, method='union'):
     :param method: str, default union. methods:[union, intersection, snf]. snf refers to similarity network fusion.
     :return: dataframe, merged linkage
     """
-    assert method in ['union', 'intersection', 'snf'], 'valid method parameter: union, intersection, knn!'
+    assert method in ['union', 'intersection'], 'valid method parameter: union, intersection'
+    
+    link_1['edge'] = ["_".join(sorted(pair)) for pair in zip(link_1['source'], link_1['target'])]
+    link_2['edge'] = ["_".join(sorted(pair)) for pair in zip(link_2['source'], link_2['target'])]
 
-    if method in ['union', 'intersection']:
-        link_1['edge'] = ["_".join(sorted([link_1.source[i], link_1.target[i]])) for i in range(link_1.shape[0])]
-        link_2['edge'] = ["_".join(sorted([link_2.source[i], link_2.target[i]])) for i in range(link_2.shape[0])]
+    mergedlinks = pd.merge(link_1, link_2, on=['edge'], how='outer' if method == 'union' else 'inner').fillna(0)
+    mergedlinks['weight'] = mergedlinks.mean(axis=1)
 
-        mergedlinks = pd.merge(link_1, link_2, on=['edge'], how='outer' if method == 'union' else 'inner').fillna(0)
-        mergedlinks['weight'] = mergedlinks.mean(axis=1)
-
-        mergedlinks['source'] = [x.split('_')[0] for x in mergedlinks.edge]
-        mergedlinks['target'] = [x.split('_')[1] for x in mergedlinks.edge]
-
-    elif method == 'snf':
-        mergedlinks = __snf_based_merge(link_1, link_2)
+    mergedlinks[['source', 'target']] = mergedlinks['edge'].str.split('_', expand=True)
 
     return mergedlinks[['source', 'target', 'weight']]
 

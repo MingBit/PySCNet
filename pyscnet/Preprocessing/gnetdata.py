@@ -25,25 +25,20 @@ class Gnetdata:
 
     def __init__(self, Exp, CellAttrs=None, GeneAttrs=None):
         self.Exp = Exp
-        self.CellAttrs = CellAttrs
-        self.GeneAttrs = GeneAttrs
-        self.NetAttrs = dict()
-        self.NetAttrs['parameters'] = dict()
+        self.CellAttrs = CellAttrs or {}
+        self.GeneAttrs = GeneAttrs or {}
+        self.NetAttrs = {'parameters': {}}
 
     def _add_cellattr(self, attr_name, attr):
-
         self.CellAttrs[attr_name] = attr
 
     def _add_geneattr(self, attr_name, attr):
-
         self.GeneAttrs[attr_name] = attr
 
     def _add_netattr(self, attr_name, attr):
-
         self.NetAttrs[attr_name] = attr
 
     def _add_netattr_para(self, attr_name, attr):
-
         self.NetAttrs['parameters'][attr_name] = attr
 
     @property
@@ -91,21 +86,28 @@ def load_Gnetdata_object(filepath):
 
 def load_from_anndata(anndata_obj=None):
     """
-    load adata object
+    Load adata object
     --------------------------------------------
     :param anndata_obj: adata object, default None
     :return: Gnetdata
     """
-    if anndata_obj is not None:
-        if scipy.sparse.issparse(anndata_obj.X):
-            gnetdata = Gnetdata(Exp=dict({'matrix': anndata_obj.X, 
-                                          'feature': anndata_obj.var_names, 
-                                          'cell': anndata_obj.obs_names}),
-                                CellAttrs=dict({'CellInfo': anndata_obj.obs}),
-                                GeneAttrs=dict({'GeneInfo': anndata_obj.var}))
-        else:
-            gnetdata = Gnetdata(Exp=dict({'matrix': scipy.sparse.csr_array(anndata_obj.X), 'feature': anndata_obj.var_names, 'cell': anndata_obj.obs_names}),
-                                CellAttrs=dict({'CellInfo': anndata_obj.obs}),
-                                GeneAttrs=dict({'GeneInfo': anndata_obj.var}))
+    if anndata_obj is None:
+        return None
+
+    matrix = scipy.sparse.csr_matrix(anndata_obj.X) if scipy.sparse.issparse(anndata_obj.X) else anndata_obj.X
+
+    gnetdata = Gnetdata(
+        Exp={
+            'matrix': matrix,
+            'feature': anndata_obj.var_names,
+            'cell': anndata_obj.obs_names
+        },
+        CellAttrs={
+            'CellInfo': anndata_obj.obs
+        },
+        GeneAttrs={
+            'GeneInfo': anndata_obj.var
+        }
+    )
 
     return gnetdata

@@ -20,11 +20,13 @@ from sklearn import metrics
 
 
 def __order_source_target(df):
-    df_new = pd.DataFrame()
-    df_new['source'] = [sorted([df.source[i], df.target[i]])[0] for i in range(df.shape[0])]
-    df_new['target'] = [sorted([df.source[i], df.target[i]])[1] for i in range(df.shape[0])]
+    
+    df_new = pd.DataFrame(tuple(sorted(a)) for a in df[['source', 'target']].values.tolist()). \
+            rename(columns={0: 'source',
+                            1: 'target'})
+    
     df_new['weight'] = df.weight
-
+    
     return df_new
 
 
@@ -38,16 +40,16 @@ def _generate_x_y(links_dict, top_rank, set_train):
     df_final = reduce(lambda left, right: pd.merge(left, right, on=['source', 'target']), dfs)
     rep = (df_final.shape[1] - 2) / len(links_dict)
     df_final.columns = list(df_final.columns[:2]) + list(np.repeat(list(links_dict.keys()), rep))
+    
     for col in df_final.columns[2:]:
         df_final[col + '_rank'] = list(df_final[col].rank())
         df_final = df_final.drop(col, axis=1)
 
     df_final['avg'] = df_final.mean(axis=1)
+    df_final_sorted = df_final.sort_values('avg', ascending=False, ignore_index=True)
 
-    train_head = df_final.sort_values('avg', ascending=False, ignore_index=True).head(
-        int(df_final.shape[0] * set_train[0]))
-    train_bottom = df_final.sort_values('avg', ascending=False, ignore_index=True).tail(
-        int(df_final.shape[0] * set_train[1]))
+    train_head = df_final_sorted.head(int(df_final.shape[0] * set_train[0]))   
+    train_bottom = df_final_sorted.tail(int(df_final.shape[0] * set_train[1]))
 
     train_df = train_head.append(train_bottom)
     X = train_df.iloc[:, :-1]

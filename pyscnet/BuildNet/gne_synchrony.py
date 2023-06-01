@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 from scipy.signal import hilbert, butter, filtfilt
 from itertools import combinations
+from ..utils import *
 
 
 def __butter_bandpass(low_cut, high_cut, fs, order=5):
@@ -51,8 +52,8 @@ def __window_rolling(df, window_size):
     return rank
 
 
-def get_synchrony(gnetdata, method, cell=None, feature=None, cell_clusterid=None, select_by=None,
-                  fs=50., low_cut=2, high_cut=15, order=5, window_size=[50]):
+def get_synchrony(gnetdata, method, cell=None, feature=None,
+                  fs=50., low_cut=2, high_cut=15, order=5, window_size=[50], **kwargs):
     """
     :param gnetdata: Gnetdata object, default None.
     :param method: str, default None. methods: [window_rolling, phase_synchrony]
@@ -70,18 +71,7 @@ def get_synchrony(gnetdata, method, cell=None, feature=None, cell_clusterid=None
 
     assert method in ['window_rolling', 'phase_synchrony'], 'only window_rolling and phase_synchrony are valid!'
 
-    feature = gnetdata.Exp['feature'] if feature is None else feature
-
-    if cell_clusterid is None:
-        cell = gnetdata.Exp['cell'] if cell is None else cell
-    else:
-        cell_info = gnetdata.CellAttrs['CellInfo']
-        cell = list(cell_info.loc[cell_info[select_by].isin([cell_clusterid])].index)
-
-    subExpr = pd.DataFrame.sparse.from_spmatrix(gnetdata.Exp['matrix'],
-                                                index = gnetData.Exp['cell'],
-                                                columns = gnetData.Exp['feature']).loc[cell, feature]
-
+    subExpr = gnetdata_subset(gnetdata, cell, feature, **kwargs).T
     link = pd.DataFrame(combinations(set(feature), 2), columns=['source', 'target'])
     phase_synchrony = list()
 

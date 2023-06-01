@@ -6,6 +6,7 @@
 
 from __future__ import absolute_import
 from ._nx2gt import nx2gt
+from ..utils import *
 import graph_tool.all as gt
 import seaborn as sns
 import pandas as pd
@@ -22,13 +23,12 @@ from dash import html
 from dash.dependencies import Input, Output
 
 
-def geneHeatmap(gnetdata, gene, cell_clusterid, select_by, order_by=None, scale=True, cmap='RdBu', save_as=None,
-                **kwargs):
+def geneHeatmap(gnetdata, cell, feature, scale=True, cmap='RdBu', save_as=None, **kwargs):
     """
     Create Heatmap showing gene expression in individual cells along pseudotime
     ----------------------------------------------------------------------------
     :param gnetdata: Gnetdata object, default None
-    :param gene: list, default None.
+    :param feature: list, default None.
     :param cell_clusterid: str, default None. cell with cell_clusterid will be selected
     :param select_by: str, default None. key of filtering cells
     :param order_by: str, default None. key of ordering cells
@@ -38,13 +38,9 @@ def geneHeatmap(gnetdata, gene, cell_clusterid, select_by, order_by=None, scale=
     :param kwargs: additional parameters passed to seaborn.clustermap()
     :return: None
     """
-    cell_info = gnetdata.CellAttrs['CellInfo'] if order_by is None else gnetdata.CellAttrs['CellInfo'].sort_values(order_by, ascending=True)
-    cell = list(cell_info.loc[cell_info[select_by].isin([cell_clusterid])].index)
     
-    sub_Expr = pd.DataFrame.sparse.from_spmatrix(gnetdata.Exp['matrix'],
-                                                index = gnetdata.Exp['cell'],
-                                                columns = gnetdata.Exp['feature']).loc[cell, gene].T
-    
+    sub_Expr = gnetdata_subset(gnetdata, cell, feature, **kwargs)
+
     if scale:
         sub_Expr = preprocessing.scale(sub_Expr)
 
@@ -60,8 +56,7 @@ def geneHeatmap(gnetdata, gene, cell_clusterid, select_by, order_by=None, scale=
     return sns_plot
 
 
-def geneCorrelation(gnetdata, gene, cell_clusterid, select_by, order_by=None, scale_data=True,
-                    save_as=None, figsize=None, **kwargs):
+def geneCorrelation(gnetdata, cell, feature, scale_data=True, save_as=None, **kwargs):
     """
     Create gene correlation heatmap
     --------------------------------------------------
@@ -76,13 +71,8 @@ def geneCorrelation(gnetdata, gene, cell_clusterid, select_by, order_by=None, sc
     :param kwargs: additional parameters passed to seaborn.clustermap()
     :return: None
     """
-    cell_info = gnetdata.CellAttrs['CellInfo'] if order_by is None else gnetdata.CellAttrs['CellInfo'].sort_values(order_by, ascending=True)
-    cell = list(cell_info.loc[cell_info[select_by].isin([cell_clusterid])].index)
+    sub_Expr = gnetdata_subset(gnetdata, cell, feature, **kwargs)
     
-    sub_Expr = pd.DataFrame.sparse.from_spmatrix(gnetdata.Exp['matrix'],
-                                            index = gnetdata.Exp['cell'],
-                                            columns = gnetdata.Exp['feature']).loc[cell, gene].T
-
     if scale:
         sub_Expr = preprocessing.scale(sub_Expr)
 
