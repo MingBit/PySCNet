@@ -44,9 +44,6 @@ def geneHeatmap(gnetdata, cell, feature, scale=True, cmap='RdBu', save_as=None, 
     if scale:
         sub_Expr = preprocessing.scale(sub_Expr)
 
-    # sub_Expr = pd.DataFrame(preprocessing.scale(gnetdata.ExpMatrix),
-    #                         index=gnetdata.ExpMatrix.index, columns=gnetdata.ExpMatrix.columns).loc[gene, cell] if scale else gnetdata.ExpMatrix.loc[gene, cell]
-
     sns_plot = sns.clustermap(sub_Expr, cmap=cmap, xticklabels=False, **kwargs)
 
     if save_as is not None:
@@ -76,9 +73,6 @@ def geneCorrelation(gnetdata, cell, feature, scale_data=True, save_as=None, **kw
     if scale:
         sub_Expr = preprocessing.scale(sub_Expr)
 
-    # sub_Expr = pd.DataFrame(preprocessing.scale(gnetdata.ExpMatrix),
-    #                         index=gnetdata.ExpMatrix.index, columns=gnetdata.ExpMatrix.columns).loc[gene, cell].T if scale_data else gnetdata.ExpMatrix.loc[gene, cell].T
-
     corr = sub_Expr.corr()
     
     #     mask = np.triu(np.ones_like(corr, dtype=np.bool))
@@ -93,7 +87,8 @@ def geneCorrelation(gnetdata, cell, feature, scale_data=True, save_as=None, **kw
     return sns_heatmap
 
 
-def dynamic_netShow(gnetdata, filename, node_size=50, node_community='all', html_size=["500px", "1800px"],
+def dynamic_netShow(gnetdata, filename, node_size=50, node_community='all', 
+                    html_size=["500px", "1800px"],
                     bgcolor="#222222", font_color="white", **kwarg):
     """
     create a GRN html
@@ -171,6 +166,7 @@ def net_hierarchy_plot(gnetdata, filename=None, **kwarg):
     ngroup = graph.new_vertex_property('int')
 
     labels = dict(zip(list(range(graph.num_vertices())), list(graph.vertex_properties['id'])))
+    
     for g in labels.keys():
         ngroup[g] = node_group.loc[node_group.node == labels[g], 'group']
 
@@ -236,86 +232,87 @@ def net_matrix_plot(gnetdata, filename=None, highlight_path=None, **kwarg):
     return None
 
 
-def create_app(gnetdata, grn_method, top_links, resolution=0.5, layout='cose'):
-    """
-    Create dash-plotly in Jupyter notebook
-    ------------------------------------------------------------
-    :param gnetdata: Gnetdata object.
-    :param grn_method: str, defualt None. It refers to the links table stored in NetAttrs.
-    :param top_links: int, default None.
-    :param resolution: float, default 0.5. resolution for gene module detection.
-    :param layout: str, default cose. Network layout.
-    :return: dashboard html
+# def create_app(gnetdata, grn_method, top_links, resolution=0.5, layout='cose'):
+#     """
+#     ToDo: test on S@S EZ
+#     Create dash-plotly in Jupyter notebook
+#     ------------------------------------------------------------
+#     :param gnetdata: Gnetdata object.
+#     :param grn_method: str, defualt None. It refers to the links table stored in NetAttrs.
+#     :param top_links: int, default None.
+#     :param resolution: float, default 0.5. resolution for gene module detection.
+#     :param layout: str, default cose. Network layout.
+#     :return: dashboard html
 
-    """
-    app = JupyterDash('pyscnet-plotly-dash')
-    elements = __update_filter_link(gnetdata, grn_method, top_links, resolution)
-    neighbours, sub_element_1, sub_element_2 = __update_sub_network(click_node=None)
-    def_text = 'please click on the gene node!'
-    FONT_STYLE = {
-        "color": '#343a40',
-        'font-size': '30'
-    }
-    new_stylesheet = [
-        {
-            'selector': 'node',
-            'style': {
-                'label': 'data(id)',
-                'background-color': 'data(color)',
-                'color': '#343a40'}
-        }]
-    app.layout = html.Div([
-        html.H3("pyscnet-plotly-dash"),
-        cyto.Cytoscape(
-            id='gene_network',
-            layout={'name': layout},
-            style={'width': '100%', 'height': '800px', 'background-color': '#eddcd2'},
-            stylesheet=new_stylesheet,
-            elements=elements
-        ),
+#     """
+#     app = JupyterDash('pyscnet-plotly-dash')
+#     elements = __update_filter_link(gnetdata, grn_method, top_links, resolution)
+#     neighbours, sub_element_1, sub_element_2 = __update_sub_network(click_node=None)
+#     def_text = 'please click on the gene node!'
+#     FONT_STYLE = {
+#         "color": '#343a40',
+#         'font-size': '30'
+#     }
+#     new_stylesheet = [
+#         {
+#             'selector': 'node',
+#             'style': {
+#                 'label': 'data(id)',
+#                 'background-color': 'data(color)',
+#                 'color': '#343a40'}
+#         }]
+#     app.layout = html.Div([
+#         html.H3("pyscnet-plotly-dash"),
+#         cyto.Cytoscape(
+#             id='gene_network',
+#             layout={'name': layout},
+#             style={'width': '100%', 'height': '800px', 'background-color': '#eddcd2'},
+#             stylesheet=new_stylesheet,
+#             elements=elements
+#         ),
 
-        html.H3(id='node_neighbors', children=def_text, style=FONT_STYLE),
-        cyto.Cytoscape(
-            id='selected_node_neighbors',
-            layout={'name': layout},
-            style={'width': '100%', 'height': '800px', 'background-color': '#eddcd2'},
-            stylesheet=new_stylesheet,
-            elements=sub_element_1
-        ),
+#         html.H3(id='node_neighbors', children=def_text, style=FONT_STYLE),
+#         cyto.Cytoscape(
+#             id='selected_node_neighbors',
+#             layout={'name': layout},
+#             style={'width': '100%', 'height': '800px', 'background-color': '#eddcd2'},
+#             stylesheet=new_stylesheet,
+#             elements=sub_element_1
+#         ),
 
-        html.H3(id='node_module', children=def_text, style=FONT_STYLE),
-        cyto.Cytoscape(
-            id='selected_node_module',
-            layout={'name': 'grid'},
-            style={'width': '100%', 'height': '800px', 'background-color': '#eddcd2'},
-            stylesheet=new_stylesheet,
-            elements=sub_element_2)
+#         html.H3(id='node_module', children=def_text, style=FONT_STYLE),
+#         cyto.Cytoscape(
+#             id='selected_node_module',
+#             layout={'name': 'grid'},
+#             style={'width': '100%', 'height': '800px', 'background-color': '#eddcd2'},
+#             stylesheet=new_stylesheet,
+#             elements=sub_element_2)
 
-    ])
+#     ])
 
-    @app.callback([Output('selected_node_neighbors', 'elements'),
-                   Output('selected_node_module', 'elements'),
-                   Output('selected_node_neighbors', 'stylesheet'),
-                   Output('selected_node_module', 'stylesheet'),
-                   Output('node_neighbors', 'children'),
-                   Output('node_module', 'children')],
-                  [Input('gene_network', 'tapNodeData')])
-    def update_sub_net(data):
-        if data:
-            neighbours, new_sub_elements_1, new_sub_elements_2 = __update_sub_network(data['id'])
-            new_stylesheet_1 = [{
-                'selector': 'node',
-                'style': {
-                    'label': 'data(id)',
-                    'color': '#343a40',
-                    'background-color': 'data(color)'
-                }
-            }]
+#     @app.callback([Output('selected_node_neighbors', 'elements'),
+#                    Output('selected_node_module', 'elements'),
+#                    Output('selected_node_neighbors', 'stylesheet'),
+#                    Output('selected_node_module', 'stylesheet'),
+#                    Output('node_neighbors', 'children'),
+#                    Output('node_module', 'children')],
+#                   [Input('gene_network', 'tapNodeData')])
+#     def update_sub_net(data):
+#         if data:
+#             neighbours, new_sub_elements_1, new_sub_elements_2 = __update_sub_network(data['id'])
+#             new_stylesheet_1 = [{
+#                 'selector': 'node',
+#                 'style': {
+#                     'label': 'data(id)',
+#                     'color': '#343a40',
+#                     'background-color': 'data(color)'
+#                 }
+#             }]
 
-            neighbour_text = 'Genes connected to ' + data['id']
-            module_text = 'Genes assigned to the same module as ' + data['id']
+#             neighbour_text = 'Genes connected to ' + data['id']
+#             module_text = 'Genes assigned to the same module as ' + data['id']
 
-        return [new_sub_elements_1, new_sub_elements_2, new_stylesheet_1,
-                new_stylesheet_1, neighbour_text, module_text]
+#         return [new_sub_elements_1, new_sub_elements_2, new_stylesheet_1,
+#                 new_stylesheet_1, neighbour_text, module_text]
 
-    return app
+#     return app

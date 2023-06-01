@@ -1,16 +1,21 @@
 # map edges and calculate roc score
+
 from sklearn import metrics
 import seaborn as sns
 import numpy as np
 
 
 def mapping_edges(df_1_link, df_2_link):
-    df_1_link['edge']= ["_".join(sorted([df_1_link.source[i], df_1_link.target[i]])) for i in range(df_1_link.shape[0])]
-    df_2_link['edge']= ["_".join(sorted([df_2_link.source[i], df_2_link.target[i]])) for i in range(df_2_link.shape[0])]
-    
-    return (len(set(df_1_link['edge']) & set(df_2_link['edge'])))
+
+    df_1_link['edge'] = df_1_link[['source', 'target']].apply(lambda x: '_'.join(sorted(x)), axis=1)
+    df_2_link['edge'] = df_2_link[['source', 'target']].apply(lambda x: '_'.join(sorted(x)), axis=1)
+
+    return len(set(df_1_link['edge']).intersection(df_2_link['edge']))
 
 def evaluation(links, Full_Ref):
+    
+    ##ToDo: Test
+    
     Detected = links.shape[0]
     Ref_links = Full_Ref[Full_Ref.weight == 1].reset_index(drop=True)
     TP = mapping_edges(links, Ref_links)
@@ -23,28 +28,20 @@ def evaluation(links, Full_Ref):
     FDR = FP / (TN + FP)
     F1_Score = (2 * Precision * Recall) / (Precision + Recall)
 
-    # print('TP:', TP, '\n', 'FN:', FN, '\n', 'FP:', FP, '\n', 'TN:', TN)
-
     links['name'] = links['source'] + '_' + links['target']
 
-    for name in links.name:
-        tmp = list(name.split('_'))
-        if name in list(Full_Ref['name']):
-            Full_Ref.loc[Full_Ref.name == name, 'weight_2'] = float(
-                format(float(links.loc[links.name == name, 'weight']), '.2f'))
+    name_exists = Full_Ref['name'].isin(links['name'])
+    tmp = links.loc[links['name'].isin(Full_Ref.loc[name_exists, 'name']), 'weight']
+    Full_Ref.loc[name_exists, 'weight_2'] = tmp.astype(float).apply(lambda x: format(x, '.2f'))
 
-        elif tmp[1] + '_' + tmp[0] in list(Full_Ref['name']):
-            Full_Ref.loc[Full_Ref.name == tmp[1] + '_' + tmp[0], 'weight_2'] = float(
-                format(float(links.loc[links.name == name, 'weight']), '.2f'))
+    name_exists_reversed = Full_Ref['name'].str.split('_').apply(lambda x: x[1] + '_' + x[0]).isin(links['name'])
+    tmp_reversed = links.loc[links['name'].isin(Full_Ref.loc[name_exists_reversed, 'name']), 'weight']
+    Full_Ref.loc[name_exists_reversed, 'weight_2'] = tmp_reversed.astype(float).apply(lambda x: format(x, '.2f'))
 
-        else:
-            continue
-
-    Full_Ref = Full_Ref.fillna(0)
-    auc = metrics.roc_auc_score(np.array(Full_Ref['weight'].abs()), np.array(Full_Ref['weight_2'].abs()))
-    fpr, tpr, threshold_1 = metrics.roc_curve(Full_Ref['weight'].abs(), Full_Ref['weight_2'].abs())
-    pre, recall, threshold_2 = metrics.precision_recall_curve(Full_Ref['weight'].abs(),
-                                                              Full_Ref['weight_2'].abs())
+    Full_Ref['weight_2'] = Full_Ref['weight_2'].fillna(0)
+    auc = metrics.roc_auc_score(np.abs(Full_Ref['weight']), np.abs(Full_Ref['weight_2']))
+    fpr, tpr, _ = metrics.roc_curve(np.abs(Full_Ref['weight']), np.abs(Full_Ref['weight_2']))
+    pre, recall, _ = metrics.precision_recall_curve(np.abs(Full_Ref['weight']), np.abs(Full_Ref['weight_2']))
 
     avg_pre_auc = metrics.auc(recall, pre)
 
@@ -53,8 +50,6 @@ def evaluation(links, Full_Ref):
 
 
 # Create ROC and PR curves
-
-
 def build_curves(ax, dict_of_algs, curve, filename, colors=None, **kwarg):
     names = dict_of_algs.keys()
 
@@ -65,6 +60,7 @@ def build_curves(ax, dict_of_algs, curve, filename, colors=None, **kwarg):
     section_dict = {sec: {} for sec in ['fpr_dict', 'tpr_dict', 'auc_dict', 'avgpre_dict']}
 
     for name in names:
+        
         section_dict['fpr_dict'][name] = dict_of_algs[name][keywords[0]]
         section_dict['tpr_dict'][name] = dict_of_algs[name][keywords[1]]
         section_dict['auc_dict'][name] = dict_of_algs[name]['auc']

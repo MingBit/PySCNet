@@ -187,8 +187,7 @@ def self_guide_walk(gnetdata, start, method='greedy_walk', supervisedby='pageRan
     :param repeat: int, repeat time for supervised random walk. default: 100
     :return: a list of travelled nodes.
     """
-    assert method in ['greedy_walk',
-                      'supervised_random_walk'], 'method must be either greedy_walk or supervised_random_walk'
+    assert method in ['greedy_walk', 'supervised_random_walk'], 'method must be either greedy_walk or supervised_random_walk'
     if method == 'greedy_walk':
         path = greedy_walk(gnetdata=gnetdata, start=start, supervisedby=supervisedby, steps=steps)
     else:
