@@ -5,7 +5,7 @@ Created on Mon Jul  1 18:37:20 2019
 
 @author: angelawu
 """
-
+"""
 import pandas as pd
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
@@ -98,3 +98,5 @@ def ensemble_classifier(X, Y, df_final, test_size=0.4, seed=3,
          'weight': df_final_pred})
 
     return res_df[res_df.weight == 1]
+    
+"""

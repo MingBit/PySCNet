@@ -13,8 +13,9 @@ import snf
 import numpy as np
 import warnings
 import networkx.algorithms.traversal as nextra
-from ._random_walk import greedy_walk, supervised_random_walk
-from ._ensemble_classifier import _generate_x_y, ensemble_classifier
+
+# from ._random_walk import greedy_walk, supervised_random_walk
+# from ._ensemble_classifier import _generate_x_y, ensemble_classifier
 
 
 def __init__():
@@ -97,6 +98,47 @@ def detect_community(gnetdata, **kwargs):
     print('gene communities added into NetAttrs')
     return gnetdata
 
+def graph_merge(link_list, method='union'):
+    """
+    Given two graphs, it returns merged graph.
+    ----------------------------------------------
+    :param link_1: dataframe. linkage table of graph_1
+    :param link_2: dataframe. linkage table of graph_2
+    :param method: str, default union. methods:[union, intersection, snf]. snf refers to similarity network fusion.
+    :return: dataframe, merged linkage
+    """
+    assert method in ['union', 'intersection'], 'valid method parameter: union, intersection'
+    
+    for link in link_list: link['edge'] = ["_".join(sorted(pair)) for pair in zip(link['source'], link['target'])]
+
+    mergedlinks = reduce(lambda x, y: pd.merge(x, y, on = 'edge', how = 'outer' if method == 'union' else inner)).fillna(0)
+    mergedlinks[['source', 'target']] = mergedlinks['edge'].str.split('_', expand=True)
+    mergedlinks['weight'] = mergedlinks.mean(axis=1)
+
+    return mergedlinks[['source', 'target', 'weight']]
+
+
+def graph_traveral(graph, start, threshold, method='bfs'):
+    """
+    Given a graph, it provides graph traversal techniques including breadth-first search (bsf) and depth-first search (dfs) to explore hidden gene/tf associations.
+    -----------------------------------------------------------------------------
+    :param graph: network graph object.
+    :param start: str. starting point of graph.
+    :type start: str
+    :param threshold: int. the depth-limit
+    :param method: str. bfs or dfs
+    :return: explored graph.
+    """
+    assert method in ['bfs', 'dfs'], 'valid method parameters: bfs, dfs!'
+    if method == 'bfs':
+        res_path = nextra.bfs_tree(graph, start, threshold)
+
+    elif method == 'dfs':
+        res_path = nextra.dfs_tree(graph, start, threshold)
+
+    return res_path
+
+
 
 # def find_consensus_graph(gnetdata, link_key='all', method='intersection',
 #                          top_rank=100, set_train=[0.05, 0.5], **kwargs):
@@ -132,48 +174,6 @@ def detect_community(gnetdata, **kwargs):
 #     return gnetdata
 
 
-def graph_merge(link_1, link_2, method='union'):
-    """
-    Given two graphs, it returns merged graph.
-    ----------------------------------------------
-    :param link_1: dataframe. linkage table of graph_1
-    :param link_2: dataframe. linkage table of graph_2
-    :param method: str, default union. methods:[union, intersection, snf]. snf refers to similarity network fusion.
-    :return: dataframe, merged linkage
-    """
-    assert method in ['union', 'intersection'], 'valid method parameter: union, intersection'
-    
-    link_1['edge'] = ["_".join(sorted(pair)) for pair in zip(link_1['source'], link_1['target'])]
-    link_2['edge'] = ["_".join(sorted(pair)) for pair in zip(link_2['source'], link_2['target'])]
-
-    mergedlinks = pd.merge(link_1, link_2, on=['edge'], how='outer' if method == 'union' else 'inner').fillna(0)
-    mergedlinks['weight'] = mergedlinks.mean(axis=1)
-
-    mergedlinks[['source', 'target']] = mergedlinks['edge'].str.split('_', expand=True)
-
-    return mergedlinks[['source', 'target', 'weight']]
-
-
-def graph_traveral(graph, start, threshold, method='bfs'):
-    """
-    Given a graph, it provides graph traversal techniques including breadth-first search (bsf) and depth-first search (dfs) to explore hidden gene/tf associations.
-    -----------------------------------------------------------------------------
-    :param graph: network graph object.
-    :param start: str. starting point of graph.
-    :type start: str
-    :param threshold: int. the depth-limit
-    :param method: str. bfs or dfs
-    :return: explored graph.
-    """
-    assert method in ['bfs', 'dfs'], 'valid method parameters: bfs, dfs!'
-    if method == 'bfs':
-        res_path = nextra.bfs_tree(graph, start, threshold)
-
-    elif method == 'dfs':
-        res_path = nextra.dfs_tree(graph, start, threshold)
-
-    return res_path
-
 
 # def self_guide_walk(gnetdata, start, method='greedy_walk', **kwargs):
 #     """
@@ -199,3 +199,5 @@ def graph_traveral(graph, start, threshold, method='bfs'):
 #         path = supervised_random_walk(gnetdata=gnetdata, start=start, supervisedby=supervisedby, steps=steps,
 #                                       repeat=repeat)
 #     return path
+
+# """

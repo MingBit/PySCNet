@@ -1,7 +1,6 @@
 # source code: https://github.com/mitbal/py-debruijn/blob/master/debruijn.py
-
+"""
 class Node:
-    """ Class Node to represent a vertex in the de bruijn graph """
 
     def __init__(self, lab):
         self.label = lab
@@ -15,7 +14,7 @@ class Edge:
 
 
 def construct_graph(reads, k):
-    """ Construct de bruijn graph from sets of short reads with k length word"""
+     #Construct de bruijn graph from sets of short reads with k length word
     edges = dict()
     vertices = dict()
 
@@ -43,7 +42,7 @@ def construct_graph(reads, k):
 
 
 def output_contigs(g):
-    """ Perform searching for Eulerian path in the graph to output genome assembly"""
+    # Perform searching for Eulerian path in the graph to output genome assembly
     V = g[0]
     E = g[1]
     # Pick starting node (the vertex with zero in degree)
@@ -62,6 +61,7 @@ def output_contigs(g):
         current = next.label
 
     return contig
+"""
 
 # =============================================================================
 # to do: hamiltonian path based

@@ -1,3 +1,4 @@
+"""
 from __future__ import absolute_import
 import scnode2vec_raw as scnv
 import _pickle as pk
@@ -34,3 +35,4 @@ with open('paras.pk', 'rb') as parameter:
 run_scnode2vec(Expr, reference_links=paras['reference_links'], p=paras['p'], q=paras['q'],
                size=paras['size'], walk_len=paras['walk_len'], num_walks=paras['num_walks'],
                workers=paras['workers'], n_pc=paras['n_pc'], param_grid=paras['param_grid'])
+"""
