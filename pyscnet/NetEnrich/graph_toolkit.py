@@ -98,38 +98,38 @@ def detect_community(gnetdata, **kwargs):
     return gnetdata
 
 
-def find_consensus_graph(gnetdata, link_key='all', method='intersection',
-                         top_rank=100, set_train=[0.05, 0.5], **kwargs):
-    """
-    Given multiple linkage tables, it predicts consensus links.
-    ------------------------------------------------------------
-    :param gnetdata: Gnetdata object.
-    :param link_key: list, default all. key referring to linkage table.
-    :param method: str, default intersection. methods for detecting consensus links. Note: intersection is recommended when there are less than 3 linkage tables.
-    :param top_rank: int, default 100. top ranked edges for intersection method.
-    :param set_train: list, default [0.05, 0.5]. Edges are ranked by weight obtained from individual methods. To train the classification model, we set top 5% edges as 'consensus edges (1)' and bottom 50% edges as 'non-consensus edges (0)' individual methods
-    :return: Gnetdata object with consensus links added into NetAttrs.
-    """
-    assert method in ['intersection', 'snf',
-                      'ensemble'], 'only following methods acceptable : intersection, snf, ensemble'
-    keys = list(filter(lambda x: 'links' in x, gnetdata.NetAttrs.keys())) if link_key == 'all' else link_key
+# def find_consensus_graph(gnetdata, link_key='all', method='intersection',
+#                          top_rank=100, set_train=[0.05, 0.5], **kwargs):
+#     """
+#     Given multiple linkage tables, it predicts consensus links.
+#     ------------------------------------------------------------
+#     :param gnetdata: Gnetdata object.
+#     :param link_key: list, default all. key referring to linkage table.
+#     :param method: str, default intersection. methods for detecting consensus links. Note: intersection is recommended when there are less than 3 linkage tables.
+#     :param top_rank: int, default 100. top ranked edges for intersection method.
+#     :param set_train: list, default [0.05, 0.5]. Edges are ranked by weight obtained from individual methods. To train the classification model, we set top 5% edges as 'consensus edges (1)' and bottom 50% edges as 'non-consensus edges (0)' individual methods
+#     :return: Gnetdata object with consensus links added into NetAttrs.
+#     """
+#     assert method in ['intersection', 'snf',
+#                       'ensemble'], 'only following methods acceptable : intersection, snf, ensemble'
+#     keys = list(filter(lambda x: 'links' in x, gnetdata.NetAttrs.keys())) if link_key == 'all' else link_key
 
-    if method == 'intersection':
-        merged_links = gnetdata.NetAttrs[keys[0]].sort_values('weight', ascending=False, ignore_index=True).head(top_rank)
-        for i in range(1, len(keys)):
-            sorted_links = gnetdata.NetAttrs[keys[i]].sort_values('weight',
-                                                                  ascending=False, ignore_index=True).head(top_rank)
-            merged_links = graph_merge(merged_links, sorted_links, method=method)
+#     if method == 'intersection':
+#         merged_links = gnetdata.NetAttrs[keys[0]].sort_values('weight', ascending=False, ignore_index=True).head(top_rank)
+#         for i in range(1, len(keys)):
+#             sorted_links = gnetdata.NetAttrs[keys[i]].sort_values('weight',
+#                                                                   ascending=False, ignore_index=True).head(top_rank)
+#             merged_links = graph_merge(merged_links, sorted_links, method=method)
 
-    elif method == 'ensemble':
-        links_dict = dict(filter(lambda i: i[0] in keys, gnetdata.NetAttrs.items()))
-        X, Y, df_final = _generate_x_y(links_dict, top_rank=top_rank, set_train=set_train)
-        merged_links = ensemble_classifier(X, Y, df_final, **kwargs)
+#     elif method == 'ensemble':
+#         links_dict = dict(filter(lambda i: i[0] in keys, gnetdata.NetAttrs.items()))
+#         X, Y, df_final = _generate_x_y(links_dict, top_rank=top_rank, set_train=set_train)
+#         merged_links = ensemble_classifier(X, Y, df_final, **kwargs)
 
-    print('there are {} consensus edges found!'.format(merged_links.shape[0]))
-    gnetdata._add_netattr('consensus_links', merged_links)
+#     print('there are {} consensus edges found!'.format(merged_links.shape[0]))
+#     gnetdata._add_netattr('consensus_links', merged_links)
 
-    return gnetdata
+#     return gnetdata
 
 
 def graph_merge(link_1, link_2, method='union'):
@@ -175,22 +175,27 @@ def graph_traveral(graph, start, threshold, method='bfs'):
     return res_path
 
 
-def self_guide_walk(gnetdata, start, method='greedy_walk', supervisedby='pageRank', steps=10, repeat=100):
-    """
-    For given a starting node, it provides greedy_walk and supervised random walk guided by node centrality.
-    ------------------------------------------------------------
-    :param gnetdata: Gnetdata object
-    :param start: str, starting point of graph.
-    :param method: str, 'greedy_walk' or 'supervised_random_walk'. default: greedy walk -- it prefers neighbors with maximum product of node centrality and weight. supervided_random_walk -- it prefers neighbors with randomized probability weighted by the product of node centrality and weight.
-    :param supervisedby: str, 'betweenness', 'closeness', 'degree' or 'pageRank'. default: pageRank
-    :param steps: int, number of steps. default: 10
-    :param repeat: int, repeat time for supervised random walk. default: 100
-    :return: a list of travelled nodes.
-    """
-    assert method in ['greedy_walk', 'supervised_random_walk'], 'method must be either greedy_walk or supervised_random_walk'
-    if method == 'greedy_walk':
-        path = greedy_walk(gnetdata=gnetdata, start=start, supervisedby=supervisedby, steps=steps)
-    else:
-        path = supervised_random_walk(gnetdata=gnetdata, start=start, supervisedby=supervisedby, steps=steps,
-                                      repeat=repeat)
-    return path
+# def self_guide_walk(gnetdata, start, method='greedy_walk', **kwargs):
+#     """
+#     For given a starting node, it provides greedy_walk and supervised random walk guided by node centrality.
+#     ------------------------------------------------------------
+#     :param gnetdata: Gnetdata object
+#     :param start: str, starting point of graph.
+#     :param method: str, 'greedy_walk' or 'supervised_random_walk'. default: greedy walk -- it prefers neighbors with maximum product of node centrality and weight. supervided_random_walk -- it prefers neighbors with randomized probability weighted by the product of node centrality and weight.
+#     :param supervisedby: str, 'betweenness', 'closeness', 'degree' or 'pageRank'. default: pageRank
+#     :param steps: int, number of steps. default: 10
+#     :param repeat: int, repeat time for supervised random walk. default: 100
+#     :return: a list of travelled nodes.
+#     """
+#     assert method in ['greedy_walk', 'supervised_random_walk'], 'method must be either greedy_walk or supervised_random_walk'
+    
+#     supervisedby = kwargs.get('supervisedby', 'pageRank')
+#     steps = kwargs.get('steps', 10) 
+#     repeat = kwargs.get('repeat', 100)
+    
+#     if method == 'greedy_walk':
+#         path = greedy_walk(gnetdata=gnetdata, start=start, supervisedby=supervisedby, steps=steps)
+#     else:
+#         path = supervised_random_walk(gnetdata=gnetdata, start=start, supervisedby=supervisedby, steps=steps,
+#                                       repeat=repeat)
+#     return path
