@@ -9,7 +9,7 @@ Created on Fri May 31 12:51:34 2019
 import os.path
 import numpy as np
 import pandas as pd
-from arboreto.algo import genie3
+from arboreto.algo import genie3, grnboost2
 
 def gnetdata_subset(gnetdata, cell, feature, **kwargs):
     

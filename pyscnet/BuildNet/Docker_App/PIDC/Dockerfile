@@ -1,4 +1,4 @@
-FROM julia:1.1.0
+FROM julia:1.9.0
 
 LABEL maintainer='ming.wu@tum.de'
 
