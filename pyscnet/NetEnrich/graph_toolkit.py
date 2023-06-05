@@ -130,11 +130,7 @@ def graph_traveral(graph, start, threshold, method='bfs'):
     :return: explored graph.
     """
     assert method in ['bfs', 'dfs'], 'valid method parameters: bfs, dfs!'
-    if method == 'bfs':
-        res_path = nextra.bfs_tree(graph, start, threshold)
-
-    elif method == 'dfs':
-        res_path = nextra.dfs_tree(graph, start, threshold)
+    res_path = nextra.bfs_tree(graph, start, threshold) if method =='bfs' else nextra.dfs_tree(graph, start, threshold)
 
     return res_path
 

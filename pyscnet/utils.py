@@ -20,7 +20,6 @@ def gnetdata_subset(gnetdata, cell, feature, **kwargs):
         cell = gnetdata.Exp['cell'] if cell is None else cell
     else:
         cell_info = gnetdata.CellAttrs['CellInfo']
-        # cell = list(cell_info.loc[cell_info[select_by].isin([cell_clusterid])].index)
         cell = cell_info.loc[cell_info[select_by].eq(cell_clusterid)].index.tolist()
 
 
@@ -37,5 +36,22 @@ def order_source_target(df):
     df_new['weight'] = df['weight']
 
     return df_new
+
+
+def run_genie3_grnboost(method, **kwargs):
+    
+    assert method in ['genie3', 'grnboost2'], 'valid methods parameters: genie3, grnboost2'
+    
+    tf_names = list(pd.read_csv('TF_Names.txt', sep='\t', header=0, index_col=0).index) \ 
+                                                if os.path.isfile('TF_Names.txt') else None
+    Expr = pd.read_csv('Expr.txt', sep='\t', header=0, index_col=0)
+    
+    links = genie3(np.asmatrix(Expr.T), gene_names=gene_names, **kwargs) if method == 'genie3' else \
+            grnboost2(np.asmatrix(Expr.T), gene_names=gene_names, **kwargs)
+    
+    links.to_csv('links.txt', sep='\t', index=False, header=False)
+    
+    
+    
 
 
