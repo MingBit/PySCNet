@@ -1,5 +1,4 @@
-from __future__ import absolute_import
-import os.path
-from ..utils import *
+from utils import *
 
-run_genie3_grnboost('genie3', **kwargs)
+if __name__ == '__main__':
+    run_genie3_grnboost('genie3')

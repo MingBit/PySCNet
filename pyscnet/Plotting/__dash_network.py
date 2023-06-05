@@ -36,8 +36,21 @@ def __update_filter_link(gnetdata, grn_method, top_links, resolution=0.5):
 
     return new_elements
 
+def __get_node_module(gene_module, link_table):
+    
+    sub_nodes = [{'data': {'id': name, 'label': name, 'color': color}} for name, color in
+                 gene_module.itertuples(index=False, name=None)]
+
+    sub_edges = [{'data': {'source': source, 'target': target}} for source, target in
+                 list(link_table.itertuples(index=False, name=None))]
+
+    sub_element = sub_nodes + sub_edges
+    return sub_element
+
+    
 
 def __update_sub_network(click_node=None):
+    
     click_node = list(new_object.NetAttrs['graph'].nodes)[0] if click_node is None else click_node
     neighbours = list(new_object.NetAttrs['graph'].neighbors(click_node))
     gene_module = new_object.NetAttrs['communities']
@@ -46,24 +59,14 @@ def __update_sub_network(click_node=None):
                              'target': neighbours})
     sub_gene_module = gene_module[gene_module.node.isin([click_node] + neighbours)][['node', 'color']]
 
-    sub_nodes = [{'data': {'id': name, 'label': name, 'color': color}} for name, color in
-                 sub_gene_module.itertuples(index=False, name=None)]
-    sub_edges = [{'data': {'source': source, 'target': target}} for source, target in
-                 list(sub_link.itertuples(index=False, name=None))]
-
-    sub_element = sub_nodes + sub_edges
+    sub_element = __get_node_module(sub_gene_module, sub_link)
 
     color = gene_module.loc[gene_module.node == click_node, 'color'].to_list()
     sub_module = gene_module[gene_module.color == color[0]][['node', 'color']]
 
     inter_node = set(neighbours) & set(sub_module)
-    sub_nodes_2 = [{'data': {'id': name, 'label': name, 'color': color}} for name, color in
-                   sub_module.itertuples(index=False, name=None)]
-    sub_edges_2 = [{'data': {'source': source, 'target': target}}
-                   for source, target in
-                   list(sub_link.loc[sub_link.target.isin(inter_node)].itertuples(index=False, name=None))]
-
-    sub_element_module = sub_nodes_2 + sub_edges_2
+    
+    sub_element_module = __get_node_module(sub_module, sub_link.loc[sub_link.target.isin(inter_node)])
 
     return [[click_node] + neighbours, sub_element, sub_element_module]
 

@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 """
 Created on Fri May 31 12:51:34 2019
 
 @author: mwu
 """
-
+import os.path
+import numpy as np
 import pandas as pd
-
+from arboreto.algo import genie3
 
 def gnetdata_subset(gnetdata, cell, feature, **kwargs):
     
@@ -38,20 +40,15 @@ def order_source_target(df):
     return df_new
 
 
+
 def run_genie3_grnboost(method, **kwargs):
     
     assert method in ['genie3', 'grnboost2'], 'valid methods parameters: genie3, grnboost2'
     
-    tf_names = list(pd.read_csv('TF_Names.txt', sep='\t', header=0, index_col=0).index) \ 
-                                                if os.path.isfile('TF_Names.txt') else None
+    tf_names = list(pd.read_csv('TF_Names.txt', sep='\t', header=0, index_col=0).index) if os.path.isfile('TF_Names.txt') else None
     Expr = pd.read_csv('Expr.txt', sep='\t', header=0, index_col=0)
     
-    links = genie3(np.asmatrix(Expr.T), gene_names=gene_names, **kwargs) if method == 'genie3' else \
-            grnboost2(np.asmatrix(Expr.T), gene_names=gene_names, **kwargs)
+    links = genie3(np.asmatrix(Expr.T), gene_names=Expr.index.values, **kwargs) if method == 'genie3' else \
+            grnboost2(np.asmatrix(Expr.T), gene_names=Expr.index.values, **kwargs)
     
     links.to_csv('links.txt', sep='\t', index=False, header=False)
-    
-    
-    
-
-

@@ -14,13 +14,12 @@ path = os.path.join(os.path.dirname(__file__)) + '/Docker_App/'
 sys.path.append("..")
 
 import docker
+import shutil
 import pandas as pd
 import tarfile
 import warnings
 import _pickle as pk
-
 from ..utils import *
-
 
 def __copy_to(container_id, src, dst):
     
@@ -32,7 +31,6 @@ def __copy_to(container_id, src, dst):
         for line in strm:
             f.write(str(line, 'utf-8'))
         f.seek(0)
-
         thisTar = tarfile.TarFile(f.name)
         thisTar.extract('links.txt', path=dst)
     os.remove(os.getenv('HOME') + '/temp.tar')
@@ -46,6 +44,9 @@ def __rundocker(gnetdata, method, cell, feature, **kwargs):
     Mms_TF = kwargs.get('Mms_TF', None)
     directed = kwargs.get('directed', True)
     
+    shutil.copyfile(os.path.join('/', *(os.path.dirname(__file__).split(os.path.sep))[:-1], 'utils.py'), 
+                    path + method + '/utils.py')
+    
     tmp_expr = gnetdata_subset(gnetdata, cell, feature, **kwargs)
 
     if Mms_TF is not None:
@@ -53,10 +54,11 @@ def __rundocker(gnetdata, method, cell, feature, **kwargs):
 
     with open(path + method + '/paras.pk', 'wb') as outfile:
         pk.dump(kwargs, outfile)
-
+        
     pd.DataFrame.to_csv(tmp_expr, path + method + '/Expr.txt', sep='\t')
     client.images.build(path=path + method, dockerfile='Dockerfile', tag=method.lower())
     container = client.containers.run(method.lower(), detach=True)
+    
     __copy_to(container_id=container.short_id, src='/' + method + '/links.txt', dst=os.getenv('HOME'))
 
     #client.remove_container(container.short_id)
