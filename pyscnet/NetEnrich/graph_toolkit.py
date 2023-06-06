@@ -8,11 +8,14 @@ Created on Sun Jun 16 20:50:39 2019
 from __future__ import absolute_import
 import networkx as nx
 import pandas as pd
-from community import community_louvain
 import snf
 import numpy as np
 import warnings
 from ..utils import *
+
+from functools import reduce
+from community import community_louvain
+
 import networkx.algorithms.traversal as nextra
 
 # from ._random_walk import greedy_walk, supervised_random_walk
@@ -112,7 +115,7 @@ def graph_merge(link_list, method='union'):
     
     for link in link_list: link['edge'] = ["_".join(sorted(pair)) for pair in zip(link['source'], link['target'])]
 
-    mergedlinks = reduce(lambda x, y: pd.merge(x, y, on = 'edge', how = 'outer' if method == 'union' else inner)).fillna(0)
+    mergedlinks = reduce(lambda x, y: pd.merge(x, y, on = 'edge', how = 'outer' if method == 'union' else inner), link_list).fillna(0)
     mergedlinks[['source', 'target']] = mergedlinks['edge'].str.split('_', expand=True)
     mergedlinks['weight'] = mergedlinks.mean(axis=1)
 
