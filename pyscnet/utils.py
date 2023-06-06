@@ -7,6 +7,7 @@ Created on Fri May 31 12:51:34 2019
 @author: mwu
 """
 import os.path
+import inspect
 import numpy as np
 import pandas as pd
 from arboreto.algo import genie3, grnboost2
@@ -39,6 +40,13 @@ def order_source_target(df):
 
     return df_new
 
+def get_para(func, **kwargs):
+    
+    paras = list(inspect.signature(func).parameters)
+    paras_kwargs = {k: kwargs.pop(k) for k in dict(kwargs) if k in paras}
+    
+    return paras_kwargs
+    
 
 
 def run_genie3_grnboost(method, **kwargs):

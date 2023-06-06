@@ -11,6 +11,7 @@ import graph_tool.all as gt
 import seaborn as sns
 import pandas as pd
 import numpy as np
+import inspect
 from pyvis.network import Network
 import matplotlib.pyplot as plt
 
@@ -35,17 +36,17 @@ def geneHeatmap(gnetdata, cell, feature, scale=True, **kwargs):
     :param scale: bool, default True. whether or not scale the data
     :param cmap: str, default 'RdBu'. string denoting colors in clustermap
     :param save_as: str, default None. filepath+filename
-    :param kwargs: additional parameters passed to seaborn.clustermap()
+    :param kwargs: additional parameters passed to gnetdata_subset, seaborn.clustermap()
     :return: None
     """
     save_as = kwargs.get('save_as', None)
     
-    sub_Expr = gnetdata_subset(gnetdata, cell, feature, **kwargs)
+    sub_Expr = gnetdata_subset(gnetdata, cell, feature, **get_para(gnetdata_subset, **kwargs))
 
     if scale:
         sub_Expr = preprocessing.scale(sub_Expr)
 
-    sns_plot = sns.clustermap(sub_Expr, xticklabels=False)
+    sns_plot = sns.clustermap(sub_Expr, **get_para(sns.clustermap, **kwargs))
 
     if save_as is not None:
         sns_plot.savefig(save_as)
@@ -66,28 +67,29 @@ def geneCorrelation(gnetdata, cell, feature, **kwargs):
     :param scale_data: bool, default True. whether or not scale the data
     :param save_as: str, default None. filepath+filename
     :param figsize: list, default None. a list of int defining figure size
-    :param kwargs: additional parameters passed to seaborn.clustermap()
+    :param kwargs: additional parameters passed to gnetdata_subset, sns.heatmap
     :return: None
     """
     scale = kwargs.get('scale', True)
     save_as = kwargs.get('save_as', None)
-
-    sub_Expr = gnetdata_subset(gnetdata, cell, feature, **kwargs)
+    figsize = kwargs.get('figsize', [10, 10])
+        
+    sub_Expr = pd.DataFrame(gnetdata_subset(gnetdata, cell, feature, **get_para(gnetdata_subset, **kwargs)))
         
     if scale:
-        sub_Expr = preprocessing.scale(sub_Expr)
+        sub_Expr = pd.DataFrame(preprocessing.scale(sub_Expr), index = sub_Expr.index, 
+                                columns = sub_Expr.columns)
 
-    corr = sub_Expr.corr()
+    corr = sub_Expr.T.corr()
     
-    #     mask = np.triu(np.ones_like(corr, dtype=np.bool))
-    cmap = sns.diverging_palette(220, 10, as_cmap=True)
-    fig, ax = plt.subplots(figsize=[10, 10] if figsize is None else figsize)
-    sns_heatmap = sns.heatmap(corr, cmap=cmap, center=0, **kwargs)
+    #mask = np.triu(np.ones_like(corr, dtype=np.bool))
+    # cmap = sns.diverging_palette(220, 10, as_cmap=True)
+    fig, ax = plt.subplots(figsize=figsize)
+    sns_heatmap = sns.heatmap(corr, center=0, **get_para(sns.heatmap, **kwargs))
 
     if save_as is not None:
         plt.savefig(save_as)
 
-    # plt.show()
     return sns_heatmap
 
 def dynamic_netShow(gnetdata, filename, node_community='all', **kwargs):
@@ -115,7 +117,7 @@ def dynamic_netShow(gnetdata, filename, node_community='all', **kwargs):
     node_group = gnetdata.NetAttrs['communities']
     graph = gnetdata.NetAttrs['graph']
 
-    net = Network(html_size[0], html_size[1], bgcolor=bgcolor, font_color=font_color, **kwargs)
+    net = Network(html_size[0], html_size[1], bgcolor=bgcolor, font_color=font_color)
     edge_data = [(edge, graph[edge[0]][edge[1]]['weight']) for edge in graph.edges]
 
     colors = sns.color_palette().as_hex() + sns.color_palette('Paired', 100).as_hex()

@@ -12,6 +12,7 @@ from community import community_louvain
 import snf
 import numpy as np
 import warnings
+from ..utils import *
 import networkx.algorithms.traversal as nextra
 
 # from ._random_walk import greedy_walk, supervised_random_walk
@@ -22,13 +23,13 @@ def __init__():
     warnings.simplefilter("ignore")
 
 
-def snf_based_merge(links_list, node_list):
+def snf_based_merge(links_list, node_list, **kwargs):
     """
     snf network merge based on Wang, Bo, et al. Nature methods 11.3 (2014): 333.
     """
     warnings.simplefilter("ignore")
-    affinity_matrix = snf.make_affinity(links_list)
-    fused_network = snf.snf(affinity_matrix)
+    affinity_matrix = snf.make_affinity(links_list, **get_para(snf.make_affinity, **kwargs))
+    fused_network = snf.snf(affinity_matrix, **get_para(snf.snf, **kwargs))
     np.fill_diagonal(fused_network, 0)
     
     graph = nx.from_pandas_adjacency(pd.DataFrame(fused_network, index=node_list, columns=node_list))
@@ -90,7 +91,7 @@ def detect_community(gnetdata, **kwargs):
     :return: Gnetdata object with 'communities' added into NetAttrs
     """
     G = gnetdata.NetAttrs['graph']
-    partition = community_louvain.best_partition(G, **kwargs)
+    partition = community_louvain.best_partition(G, **get_para(community_louvain.best_partition, **kwargs))
     communities = pd.DataFrame.from_dict(list(partition.items()))
     communities.columns = ['node', 'group']
 
