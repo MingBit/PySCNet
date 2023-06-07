@@ -3,7 +3,6 @@
 # def get_prop_type(value, key=None):
 #     if isinstance(key, str):
 #         key = key.encode('utf-8', errors='replace')
-
 #     if isinstance(value, bool):
 #         tname = 'bool'
 #     elif isinstance(value, int):

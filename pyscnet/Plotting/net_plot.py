@@ -44,7 +44,9 @@ def geneHeatmap(gnetdata, cell, feature, scale=True, **kwargs):
     sub_Expr = gnetdata_subset(gnetdata, cell, feature, **get_para(gnetdata_subset, **kwargs))
 
     if scale:
-        sub_Expr = preprocessing.scale(sub_Expr)
+        sub_Expr = pd.DataFrame(preprocessing.scale(sub_Expr),
+                                index = sub_Expr.index,
+                                columns = sub_Expr.columns)
 
     sns_plot = sns.clustermap(sub_Expr, **get_para(sns.clustermap, **kwargs))
 
@@ -74,13 +76,14 @@ def geneCorrelation(gnetdata, cell, feature, **kwargs):
     save_as = kwargs.get('save_as', None)
     figsize = kwargs.get('figsize', [10, 10])
         
-    sub_Expr = pd.DataFrame(gnetdata_subset(gnetdata, cell, feature, **get_para(gnetdata_subset, **kwargs)))
+    sub_Expr = gnetdata_subset(gnetdata, cell, feature, **get_para(gnetdata_subset, **kwargs))
         
     if scale:
-        sub_Expr = pd.DataFrame(preprocessing.scale(sub_Expr), index = sub_Expr.index, 
+        sub_Expr = pd.DataFrame(preprocessing.scale(sub_Expr), 
+                                index = sub_Expr.index, 
                                 columns = sub_Expr.columns)
 
-    corr = sub_Expr.T.corr()
+    corr = pd.DataFrame(sub_Expr).T.corr()
     
     #mask = np.triu(np.ones_like(corr, dtype=np.bool))
     # cmap = sns.diverging_palette(220, 10, as_cmap=True)

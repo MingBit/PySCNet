@@ -2,6 +2,7 @@
 [![Build Status](https://travis-ci.org/MingBit/PySCNet.svg?branch=master)](https://travis-ci.org/MingBit/PySCNet)
 [![Maintainability](https://api.codeclimate.com/v1/badges/fe95cba3036e0db66538/maintainability)](https://codeclimate.com/github/MingBit/PySCNet/maintainability)
 [![Documentation Status](https://readthedocs.org/projects/pyscnet/badge/?version=latest)](https://pyscnet.readthedocs.io/en/latest/?badge=latest)
+[![Downloads](https://static.pepy.tech/badge/pyscnet)](https://pepy.tech/project/pyscnet)
 
 # PySCNet: A tool for reconstructing and analyzing gene regulatory network from single-cell RNA-Seq data
 There are four modules:
