@@ -100,7 +100,7 @@ def dynamic_netShow(gnetdata, filename, node_community='all', **kwargs):
     create a GRN html
     ------------------------------------------
     :param gnetdata: Gnetdata object
-    :param filename: str, save as filename
+    :param filename: str, save as filename - local directory
     :param node_size: int, default 50.
     :param node_community: str or list, default all.
     :param html_size: list, default ["1200px", "1600px"]
@@ -108,7 +108,7 @@ def dynamic_netShow(gnetdata, filename, node_community='all', **kwargs):
     :param bgcolor: string, default #222222
     :return: None
     """
-
+    
     node_size = kwargs.get('node_size', 50)
     bgcolor = kwargs.get('bgcolor', "#222222")
     font_color = kwargs.get('font_color', 'white')
@@ -120,7 +120,7 @@ def dynamic_netShow(gnetdata, filename, node_community='all', **kwargs):
     node_group = gnetdata.NetAttrs['communities']
     graph = gnetdata.NetAttrs['graph']
 
-    net = Network(html_size[0], html_size[1], bgcolor=bgcolor, font_color=font_color)
+    net = Network(html_size[0], html_size[1], bgcolor=bgcolor, font_color=font_color, notebook = True)
     edge_data = [(edge, graph[edge[0]][edge[1]]['weight']) for edge in graph.edges]
 
     colors = sns.color_palette().as_hex() + sns.color_palette('Paired', 100).as_hex()
@@ -147,15 +147,13 @@ def dynamic_netShow(gnetdata, filename, node_community='all', **kwargs):
     # add neighbor data to node hover data
     for node in net.nodes:
         neighbors = neighbor_map.get(node['id'], [])
-        node["title"] += " Neighbors:<br>" + "<br>".join(neighbors)
+        node["title"] += "\n Neighbors: \n" + "\n".join(neighbors)
         node["value"] = len(neighbors)
         node['size'] = node_size
-
-    net.show_buttons(filter_='physics')
-    net.show(filename)
-
-    return None
-
+    
+    net.save_graph(filename)
+    
+    return net
 # def net_hierarchy_plot(gnetdata, filename=None, **kwarg):
 #     """
 #      create a hierarchy gene net plot

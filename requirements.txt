@@ -19,7 +19,7 @@ scanpy
 docker~=4.0.2
 seaborn
 matplotlib
-pyvis
+pyvis==0.3.1
 python-louvain
 setuptools
 nbsphinx
