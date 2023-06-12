@@ -95,7 +95,7 @@ def geneCorrelation(gnetdata, cell, feature, **kwargs):
 
     return sns_heatmap
 
-def dynamic_netShow(gnetdata, filename, node_community='all', **kwargs):
+def dynamic_netShow(gnetdata, filename, subnodes = None, **kwargs):
     """
     create a GRN html
     ------------------------------------------
@@ -118,8 +118,8 @@ def dynamic_netShow(gnetdata, filename, node_community='all', **kwargs):
     assert 'communities' in gnetdata.NetAttrs.keys(), 'node communities is empty!'
 
     node_group = gnetdata.NetAttrs['communities']
-    graph = gnetdata.NetAttrs['graph']
-
+    graph = gnetdata.NetAttrs['graph'] if subnodes is None else gnetdata.NetAttrs['graph'].subgraph(subnodes)
+    
     net = Network(html_size[0], html_size[1], bgcolor=bgcolor, font_color=font_color, notebook = True)
     edge_data = [(edge, graph[edge[0]][edge[1]]['weight']) for edge in graph.edges]
 
@@ -127,33 +127,27 @@ def dynamic_netShow(gnetdata, filename, node_community='all', **kwargs):
     color_map = {node: colors[int(node_group[node_group['node'] == node]['group'])] for node in node_group['node']}
     color_map['grey'] = 'grey'
 
-    if node_community != 'all':
-        sub_node_group = set(node_group[node_group.group.isin(node_community)]['node'])
-
     for (src, dst), w in edge_data:
-        if node_community == 'all':
-            src_color = color_map.get(src, 'grey')
-            dst_color = color_map.get(dst, 'grey')
-        else:
-            src_color = color_map.get(src, 'grey') if src in sub_node_group else 'grey'
-            dst_color = color_map.get(dst, 'grey') if dst in sub_node_group else 'grey'
-
+        
+        src_color = color_map.get(src, 'grey')
+        dst_color = color_map.get(dst, 'grey')
+    
         net.add_node(src, src, title=src, color=src_color)
         net.add_node(dst, dst, title=dst, color=dst_color)
         net.add_edge(src, dst, value=w)
 
     neighbor_map = net.get_adj_list()
-
-    # add neighbor data to node hover data
+    
     for node in net.nodes:
         neighbors = neighbor_map.get(node['id'], [])
         node["title"] += "\n Neighbors: \n" + "\n".join(neighbors)
         node["value"] = len(neighbors)
         node['size'] = node_size
     
-    net.save_graph(filename)
-    
+    net.save_graph(filename)    
     return net
+
+
 # def net_hierarchy_plot(gnetdata, filename=None, **kwarg):
 #     """
 #      create a hierarchy gene net plot
