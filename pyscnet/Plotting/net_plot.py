@@ -5,7 +5,7 @@
 """
 
 from __future__ import absolute_import
-# from ._nx2gt import nx2gt
+from ._nx2gt import nx2gt
 from ..utils import *
 import graph_tool.all as gt
 import seaborn as sns
@@ -148,174 +148,174 @@ def dynamic_netShow(gnetdata, filename, subnodes = None, **kwargs):
     return net
 
 
-# def net_hierarchy_plot(gnetdata, filename=None, **kwarg):
-#     """
-#      create a hierarchy gene net plot
-#     ---------------------------------------------
-#     :param gnetdata: Gnetdata object
-#     :param filename: str, default None.
-#     :param kwarg: additional parameters passed to graph_tool.all.draw_hierarchy()
-#     :return: None
+def net_hierarchy_plot(gnetdata, filename=None, **kwarg):
+    """
+     create a hierarchy gene net plot
+    ---------------------------------------------
+    :param gnetdata: Gnetdata object
+    :param filename: str, default None.
+    :param kwarg: additional parameters passed to graph_tool.all.draw_hierarchy()
+    :return: None
 
-#     """
+    """
 
-#     assert 'graph' in gnetdata.NetAttrs.keys(), 'graph is empty!'
-#     assert 'communities' in gnetdata.NetAttrs.keys(), 'node communities is empty!'
+    assert 'graph' in gnetdata.NetAttrs.keys(), 'graph is empty!'
+    assert 'communities' in gnetdata.NetAttrs.keys(), 'node communities is empty!'
 
-#     graph = nx2gt(gnetdata.NetAttrs['graph'])
-#     node_group = gnetdata.NetAttrs['communities']
+    graph = nx2gt(gnetdata.NetAttrs['graph'])
+    node_group = gnetdata.NetAttrs['communities']
 
-#     # deg = graph.degree_property_map('total')
-#     ngroup = graph.new_vertex_property('int')
+    # deg = graph.degree_property_map('total')
+    ngroup = graph.new_vertex_property('int')
 
-#     labels = dict(zip(list(range(graph.num_vertices())), list(graph.vertex_properties['id'])))
+    labels = dict(zip(list(range(graph.num_vertices())), list(graph.vertex_properties['id'])))
     
-#     for g in labels.keys():
-#         ngroup[g] = node_group.loc[node_group.node == labels[g], 'group']
+    for g in labels.keys():
+        ngroup[g] = node_group.loc[node_group.node == labels[g], 'group']
 
-#     state = gt.minimize_nested_blockmodel_dl(graph)
-#     gt.draw_hierarchy(state, vertex_fill_color=ngroup, vertex_anchor=0,
-#                       vertex_text=graph.vertex_properties['id'],
-#                       output=filename, **kwarg)
-#     return None
-
-
-# def net_matrix_plot(gnetdata, filename=None, highlight_path=None, **kwarg):
-#     """
-#     create a matrix gene net plot
-#     --------------------------------------
-#     :param gnetdata: Gnetdata object.
-#     :param filename: str, default None.
-#     :param highlight_path: list, default None. a list of gene Nodes.
-#     :param kwarg: additional parameters passed to graph_tool.all.graph_draw()
-#     :return: None
-
-#     """
-
-#     assert 'graph' in gnetdata.NetAttrs.keys(), 'graph is empty!'
-#     assert 'communities' in gnetdata.NetAttrs.keys(), 'node communities is empty!'
-
-#     graph = nx2gt(gnetdata.NetAttrs['graph'])
-#     node_group = gnetdata.NetAttrs['communities']
-
-#     ngroup = graph.new_vertex_property('int')
-
-#     # deg = graph.degree_property_map('total')
-#     labels = dict(zip(list(range(graph.num_vertices())), list(graph.vertex_properties['id'])))
-#     for g in labels.keys():
-#         ngroup[g] = node_group.loc[node_group.node == labels[g], 'group']
-
-#     position = graph.new_vertex_property("vector<double>")
-#     edge_color = graph.new_edge_property("string")
-
-#     dim = int(np.sqrt(len(labels))) + 1
-#     node_pos = list()
-
-#     node_group_dict = dict(zip(list(range(graph.num_vertices())), list(node_group.group)))
-
-#     for i in range(len(set(node_group.group))):
-#         for key, item in node_group_dict.items():
-#             if item == i:
-#                 node_pos.append(key)
-
-#     for i in range(len(node_pos)):
-#         position[graph.vertex(node_pos[i])] = (int(i / dim), i % dim)
-
-#     for e in graph.edges():
-#         if (highlight_path is not None) and (labels[list(e)[0]] in highlight_path) and (
-#                 labels[list(e)[1]] in highlight_path) and abs(
-#             highlight_path.index(labels[list(e)[0]]) - highlight_path.index(labels[list(e)[1]])) == 1:
-#             edge_color[e] = 'darkorange'
-#         else:
-#             edge_color[e] = 'lightgrey'
-
-#     gt.graph_draw(graph, pos=position, vertex_fill_color=ngroup, edge_color=edge_color,
-#                   vertex_text=graph.vertex_properties['id'], output=filename, **kwarg)
-
-#     return None
+    state = gt.minimize_nested_blockmodel_dl(graph)
+    gt.draw_hierarchy(state, vertex_fill_color=ngroup, vertex_anchor=0,
+                      vertex_text=graph.vertex_properties['id'],
+                      output=filename, **kwarg)
+    return None
 
 
-# def create_app(gnetdata, grn_method, top_links, resolution=0.5, layout='cose'):
-#     """
-#     ToDo: test on S@S EZ
-#     Create dash-plotly in Jupyter notebook
-#     ------------------------------------------------------------
-#     :param gnetdata: Gnetdata object.
-#     :param grn_method: str, defualt None. It refers to the links table stored in NetAttrs.
-#     :param top_links: int, default None.
-#     :param resolution: float, default 0.5. resolution for gene module detection.
-#     :param layout: str, default cose. Network layout.
-#     :return: dashboard html
+def net_matrix_plot(gnetdata, filename=None, highlight_path=None, **kwarg):
+    """
+    create a matrix gene net plot
+    --------------------------------------
+    :param gnetdata: Gnetdata object.
+    :param filename: str, default None.
+    :param highlight_path: list, default None. a list of gene Nodes.
+    :param kwarg: additional parameters passed to graph_tool.all.graph_draw()
+    :return: None
 
-#     """
-#     app = JupyterDash('pyscnet-plotly-dash')
-#     elements = __update_filter_link(gnetdata, grn_method, top_links, resolution)
-#     neighbours, sub_element_1, sub_element_2 = __update_sub_network(click_node=None)
-#     def_text = 'please click on the gene node!'
-#     FONT_STYLE = {
-#         "color": '#343a40',
-#         'font-size': '30'
-#     }
-#     new_stylesheet = [
-#         {
-#             'selector': 'node',
-#             'style': {
-#                 'label': 'data(id)',
-#                 'background-color': 'data(color)',
-#                 'color': '#343a40'}
-#         }]
-#     app.layout = html.Div([
-#         html.H3("pyscnet-plotly-dash"),
-#         cyto.Cytoscape(
-#             id='gene_network',
-#             layout={'name': layout},
-#             style={'width': '100%', 'height': '800px', 'background-color': '#eddcd2'},
-#             stylesheet=new_stylesheet,
-#             elements=elements
-#         ),
+    """
 
-#         html.H3(id='node_neighbors', children=def_text, style=FONT_STYLE),
-#         cyto.Cytoscape(
-#             id='selected_node_neighbors',
-#             layout={'name': layout},
-#             style={'width': '100%', 'height': '800px', 'background-color': '#eddcd2'},
-#             stylesheet=new_stylesheet,
-#             elements=sub_element_1
-#         ),
+    assert 'graph' in gnetdata.NetAttrs.keys(), 'graph is empty!'
+    assert 'communities' in gnetdata.NetAttrs.keys(), 'node communities is empty!'
 
-#         html.H3(id='node_module', children=def_text, style=FONT_STYLE),
-#         cyto.Cytoscape(
-#             id='selected_node_module',
-#             layout={'name': 'grid'},
-#             style={'width': '100%', 'height': '800px', 'background-color': '#eddcd2'},
-#             stylesheet=new_stylesheet,
-#             elements=sub_element_2)
+    graph = nx2gt(gnetdata.NetAttrs['graph'])
+    node_group = gnetdata.NetAttrs['communities']
 
-#     ])
+    ngroup = graph.new_vertex_property('int')
 
-#     @app.callback([Output('selected_node_neighbors', 'elements'),
-#                    Output('selected_node_module', 'elements'),
-#                    Output('selected_node_neighbors', 'stylesheet'),
-#                    Output('selected_node_module', 'stylesheet'),
-#                    Output('node_neighbors', 'children'),
-#                    Output('node_module', 'children')],
-#                   [Input('gene_network', 'tapNodeData')])
-#     def update_sub_net(data):
-#         if data:
-#             neighbours, new_sub_elements_1, new_sub_elements_2 = __update_sub_network(data['id'])
-#             new_stylesheet_1 = [{
-#                 'selector': 'node',
-#                 'style': {
-#                     'label': 'data(id)',
-#                     'color': '#343a40',
-#                     'background-color': 'data(color)'
-#                 }
-#             }]
+    # deg = graph.degree_property_map('total')
+    labels = dict(zip(list(range(graph.num_vertices())), list(graph.vertex_properties['id'])))
+    for g in labels.keys():
+        ngroup[g] = node_group.loc[node_group.node == labels[g], 'group']
 
-#             neighbour_text = 'Genes connected to ' + data['id']
-#             module_text = 'Genes assigned to the same module as ' + data['id']
+    position = graph.new_vertex_property("vector<double>")
+    edge_color = graph.new_edge_property("string")
 
-#         return [new_sub_elements_1, new_sub_elements_2, new_stylesheet_1,
-#                 new_stylesheet_1, neighbour_text, module_text]
+    dim = int(np.sqrt(len(labels))) + 1
+    node_pos = list()
 
-#     return app
+    node_group_dict = dict(zip(list(range(graph.num_vertices())), list(node_group.group)))
+
+    for i in range(len(set(node_group.group))):
+        for key, item in node_group_dict.items():
+            if item == i:
+                node_pos.append(key)
+
+    for i in range(len(node_pos)):
+        position[graph.vertex(node_pos[i])] = (int(i / dim), i % dim)
+
+    for e in graph.edges():
+        if (highlight_path is not None) and (labels[list(e)[0]] in highlight_path) and (
+                labels[list(e)[1]] in highlight_path) and abs(
+            highlight_path.index(labels[list(e)[0]]) - highlight_path.index(labels[list(e)[1]])) == 1:
+            edge_color[e] = 'darkorange'
+        else:
+            edge_color[e] = 'lightgrey'
+
+    gt.graph_draw(graph, pos=position, vertex_fill_color=ngroup, edge_color=edge_color,
+                  vertex_text=graph.vertex_properties['id'], output=filename, **kwarg)
+
+    return None
+
+
+def create_app(gnetdata, grn_method, top_links, resolution=0.5, layout='cose'):
+    """
+    ToDo: test on S@S EZ
+    Create dash-plotly in Jupyter notebook
+    ------------------------------------------------------------
+    :param gnetdata: Gnetdata object.
+    :param grn_method: str, defualt None. It refers to the links table stored in NetAttrs.
+    :param top_links: int, default None.
+    :param resolution: float, default 0.5. resolution for gene module detection.
+    :param layout: str, default cose. Network layout.
+    :return: dashboard html
+
+    """
+    app = JupyterDash('pyscnet-plotly-dash')
+    elements = __update_filter_link(gnetdata, grn_method, top_links, resolution)
+    neighbours, sub_element_1, sub_element_2 = __update_sub_network(click_node=None)
+    def_text = 'please click on the gene node!'
+    FONT_STYLE = {
+        "color": '#343a40',
+        'font-size': '30'
+    }
+    new_stylesheet = [
+        {
+            'selector': 'node',
+            'style': {
+                'label': 'data(id)',
+                'background-color': 'data(color)',
+                'color': '#343a40'}
+        }]
+    app.layout = html.Div([
+        html.H3("pyscnet-plotly-dash"),
+        cyto.Cytoscape(
+            id='gene_network',
+            layout={'name': layout},
+            style={'width': '100%', 'height': '800px', 'background-color': '#eddcd2'},
+            stylesheet=new_stylesheet,
+            elements=elements
+        ),
+
+        html.H3(id='node_neighbors', children=def_text, style=FONT_STYLE),
+        cyto.Cytoscape(
+            id='selected_node_neighbors',
+            layout={'name': layout},
+            style={'width': '100%', 'height': '800px', 'background-color': '#eddcd2'},
+            stylesheet=new_stylesheet,
+            elements=sub_element_1
+        ),
+
+        html.H3(id='node_module', children=def_text, style=FONT_STYLE),
+        cyto.Cytoscape(
+            id='selected_node_module',
+            layout={'name': 'grid'},
+            style={'width': '100%', 'height': '800px', 'background-color': '#eddcd2'},
+            stylesheet=new_stylesheet,
+            elements=sub_element_2)
+
+    ])
+
+    @app.callback([Output('selected_node_neighbors', 'elements'),
+                   Output('selected_node_module', 'elements'),
+                   Output('selected_node_neighbors', 'stylesheet'),
+                   Output('selected_node_module', 'stylesheet'),
+                   Output('node_neighbors', 'children'),
+                   Output('node_module', 'children')],
+                  [Input('gene_network', 'tapNodeData')])
+    def update_sub_net(data):
+        if data:
+            neighbours, new_sub_elements_1, new_sub_elements_2 = __update_sub_network(data['id'])
+            new_stylesheet_1 = [{
+                'selector': 'node',
+                'style': {
+                    'label': 'data(id)',
+                    'color': '#343a40',
+                    'background-color': 'data(color)'
+                }
+            }]
+
+            neighbour_text = 'Genes connected to ' + data['id']
+            module_text = 'Genes assigned to the same module as ' + data['id']
+
+        return [new_sub_elements_1, new_sub_elements_2, new_stylesheet_1,
+                new_stylesheet_1, neighbour_text, module_text]
+
+    return app

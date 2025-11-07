@@ -56,7 +56,13 @@ def __rundocker(gnetdata, method, cell, feature, **kwargs):
         pk.dump(kwargs, outfile)
         
     pd.DataFrame.to_csv(tmp_expr, path + method + '/Expr.txt', sep='\t')
-    client.images.build(path=path + method, dockerfile='Dockerfile', tag=method.lower())
+    
+    client.images.build(path=path + method, 
+                        dockerfile='Dockerfile', 
+                        tag=method.lower(),
+                        nocache=True,
+                        rm = True)
+    
     container = client.containers.run(method.lower(), detach=True)
     
     __copy_to(container_id=container.short_id, src='/' + method + '/links.txt', dst=os.getenv('HOME'))
@@ -64,7 +70,13 @@ def __rundocker(gnetdata, method, cell, feature, **kwargs):
     #client.remove_container(container.short_id)
     container.stop()
     client.containers.prune()
-    client.images.prune()
+    # client.images.prune()
+    
+    try:
+        client.images.remove(image=method.lower(), force=True)
+    except docker.errors.ImageNotFound:
+        pass # Ignore error if image was already gone
+
     raw_links = pd.read_csv(os.getenv('HOME') + '/links.txt', sep='\t', header=None)
     raw_links.columns = ['source', 'target', 'weight']
     os.system('rm ' + path + method + '/*.txt | rm ' + path + method + '/paras.pk')
